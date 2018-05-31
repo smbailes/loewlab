@@ -43,10 +43,10 @@ if (strcmp(answer, 'Patient'))
     ptID = patientselect;    % Dialog Box for patient selection
     %% User Selection (CHANGE THIS TO NEW USERS / DIRECTORY REF SYSTEM)
     user = userselect;          % Dialog Box for user selection
-    a = strcmp(user,'Aidan');   % Compare user input to 'Aidan"
+    a = strcmp(user,'Sydney');   % Compare user input to 'Sydney"
     b = strcmp(user,'Lovelace');
-    if (a == 1 && b == 0)                 % If Aidan was selected
-        location = (['/Users/AidanMurray/Data/GWBox/GRP_Loew-Doc/NadaKamona/Clinic Patients/Registered/' ptID 'Registered/ALGCropped/']);
+    if (a == 1 && b == 0)                 % If Sydney was selected
+        location = (['C:\Users\smbailes\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\' ptID '\Cropped Image\']);
     elseif (a == 0 && b == 0)
         location = (['\Users\shann\Box\GRP_Loew-Doc\NadaKamona\Clinic Patients\Manual Crop\' ptID 'Cropped\Cropped Image\']);
     elseif (a == 0 && b == 1)
@@ -59,7 +59,6 @@ else
     a = strcmp(user,'Aidan');   % Compare user input to 'Aidan"
     b = strcmp(user,'Lovelace');
     if (a == 1 && b == 0)                 % If Aidan was selected
-%         location = (['/Users/AidanMurray/Data/GWBox/GRP_Loew-Doc/NadaKamona/Clinic Volunteers/' ptID '/']);
         location = (['/Users/AidanMurray/Data/GWBox/GRP_Loew-Doc/NadaKamona/Clinic Volunteers/' ptID '/']);
     elseif (a == 0 && b == 0)
         location = (['\Users\shann\Box\GRP_Loew-Doc\NadaKamona\Clinic Volunteers\Manual Crop\' ptID 'Cropped\Cropped Image\']);

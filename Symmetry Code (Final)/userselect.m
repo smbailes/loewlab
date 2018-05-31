@@ -5,13 +5,13 @@ function userselect = choosedialog
            'String','Select a User');
        
     popup = uicontrol('Parent',d,'Style','popup','Position',[75 70 100 25],...
-           'String',{'Shannon';'Aidan';'Lovelace';},... //ADD NEW USERS HERE
+           'String',{'Sydney';'Aidan';'Lovelace';},... //ADD NEW USERS HERE
            'Callback',@popup_callback);
        
     btn = uicontrol('Parent',d,'Position',[89 20 70 25],... % button
            'String','Next','Callback','delete(gcf)');     
     
-    userselect = 'Shannon';   %Default Answer, should be set to first name on list
+    userselect = 'Sydney';   %Default Answer, should be set to first name on list
     
     % Wait for d to close before running to completion
     uiwait(d);
