@@ -57,14 +57,15 @@ else
     ptID = volunteerselect;
     user = userselect;
     
-    a = strcmp(user,'Aidan');   % Compare user input to 'Aidan"
-    b = strcmp(user,'Lovelace');
-    if (a == 1 && b == 0)                 % If Aidan was selected
-        location = (['/Users/AidanMurray/Data/GWBox/GRP_Loew-Doc/NadaKamona/Clinic Volunteers/' ptID '/']);
-    elseif (a == 0 && b == 0)
-        location = (['\Users\shann\Box\GRP_Loew-Doc\NadaKamona\Clinic Volunteers\Manual Crop\' ptID 'Cropped\Cropped Image\']);
-    elseif (a == 0 && b == 1)
-        location = (['D:\BreastPatients\Manual Crop\' ptID 'Cropped\']); %GET ACTUAL LOCATION ON LAB PC
+    a = strcmp(user,'Sydney');   % Compare user input to 'Sydney"
+    b = strcmp(user,'Samhita');
+    c = strcmp(user,'Jacob');
+    if (a == 1 && b == 0)                 % If Sydney was selected
+        location = (['C:\Users\smbailes\Documents\GitHub\loewlab\Symmetry Code (Final)\Volunteer Images\' ptID '\Cropped Image\']);
+    elseif (a == 0 && b == 1)  % If Samhita was selected
+         location = (['C:\Users\samhitamurthy\GitHub\loewlab\Symmetry Code (Final)\Volunteer Images\' ptID '\Cropped Image\']);
+    elseif (a == 0 && b == 0 && c == 1)
+        location = (['C:\Users\Jacob\Documents\GitHub\loewlab\Symmetry Code (Final)\Volunteer Images\' ptID '\Cropped Image\']);
     end
     
     
