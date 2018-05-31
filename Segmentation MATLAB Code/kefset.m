@@ -1,12 +1,13 @@
 
 close all;
 clear;
+clc;
 
 %% Part 1 Intial Loading of Images
 
 ptID = input('Enter image name you want to open: ','s'); %Request patient image name
 ptID = strcat(ptID,'.tif'); 
-I = imread(ptID); %open the image, keeping it in 16-bits
+I = imread(['C:\Users\smbailes\Documents\GitHub\loewlab\Segmentation MATLAB Code\Images\' ptID]); %open the image, keeping it in 16-bits
 
 figure, imshow(I,[]) %to help decide if it should be cropped or not
 title('Original Image')
