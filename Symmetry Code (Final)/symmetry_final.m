@@ -47,11 +47,11 @@ if (strcmp(answer, 'Patient'))
     b = strcmp(user,'Samhita');
     c = strcmp(user,'Jacob');
     if (a == 1 && b == 0)                 % If Sydney was selected
-        location = (['C:\Users\smbailes\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\' ptID '\Cropped Image\']);
+        location = (['C:\Users\smbailes\Documents\GitHub\loewlab\Symmetry Code (Final)\Patient Images\' ptID '\Cropped Image\']);
     elseif (a == 0 && b == 1)  % If Samhita was selected
-         location = (['C:\Users\samhitamurthy\GitHub\loewlab\Symmetry Code (Final)\Images\' ptID '\Cropped Image\']);
+         location = (['C:\Users\samhitamurthy\GitHub\loewlab\Symmetry Code (Final)\Patient Images\' ptID '\Cropped Image\']);
     elseif (a == 0 && b == 0 && c == 1)
-        location = (['C:\Users\Jacob\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\' ptID '\Cropped Image\']);
+        location = (['C:\Users\Jacob\Documents\GitHub\loewlab\Symmetry Code (Final)\Patient Images\' ptID '\Cropped Image\']);
     end
 else
     ptID = volunteerselect;
