@@ -5,7 +5,7 @@ function userselect = choosedialog
            'String','Select a User');
        
     popup = uicontrol('Parent',d,'Style','popup','Position',[75 70 100 25],...
-           'String',{'Sydney';'Samhita';},... //ADD NEW USERS HERE
+           'String',{'Sydney';'Samhita';'Jacob';},... //ADD NEW USERS HERE
            'Callback',@popup_callback);
        
     btn = uicontrol('Parent',d,'Position',[89 20 70 25],... % button
