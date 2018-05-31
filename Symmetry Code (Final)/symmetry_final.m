@@ -44,11 +44,11 @@ if (strcmp(answer, 'Patient'))
     %% User Selection (CHANGE THIS TO NEW USERS / DIRECTORY REF SYSTEM)
     user = userselect;          % Dialog Box for user selection
     a = strcmp(user,'Sydney');   % Compare user input to 'Sydney"
-    b = strcmp(user,'Lovelace');
+    b = strcmp(user,'Samhita');
     if (a == 1 && b == 0)                 % If Sydney was selected
         location = (['C:\Users\smbailes\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\' ptID '\Cropped Image\']);
-    elseif (a == 0 && b == 0)
-        location = (['\Users\shann\Box\GRP_Loew-Doc\NadaKamona\Clinic Patients\Manual Crop\' ptID 'Cropped\Cropped Image\']);
+    elseif (a == 0 && b == 0)  % If Samhita was selected
+         location = (['C:\Users\samhitamurthy\GitHub\loewlab\Symmetry Code (Final)\Images\' ptID '\Cropped Image\']);
     elseif (a == 0 && b == 1)
         location = (['D:\BreastPatients\Manual Crop\' ptID 'Cropped\']);
     end
