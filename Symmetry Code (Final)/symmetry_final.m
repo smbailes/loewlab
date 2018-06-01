@@ -41,32 +41,37 @@ answer = questdlg('ID Patient Type:','Patient Type','Patient','Volunteer','Patie
 
 if (strcmp(answer, 'Patient'))
     ptID = patientselect;    % Dialog Box for patient selection
+    dir = uigetdir;
+    location = strcat(dir, '\', ptID, '\Cropped Image\');
     %% User Selection (CHANGE THIS TO NEW USERS / DIRECTORY REF SYSTEM)
-    user = userselect;          % Dialog Box for user selection
-    a = strcmp(user,'Sydney');   % Compare user input to 'Sydney"
-    b = strcmp(user,'Samhita');
-    c = strcmp(user,'Jacob');
-    if (a == 1 && b == 0)                 % If Sydney was selected
-        location = (['C:\Users\smbailes\Documents\GitHub\loewlab\Symmetry Code (Final)\Patient Images\' ptID '\Cropped Image\']);
-    elseif (a == 0 && b == 1)  % If Samhita was selected
-         location = (['C:\Users\samhitamurthy\GitHub\loewlab\Symmetry Code (Final)\Patient Images\' ptID '\Cropped Image\']);
-    elseif (a == 0 && b == 0 && c == 1)
-        location = (['C:\Users\Jacob\Documents\GitHub\loewlab\Symmetry Code (Final)\Patient Images\' ptID '\Cropped Image\']);
-    end
+%     user = userselect;          % Dialog Box for user selection
+%     a = strcmp(user,'Sydney');   % Compare user input to 'Sydney"
+%     b = strcmp(user,'Samhita');
+%     c = strcmp(user,'Jacob');
+%     if (a == 1 && b == 0)                 % If Sydney was selected
+%         location = (['C:\Users\smbailes\Documents\GitHub\loewlab\Symmetry Code (Final)\Patient Images\' ptID '\Cropped Image\']);
+%     elseif (a == 0 && b == 1)  % If Samhita was selected
+%          location = (['C:\Users\samhitamurthy\GitHub\loewlab\Symmetry Code (Final)\Patient Images\' ptID '\Cropped Image\']);
+%     elseif (a == 0 && b == 0 && c == 1)
+%         location = (['C:\Users\Jacob\Documents\GitHub\loewlab\Symmetry Code (Final)\Patient Images\' ptID '\Cropped Image\']);
+%     end
+
 else
     ptID = volunteerselect;
-    user = userselect;
-    
-    a = strcmp(user,'Sydney');   % Compare user input to 'Sydney"
-    b = strcmp(user,'Samhita');
-    c = strcmp(user,'Jacob');
-    if (a == 1 && b == 0)                 % If Sydney was selected
-        location = (['C:\Users\smbailes\Documents\GitHub\loewlab\Symmetry Code (Final)\Volunteer Images\' ptID '\Cropped Image\']);
-    elseif (a == 0 && b == 1)  % If Samhita was selected
-         location = (['C:\Users\samhitamurthy\GitHub\loewlab\Symmetry Code (Final)\Volunteer Images\' ptID '\Cropped Image\']);
-    elseif (a == 0 && b == 0 && c == 1)
-        location = (['C:\Users\Jacob\Documents\GitHub\loewlab\Symmetry Code (Final)\Volunteer Images\' ptID '\Cropped Image\']);
-    end
+    dir = uigetdir;
+    location = strcat(dir, '\', ptID, '\Cropped Image\');
+%     user = userselect;
+%     
+%     a = strcmp(user,'Sydney');   % Compare user input to 'Sydney"
+%     b = strcmp(user,'Samhita');
+%     c = strcmp(user,'Jacob');
+%     if (a == 1 && b == 0)                 % If Sydney was selected
+%         location = (['C:\Users\smbailes\Documents\GitHub\loewlab\Symmetry Code (Final)\Volunteer Images\' ptID '\Cropped Image\']);
+%     elseif (a == 0 && b == 1)  % If Samhita was selected
+%          location = (['C:\Users\samhitamurthy\GitHub\loewlab\Symmetry Code (Final)\Volunteer Images\' ptID '\Cropped Image\']);
+%     elseif (a == 0 && b == 0 && c == 1)
+%         location = (['C:\Users\Jacob\Documents\GitHub\loewlab\Symmetry Code (Final)\Volunteer Images\' ptID '\Cropped Image\']);
+%     end
     
     
 end
