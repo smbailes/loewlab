@@ -167,6 +167,7 @@ for k = 1:15 % Iterate through cell matrix for each minute
     ClusterInfo{k,3} = ClusterData;         %Cell 3 is the ClusterData output from DBSCAN
     
 end    
+mfig = montagefigures([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],4,4)
 
     %% Identify vertical centerline (BY FINDING CENTER OF CROP REGION)
     % USES THE SHORTEST COLUMN OF NONZERO PIXELS as MIDLINE COLUMN

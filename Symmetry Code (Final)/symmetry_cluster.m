@@ -22,8 +22,8 @@ ClustersNew(isNoise) = [];      % Remove all Noise Pixels from Clusters
 hotregionNew(isNoise,:) = [];  % Remove all Noise Pixels from hotRegion
 
 
-figure('Name','Pre-Symmetrical Cluster Analysis')
-subplot(4,4,k), imshow(I,[min(I_adj) max(I_adj)]);  hold on, hold on
+
+imshow(I,[min(I_adj) max(I_adj)]);  hold on, hold on
 % Display Image w Contrast
 PlotClusterinResult(hotregionNew,ClustersNew);               % Plot Clusters on Image
 % plot([c1(1) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
