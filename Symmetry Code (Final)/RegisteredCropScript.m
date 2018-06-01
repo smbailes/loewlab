@@ -1,16 +1,6 @@
 % function newcrop = RegisteredCropScript(location)
 
-answer = questdlg('ID Patient Type:','Patient Type','Patient','Volunteer','Patient');
-
-if (strcmp(answer, 'Patient'))
-    ptID = patientselect;    % Dialog Box for patient selection
-    dir = uigetdir;
-    location = strcat(dir, '\', ptID, '\Cropped Image\');
-else
-    ptID = volunteerselect;
-    dir = uigetdir;
-    location = strcat(dir, '\', ptID, '\Cropped Image\');
-end 
+[location, ptID] = pathFinder;
 
 a=inputdlg('Enter first image number: '); 
 strt=a{1};  
