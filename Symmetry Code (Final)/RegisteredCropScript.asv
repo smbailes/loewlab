@@ -12,12 +12,10 @@ else
     location = strcat(dir, '\', ptID, '\Cropped Image\');
 end 
 
-a=inputdlg('Enter first image number: '); 
-strt=a{1};  
-strt = str2double(strt); 
+a=inputdlg('Enter
 for i=1:15          
-    I_mat{i} = imread([location sprintf('%04d.tif',strt)]);    % Read each image into I_mat
-    strt=strt+120;            % Go to next image (for cropped), HAS TO BE CHANGED TO INCREMENT BY 1
+    I_mat{i} = imread([location sprintf('%04d.tif',a)]);    % Read each image into I_mat
+    a=a+1;            % Go to next image (for cropped)
 end
 
 %% Apply Crop to All Registered Images based on User Drawn Input
