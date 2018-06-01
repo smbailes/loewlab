@@ -1,5 +1,6 @@
 function [ClustStruct,ClustData] = symmetry_cluster(ImageMatrix, epsilon, minPts, percent, ptID) %CHANGED PERCENT to PERCENT_VAL
-
+ 
+global k
 I = getMatrixOutliers(ImageMatrix);   % Remove Outliers
 I_adj = I(find(I>0));       % Remove Zero Pixels
 percent2 = percent / 100;
@@ -18,24 +19,23 @@ end
 ClustersNew = Clusters;
 hotregionNew = hotregion;
 ClustersNew(isNoise) = [];      % Remove all Noise Pixels from Clusters
-hotregionNew(isNoise,:) = [];   % Remove all Noise Pixels from hotRegion
+hotregionNew(isNoise,:) = [];  % Remove all Noise Pixels from hotRegion
+
 
 figure('Name','Pre-Symmetrical Cluster Analysis')
-imshow(I,[min(I_adj) max(I_adj)]);                          % Display Image w Contrast
-hold on;
-PlotClusterinResult(hotregionNew,ClustersNew); hold on;              % Plot Clusters on Image
+subplot(4,4,k), imshow(I,[min(I_adj) max(I_adj)]);  hold on, hold on
+% Display Image w Contrast
+PlotClusterinResult(hotregionNew,ClustersNew);               % Plot Clusters on Image
 % plot([c1(1) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
 % plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
 % plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
 % plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
 title(sprintf('%s - Pre Symmetrical Cluster Analysis',ptID));
 xlabel(sprintf('Top %.2f of Pixels',percent2*100));
-hold off;
-hold off;
+
 ClusterData(:,(1:2)) = hotregionNew;    % Columns 1,2 are X,Y Indices
 ClusterData(:,3) = ClustersNew;         % Column 3 is Cluster Number
 numClusters = max(ClusterData(:,3));    % Number of Clusters in Image
-
 % Allocate Cluster Structure with Necessary Fields for Data Tracking
 ClusterStruct(1:numClusters) = struct('ClusterNumber',0,'ClusterIndices',[],'ClusterMeanIntensity',[],'ClusterStdIntensity',[],'StdDivMean',[],'ClusterCentroid',[],'RemoveCluster',0,'NormalizedCluster',[]);
 

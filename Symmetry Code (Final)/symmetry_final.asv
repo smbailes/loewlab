@@ -157,9 +157,9 @@ percent = str2num(answer{3});
     %% Plot Image with Clusters using DBSCAN
   
 for k = 1:15 % Iterate through cell matrix for each minute
- global k
-    I = I_mat{k};  % Get Image
-    [ClusterStruct, ClusterData] = symmetry_cluster(I, epsilon, minPts, percent, ptID);
+ 
+    I = I_mat{k};               % Get Image
+    [ClusterStruct, ClusterData,k] = symmetry_cluster(I, epsilon, minPts, percent, ptID);
    
     %ClusterInfo CELL ARRAY
     ClusterInfo{k,1} = ClusterStruct;       %Cell 1 is ClusterStructure
