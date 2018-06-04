@@ -53,11 +53,42 @@ averages{i,j,k} = mean2(imcrop(I_mat{k},square)); % takes the average of each bl
 
     end
 end
-figure, imshow(I_mat{k},[min(I_adj1) max(I_adj1)])
+figure, imshow(I_mat{k},[min(I_adj1) max(I_adj1)]) % displays each image at each minute
 end
+%% standard Deviation
+for k = 1:15
+I_mat{k}(squareside:squareside:end,:,:) = 0;% converts every nth row to black
+I_mat{k}(:,squareside:squareside:end,:) = 0;% converts every nth column to black
 
-%% graph
+[r,c] = size(I_mat{k});
+numrows = floor(r/squareside); %calculates the number of full rows
+numcols = floor(c/squareside); %calculates the number of full columns
 
+
+for j = 1:1:numcols
+    row = squareside*(j-1)+1;
+    for i = 1:1:numrows
+        col = squareside*(i-1)+1 ;
+square = [row, col, squareside-2, squareside-2]; %  creates the square to be averaged
+stdv{i,j,k} = std2(imcrop(I_mat{k},square)); % takes the average of each block
+
+    end
+end
+end
+%% find good data via standard deviations
+for i = 1:numrows
+    for j = 1:numcols
+        for k = 1:15
+            if stdv{i,j,k} > 250
+                line{i,j,k} = '--';
+            else 
+                line{i,j,k} = '-';
+            end
+        end
+    end
+end
+%% graph averages
+warning('off')
 t = [0:14];
 for i = 1:numrows
     figure
@@ -68,7 +99,7 @@ for i = 1:numrows
         xpoints{k} = averages{i,j,k};
         end
     xpoints = cell2mat(xpoints);
-    plot(t,xpoints), hold on
+    plot(t,xpoints,line{i,j,k}), hold on
     legend({'col 1','col 2', 'col 3', 'col 4', 'col 5', 'col 6', 'col 7', 'col 8', 'col 9', 'col 10'})
     title(['change of regions over time: row ' num2str(i)])
     xlabel('time')
@@ -76,3 +107,24 @@ for i = 1:numrows
     end
 
 end
+%% graph Standard deviations
+%{
+t = [0:14];
+for i = 1:numrows
+    figure
+    for j = 1:numcols
+    xpoints = {};
+        for k = 1:15
+   
+        xpoints{k} = stdv{i,j,k};
+        end
+    xpoints = cell2mat(xpoints);
+    plot(t,xpoints), hold on
+    legend({'col 1','col 2', 'col 3', 'col 4', 'col 5', 'col 6', 'col 7', 'col 8', 'col 9', 'col 10'})
+    title(['Standard Deviation: row ' num2str(i)])
+    xlabel('time')
+    ylabel('pixel value')
+    end
+
+end
+%}
