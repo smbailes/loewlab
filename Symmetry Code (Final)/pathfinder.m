@@ -13,6 +13,6 @@ function [location, ptID] = choosedialog
     if(strcmp(c, 'Yes'))
         location = strcat(dir, '\', ptID, '\Cropped Image\');
     else
-        location = strcat(dir, '\', ptID);
+        location = strcat(dir, '\', ptID, '\Cropped Original\');
     end
 end
