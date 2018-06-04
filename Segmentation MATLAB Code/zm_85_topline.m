@@ -104,7 +104,7 @@ if summed<kk*(2/3)
     shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
     fin = step(shapeInserter, check, uint16([x2 y2 x3 y3]));
 
-    figure, imshow(I,[]), title('Connect Tops')
+    figure(38), imshow(I,[]), title('Connect Tops')
     %blue on top on figure
     blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
     hold on 
@@ -115,14 +115,14 @@ if summed<kk*(2/3)
 
 
 else
-%     figure, imshow(I,[]), title('Connect Tops')
-%     %blue on top on figure
-%     blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
-%     hold on 
-%     displ = imshow(blue); 
-%     hold off 
-%     %Use our diff1 as the AlphaData for the solid red image. 
-%     set(displ, 'AlphaData', connectedtop)
+    figure, imshow(I,[]), title('Connect Tops')
+    %blue on top on figure
+    blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+    hold on 
+    displ = imshow(blue); 
+    hold off 
+    %Use our diff1 as the AlphaData for the solid red image. 
+    set(displ, 'AlphaData', connectedtop)
 end
 % 
 % 
