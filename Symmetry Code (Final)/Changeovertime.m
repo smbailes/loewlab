@@ -1,3 +1,5 @@
+close all
+answer = questdlg('ID Patient Type:','Patient Type','Patient','Volunteer','Patient');
 if (strcmp(answer, 'Patient'))
     ptID = patientselect;    % Dialog Box for patient selection
     %% User Selection (CHANGE THIS TO NEW USERS / DIRECTORY REF SYSTEM)
@@ -30,26 +32,47 @@ end
 prompt = ('Enter size of one box on grid in pixels'); % make dialog box
 dlgtitle = ('input');
 num_lines = 1;
-defaultans = {'20'}
-ans = inputdlg(prompt,dlgtitle,num_lines,defaultans)
+defaultans = {'50'};
+ans = inputdlg(prompt,dlgtitle,num_lines,defaultans);
 squareside = str2num(cell2mat(ans)); %converts ans to a number
 for k = 1:15
 I_mat{k}(squareside:squareside:end,:,:) = 0;% converts every nth row to black
 I_mat{k}(:,squareside:squareside:end,:) = 0;% converts every nth column to black
 
-[r,c] = size(I_mat{k})
+[r,c] = size(I_mat{k});
 numrows = floor(r/squareside); %calculates the number of full rows
-numcols = floor(c/squareside);
-figure, imshow(I_mat{k},[min(I_adj1) max(I_adj1)])
+numcols = floor(c/squareside); %calculates the number of full columns
+
 
 for j = 1:1:numcols
     row = squareside*(j-1)+1;
     for i = 1:1:numrows
         col = squareside*(i-1)+1 ;
 square = [row, col, squareside-2, squareside-2]; %  creates the square to be averaged
-averages{i,j,k} = mean2(imcrop(I_mat{k},square));
+averages{i,j,k} = mean2(imcrop(I_mat{k},square)); % takes the average of each block
+
     end
 end
-
+figure, imshow(I_mat{k},[min(I_adj1) max(I_adj1)])
 end
 
+%% graph
+
+t = [0:14];
+for i = 1:numrows
+    figure
+    for j = 1:numcols
+    xpoints = {};
+        for k = 1:15
+   
+        xpoints{k} = averages{i,j,k};
+        end
+    xpoints = cell2mat(xpoints);
+    plot(t,xpoints), hold on
+    legend({'col 1','col 2', 'col 3', 'col 4', 'col 5', 'col 6', 'col 7', 'col 8', 'col 9', 'col 10'})
+    title(['change of regions over time: row ' num2str(i)])
+    xlabel('time')
+    ylabel('pixel value')
+    end
+
+end
