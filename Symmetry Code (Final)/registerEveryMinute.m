@@ -10,38 +10,43 @@ function registerEveryMinute(user, ptID)
     newLocation = strcat(location, '\Registered\');
     mkdir(newLocation)
 
-%% Register Images
+%% Register Images and Show Alignment 
+ref = imread([location '\0840.tif']); %reference image
+ref1 = getMatrixOutliers(ref);
+ref_nonzero = ref1(find(ref1>0));
+high = max(ref_nonzero);
+low = min(ref_nonzero);
 
-stay = imread([location '\0840.tif']);
-imwrite(stay,'0840.tif');
 cd(newLocation);
-
+figure, subplot(4,4,1);
 for i = 0000:120:1680
     newFile = [location '\' sprintf('%04d.tif',i)];
-    newImage = imread(newFile);
-    nonzero = newImage(find(newImage>0));
+    I = imread(newFile);
+    I_outliers = getMatrixOutliers(I);
 %     figure
 %     set(gcf,'units','inches', 'Position',[4 2 10 8])
 %     imshow(newImage,[]);
 %     imcontrast
-    
+%     figure
+
     [optimizer, metric] = imregconfig('monomodal');
     optimizer.MaximumStepLength = 0.05;
-    optimizer.MaximumIterations = 100; %SETTING FOR NEW MATLAB
+    optimizer.MaximumIterations = 150; %SETTING FOR NEW MATLAB
 
-    registeredImage = imregister(newImage,stay,'affine',optimizer,metric);
-%     figure
-%     set(gcf,'units','inches', 'Position',[4 2 10 8])
-%     imshow(registeredImage, []);
+    registeredImage = imregister(I_outliers,ref,'affine',optimizer,metric);
     imwrite(registeredImage,sprintf('%04d.tif',i))
-    
+    j = (i/120)+1;
+    subplot(4,4,j);
+    imshowpair(ref, registeredImage, 'Scaling', 'joint');
 end
-figure, set(gcf,'units','inches', 'Position',[4 2 10 8]), subplot(4,4,1); 
-for j = 1:15
-    for k = 0000:120:1680
-        path = [newLocation '\' sprintf('%04d.tif',k)];
-        image = imread(path);
-    end
-   subplot(4,4,j);
-   imshow(image, [min(nonzero) max(nonzero)]);
-end 
+  
+figure, subplot(4,4,1);
+%Show all 15 newly registeted images on subplot 
+for k = 0000:120:1680
+    path = [newLocation '\' sprintf('%04d.tif',k)];
+    image = imread(path);
+    m = (k/120)+1;
+    subplot(4,4,m);
+    imshow(image, [low high]);
+end
+end
