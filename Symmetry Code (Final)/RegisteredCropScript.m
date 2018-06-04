@@ -14,6 +14,7 @@ end
 %% Apply Crop to All Registered Images based on User Drawn Input
 % cd ([homedir 'Registered/' ptID 'Registered/']);
 firstImage = I_mat{1};
+
 figure
 set(gcf,'units','inches', 'Position',[4 2 10 8])
 imshow(firstImage,[]);
@@ -50,8 +51,12 @@ close;
 mkdir ALGCropped;
 cd ALGCropped;
 
+firstImage = firstImage(find(firstImage>0));    % Remove zero pixels
+low = min(firstImage(:)); %finds lowest intensity pixel
+high = max(firstImage(:)); %finds highest intensity pixels
+
 imwrite(newCrop,'0000.tif');
-imshow(newCrop)
+imshow(newCrop, [low high]) %displays image with set low and high intensity values
 
 x = 120; 
 
