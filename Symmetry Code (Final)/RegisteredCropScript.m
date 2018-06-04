@@ -1,7 +1,8 @@
 % function newcrop = RegisteredCropScript(location)
 
-[location, ptID] = pathFinder;
+[location, ptID] = pathfinder;
 
+location = 'F:\IRST012\IRST012\' %comment this part out 
 a=inputdlg('Enter first image number: '); 
 strt=a{1};  
 strt = str2double(strt); 
@@ -12,7 +13,7 @@ end
 
 %% Apply Crop to All Registered Images based on User Drawn Input
 % cd ([homedir 'Registered/' ptID 'Registered/']);
-firstImage = imread(location);
+firstImage = I_mat{1};
 figure
 set(gcf,'units','inches', 'Position',[4 2 10 8])
 imshow(firstImage,[]);
@@ -50,16 +51,19 @@ mkdir ALGCropped;
 cd ALGCropped;
 
 imwrite(newCrop,'0000.tif');
+imshow(newCrop)
 
-for i = 120:120:1680
+x = 120; 
+
+for i = 1:1:15
     cd ..
-    newImage = imread(sprintf('%04d.tif',i));
+    newImage = I_mat{i};
    
     blackMaskedImage = newImage;
     blackMaskedImage(~binaryImage) = 0;
     newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
 
     cd ALGCropped    
-    imwrite(newCrop, sprintf('%04d.tif',i));    
+    imwrite(newCrop, sprintf('%04d.tif',x));    
+    x = x + 120; 
 end
-

@@ -1,26 +1,19 @@
 % function newcrop = RegisteredCropScript(location)
 
-answer = questdlg('ID Patient Type:','Patient Type','Patient','Volunteer','Patient');
+[location, ptID] = pathfinder;
 
-if (strcmp(answer, 'Patient'))
-    ptID = patientselect;    % Dialog Box for patient selection
-    dir = uigetdir;
-    location = strcat(dir, '\', ptID, '\Cropped Image\');
-else
-    ptID = volunteerselect;
-    dir = uigetdir;
-    location = strcat(dir, '\', ptID, '\Cropped Image\');
-end 
-
-a=inputdlg('Enter
+location = 'F:\IRST012'
+a=inputdlg('Enter first image number: '); 
+strt=a{1};  
+strt = str2double(strt); 
 for i=1:15          
-    I_mat{i} = imread([location sprintf('%04d.tif',a)]);    % Read each image into I_mat
-    a=a+1;            % Go to next image (for cropped)
+    I_mat{i} = imread([location sprintf('%04d.tif',strt)]);    % Read each image into I_mat
+    strt=strt+120;            % Go to next image (for cropped), HAS TO BE CHANGED TO INCREMENT BY 1
 end
 
 %% Apply Crop to All Registered Images based on User Drawn Input
 % cd ([homedir 'Registered/' ptID 'Registered/']);
-firstImage = imread(location);
+firstImage = I_mat{1};
 figure
 set(gcf,'units','inches', 'Position',[4 2 10 8])
 imshow(firstImage,[]);
@@ -61,7 +54,7 @@ imwrite(newCrop,'0000.tif');
 
 for i = 120:120:1680
     cd ..
-    newImage = imread(sprintf('%04d.tif',i));
+    newImage = I_mat{i};
    
     blackMaskedImage = newImage;
     blackMaskedImage(~binaryImage) = 0;
