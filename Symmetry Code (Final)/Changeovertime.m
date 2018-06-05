@@ -1,4 +1,5 @@
 close all
+clear, clc
 answer = questdlg('ID Patient Type:','Patient Type','Patient','Volunteer','Patient');
 if (strcmp(answer, 'Patient'))
     ptID = patientselect;    % Dialog Box for patient selection
@@ -28,7 +29,7 @@ end
     I = getMatrixOutliers(I1);  % Remove outliers
     I_adj1 = I1(find(I1>0));    % Remove zero pixels
      
-%% create grid over image
+%% create grid over image and find averages
 prompt = ('Enter size of one box on grid in pixels'); % make dialog box
 dlgtitle = ('input');
 num_lines = 1;
@@ -54,6 +55,7 @@ averages{i,j,k} = mean2(imcrop(I_mat{k},square)); % takes the average of each bl
     end
 end
 figure, imshow(I_mat{k},[min(I_adj1) max(I_adj1)]) % displays each image at each minute
+
 end
 %% standard Deviation
 for k = 1:15
@@ -79,19 +81,63 @@ end
 for i = 1:numrows
     for j = 1:numcols
         for k = 1:15
-            if stdv{i,j,k} > 250
+            if stdv{i,j,k} > 500 %possibly include an if loop to eliminate entire columns
                 line{i,j,k} = '--';
+               % averages{i,j,k} = NaN; %eliminates bad data
             else 
                 line{i,j,k} = '-';
+                gooddata{i,j,k} = averages{i,j,k}; %separates good data into separate array
+                
             end
         end
     end
 end
+%% find good data for 
+
+for i = 1:numrows
+    for j = 1:numcols
+        for k = 1:14 %number of total pictures - 1
+            if abs(averages{i,j,k} - averages{i,j,k+1}) >500  %eliminates data that deviates too much at any one point
+                for d = 1:15 % total number of pictures
+                averages{i,j,d} = NaN;
+                end   
+            elseif averages{i,j,k} == 0
+                for d = 1:15
+                    averages{i,j,k} = NaN;
+                end
+            end
+        end
+    end
+end
+
+%% determining y-value limits
+ylim_array = gooddata;
+for i = 1:numrows
+    for j = 1:numcols
+        for k = 1:15
+            if isempty(ylim_array{i,j,k});
+                ylim_array{i,j,k} = NaN;
+            elseif ylim_array{i,j,k} <= 500;
+                ylim_array{i,j,k} = NaN;
+            elseif ylim_array{i,j,k} == 0
+                for d = 1:15
+                    ylim_array{i,j,d} = NaN;
+                end
+            end
+        end
+    end
+end
+ymin = min(cell2mat(ylim_array));
+ymin = min(ymin);
+ymin = min(ymin);
+ymax = max(cell2mat(ylim_array));
+ymax = max(ymax);
+ymax = max(ymax);
 %% graph averages
 warning('off')
-t = [0:14];
+t = 0:14;
 for i = 1:numrows
-    figure
+    figure; 
     for j = 1:numcols
     xpoints = {};
         for k = 1:15
@@ -104,9 +150,10 @@ for i = 1:numrows
     title(['change of regions over time: row ' num2str(i)])
     xlabel('time')
     ylabel('pixel value')
+    ylim([ymin,ymax]); %specify y limits
     end
-
 end
+
 %% graph Standard deviations
 %{
 t = [0:14];
