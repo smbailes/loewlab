@@ -136,21 +136,55 @@ ymax = max(ymax);
 %% graph averages
 warning('off')
 t = 0:14;
+counter = 1;
+jcounter = 0;
+%colcount = zeros(1,numcols)
 for i = 1:numrows
     figure; 
     for j = 1:numcols
     xpoints = {};
         for k = 1:15
-   
-        xpoints{k} = averages{i,j,k};
+        xpoints{k} = averages{i,j,k};      
         end
-    xpoints = cell2mat(xpoints);
-    plot(t,xpoints,line{i,j,k}), hold on
-    legend({'col 1','col 2', 'col 3', 'col 4', 'col 5', 'col 6', 'col 7', 'col 8', 'col 9', 'col 10'})
-    title(['change of regions over time: row ' num2str(i)])
-    xlabel('time')
-    ylabel('pixel value')
-    ylim([ymin,ymax]); %specify y limits
+      if isnan(xpoints{k}) == 0 %determines if the data is good for graphing
+        % xpoints = {NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN};
+        
+        xpoints = cell2mat(xpoints); legend('show')
+       % f = fit(transpose(t),transpose(xpoints),'poly1');
+        plot(t,xpoints,'*','DisplayName',num2str(j)), hold on %line{i,j,k} can be used in place of *
+        title(['change of regions over time: row ' num2str(i)])
+        xlabel('time')
+        ylabel('pixel value')
+        ylim([ymin,ymax]); %specify y limits
+      end
+     
+        
+         
+     %{
+     if isnan(xpoints{k}) %determines if the data is good for graphing
+         continue
+     elseif counter == 0 % this loop creates the values to be used in the legend
+         line1 = j;
+         counter = counter+1;
+     elseif counter == 1
+         line2 = j;
+         counter = counter+1;
+     elseif counter == 2
+         line3 = j;
+         counter = counter + 1;
+     elseif counter == 3
+         line4 = j;
+         counter = counter + 1;
+     elseif counter == 4
+     end
+     %}
+%     jcounter = jcounter + 1;
+%     xpoints = cell2mat(xpoints);, legend('show')
+%     plot(t,xpoints,line{i,j,k},'DisplayName',num2str(j)), hold on
+%     title(['change of regions over time: row ' num2str(i)])
+%     xlabel('time')
+%     ylabel('pixel value')
+%     ylim([ymin,ymax]); %specify y limits
     end
 end
 
