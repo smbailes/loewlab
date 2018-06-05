@@ -1,6 +1,5 @@
 
 close all;
-clear;
 clc;
 
 %% Part 1 Intial Loading of Images
@@ -40,50 +39,50 @@ imshow(I,[]); %produce an image to overlay the ellipses onto
 title('Image with Ellipses')
 
 in = input('Is the breast small or large? Enter s/l: ','s');
-if in == 's'
-        %RIGHT SIDE
-    % override some default parameters
-    paramsr.minMajorAxis = 150;
-    paramsr.maxMajorAxis = 300;
-    paramsr.numBest = 12; %draws 12 ellipses
-    paramsr.rotation = 45; %If rotationSpan is in (0,90), only angles within [rotation-rotationSpan,rotation+rotationSpan] are accepted.
-    paramsr.rotationSpan = 35;
-    paramsr.randomize = 7; %randomization component that may reduce changing of
-    %ellipses
-
-    % note that the edge (or gradient) image is used
-    bestFitsr = ellipseDetection(edgecanny, paramsr);
-    fprintf('Output %d best fits.\n', size(bestFitsr,1));
-
-    %ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
-
-    %takes the information that was found of the ellipses and draws them;also
-    %keeping the information for each ellipse in a cell in qr(and later ql for those):
-    qr{1,length(bestFitsr)}=0;
-    for n=1:length(bestFitsr)
-        qr{n} = ellipse(bestFitsr(n,3),bestFitsr(n,4),bestFitsr(n,5)*pi/180,bestFitsr(n,1),bestFitsr(n,2),'k');
-    end
-    %overriding parameters:
-    paramsl.minMajorAxis = 150;
-    paramsl.maxMajorAxis = 300;
-    paramsl.numBest = 12; %draws 12 ellipses
-    paramsl.rotation = 135; %If rotationSpan is in (0,90), only angles within [rotation-rotationSpan,rotation+rotationSpan] are accepted.
-    paramsl.rotationSpan = 35;
-    paramsl.randomize = 7; %randomization component that may reduce changing of
-    %ellipses
-    
-    
-    %LEFT SIDE
-    bestFitsl = ellipseDetection(edgecanny, paramsl);
-    fprintf('Output %d best fits.\n', size(bestFitsl,1));
-    
-    %ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
-    ql{1,length(bestFitsl)}=0;
-    for n=1:length(bestFitsl)
-        ql{n} = ellipse(bestFitsl(n,3),bestFitsl(n,4),bestFitsl(n,5)*pi/180,bestFitsl(n,1),bestFitsl(n,2),'k');
-    end
-    
-elseif in == 'l'
+% if in == 's'
+%         %RIGHT SIDE
+%     % override some default parameters
+%     paramsr.minMajorAxis = 150;
+%     paramsr.maxMajorAxis = 300;
+%     paramsr.numBest = 12; %draws 12 ellipses
+%     paramsr.rotation = 45; %If rotationSpan is in (0,90), only angles within [rotation-rotationSpan,rotation+rotationSpan] are accepted.
+%     paramsr.rotationSpan = 35;
+%     paramsr.randomize = 7; %randomization component that may reduce changing of
+%     %ellipses
+% 
+%     % note that the edge (or gradient) image is used
+%     bestFitsr = ellipseDetection(edgecanny, paramsr);
+%     fprintf('Output %d best fits.\n', size(bestFitsr,1));
+% 
+%     %ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
+% 
+%     %takes the information that was found of the ellipses and draws them;also
+%     %keeping the information for each ellipse in a cell in qr(and later ql for those):
+%     qr{1,length(bestFitsr)}=0;
+%     for n=1:length(bestFitsr)
+%         qr{n} = ellipse(bestFitsr(n,3),bestFitsr(n,4),bestFitsr(n,5)*pi/180,bestFitsr(n,1),bestFitsr(n,2),'k');
+%     end
+%     %overriding parameters:
+%     paramsl.minMajorAxis = 150;
+%     paramsl.maxMajorAxis = 300;
+%     paramsl.numBest = 12; %draws 12 ellipses
+%     paramsl.rotation = 135; %If rotationSpan is in (0,90), only angles within [rotation-rotationSpan,rotation+rotationSpan] are accepted.
+%     paramsl.rotationSpan = 35;
+%     paramsl.randomize = 7; %randomization component that may reduce changing of
+%     %ellipses
+%     
+%     
+%     %LEFT SIDE
+%     bestFitsl = ellipseDetection(edgecanny, paramsl);
+%     fprintf('Output %d best fits.\n', size(bestFitsl,1));
+%     
+%     %ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
+%     ql{1,length(bestFitsl)}=0;
+%     for n=1:length(bestFitsl)
+%         ql{n} = ellipse(bestFitsl(n,3),bestFitsl(n,4),bestFitsl(n,5)*pi/180,bestFitsl(n,1),bestFitsl(n,2),'k');
+%     end
+%     
+if in == 'l'
     %RIGHT SIDE
     % override some default parameters
     paramsr.minMajorAxis = 350;
@@ -126,12 +125,13 @@ elseif in == 'l'
     for n=1:length(bestFitsl)
         ql{n} = ellipse(bestFitsl(n,3),bestFitsl(n,4),bestFitsl(n,5)*pi/180,bestFitsl(n,1),bestFitsl(n,2),'k');
     end
-end
+% end
 
 %ELLIPSES TO PIXELS
 [img_y, img_x] = size(I);
 ellipses=zeros(img_y,img_x);
 
+%draw in left breast pixel by pixel
 for a = 1:length(ql)                %a,b,n,m are just used as counters in the for loops - delete at end of section
     e1 = ql{a};
     for b = 1:length(e1.XData)              %get x and y data from cell array of ellipses and round so we can use them as indices
@@ -172,7 +172,7 @@ for a = 1:length(qr)                %a,b,n,m are just used as counters in the fo
     end
 end
 
-[checky,checkx]=size(ellipses);
+[checky,checkx]=size(ellipses); %fits ellipses into image (if they are too large) 
 if checkx > img_x
     ellipses=ellipses(1:img_y,1:img_x);
 end
@@ -185,9 +185,9 @@ ellipses= imclose(ellipses,sf);
 
 ellipses=bwmorph(ellipses,'clean');
 
-ellipses(1:round(img_y/4),:)=0;
+ellipses(1:round(img_y/4),:)=0; %removes pixels from top fourth of image
 
-if in=='s'
+if in=='s' %if small breast, removes pixels from left and right thirds of images 
     ellipses(:,1:round(img_x/3))=0;
     ellipses(:,round(2*(img_x/3)):end)=0;
 end
@@ -201,6 +201,7 @@ displ = imshow(red);
 hold off 
 set(displ, 'AlphaData', ellipses)
 
+end 
 %% Part 3, Hot Pixel Finder
 
 bins = 2^16; %insert image bits here

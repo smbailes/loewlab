@@ -13,9 +13,9 @@ for aa = 1:img_y
         if newI(aa,bb)~=0
             smallpoints(aa,bb)=smallpoints(aa,bb)+1;
         end
-        if ellipses(aa,bb)==1
-            smallpoints(aa,bb)=smallpoints(aa,bb)+1;
-        end
+%         if ellipses(aa,bb)==1
+%             smallpoints(aa,bb)=smallpoints(aa,bb)+1;
+%         end
     end
 end
 
@@ -99,8 +99,8 @@ hold off
 set(displ, 'AlphaData', beforeconnect)
 
 [rowsbc,colsbc]=size(beforeconnect);
-
-
+%% 
+% Ellipses clean 
 
     %RIGHT SIDE
 % override some default parameters
@@ -239,7 +239,7 @@ for aa = 1:img_y
         if newI(aa,bb)~=0
             secondpoints(aa,bb)=secondpoints(aa,bb)+1;
         end 
-        if laterellipses(aa,bb)==1
+        if laterellipses(aa,bb)==2 %WAS 1!!!!
             secondpoints(aa,bb)=secondpoints(aa,bb)+2;
         end
     end
