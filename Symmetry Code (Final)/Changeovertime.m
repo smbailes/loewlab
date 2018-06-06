@@ -13,9 +13,25 @@ if (strcmp(answer, 'Patient'))
     elseif (a == 0 && b == 1)  % If Samhita was selected
          location = (['C:\Users\samhitamurthy\GitHub\loewlab\Symmetry Code (Final)\Images\' ptID '\Cropped Image\']);
     elseif (a == 0 && b == 0 && c == 1) % If Jacob was selected
-        location = (['C:\Users\Jacob\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\' ptID '\Cropped Image\']);
+        location = (['C:\Users\Jacob\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Patients\' ptID '\Cropped Image\']);
     end
 end
+if (strcmp(answer, 'Volunteer'))
+    vtID = volunteerselect;
+    %% User Selection (CHANGE THIS TO NEW USERS / DIRECTORY REF SYSTEM)
+    user = userselect;          % Dialog Box for user selection
+    a = strcmp(user,'Sydney');   % Compare user input to 'Sydney"
+    b = strcmp(user,'Samhita');
+    c = strcmp(user,'Jacob');
+    if (a == 1 && b == 0)                 % If Sydney was selected
+        location = (['C:\Users\smbailes\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\' ptID '\Cropped Image\']);
+    elseif (a == 0 && b == 1)  % If Samhita was selected
+         location = (['C:\Users\samhitamurthy\GitHub\loewlab\Symmetry Code (Final)\Images\' ptID '\Cropped Image\']);
+    elseif (a == 0 && b == 0 && c == 1) % If Jacob was selected
+        location = (['C:\Users\Jacob\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Volunteers\' vtID '\']);
+    end
+end
+    
     %% Image Input
     
     % Read 15 images to cell matrix I_mat
@@ -28,6 +44,7 @@ end
     I1 = I_mat{1};              % Display first image
     I = getMatrixOutliers(I1);  % Remove outliers
     I_adj1 = I1(find(I1>0));    % Remove zero pixels
+    numpics = numel(I_mat);     % allocated number of pictures
      
 %% create grid over image and find averages
 prompt = ('Enter size of one box on grid in pixels'); % make dialog box
@@ -36,7 +53,7 @@ num_lines = 1;
 defaultans = {'50'};
 ans = inputdlg(prompt,dlgtitle,num_lines,defaultans);
 squareside = str2num(cell2mat(ans)); %converts ans to a number
-for k = 1:15
+for k = 1:numpics
 I_mat{k}(squareside:squareside:end,:,:) = 0;% converts every nth row to black
 I_mat{k}(:,squareside:squareside:end,:) = 0;% converts every nth column to black
 
@@ -58,7 +75,7 @@ figure, imshow(I_mat{k},[min(I_adj1) max(I_adj1)]) % displays each image at each
 
 end
 %% standard Deviation
-for k = 1:15
+for k = 1:numpics
 I_mat{k}(squareside:squareside:end,:,:) = 0;% converts every nth row to black
 I_mat{k}(:,squareside:squareside:end,:) = 0;% converts every nth column to black
 
@@ -80,7 +97,7 @@ end
 %% find good data via standard deviations
 for i = 1:numrows
     for j = 1:numcols
-        for k = 1:15
+        for k = 1:numpics
             if stdv{i,j,k} > 500 %possibly include an if loop to eliminate entire columns
                 line{i,j,k} = '--';
                % averages{i,j,k} = NaN; %eliminates bad data
@@ -96,7 +113,7 @@ end
 
 for i = 1:numrows
     for j = 1:numcols
-        for k = 1:15 %number of total pictures - 1
+        for k = 1:numpics 
             if abs(stdv{i,j,k}) >500  %THIS WILL  HAVE TO BE CHANGED TO STDV WHEN PICTURES ARE PROPERLY CROPPED eliminates data that deviates too much at any one point
                 for d = 1:15 % total number of pictures
                 averages{i,j,d} = NaN;
@@ -114,7 +131,7 @@ end
 ylim_array = gooddata;
 for i = 1:numrows
     for j = 1:numcols
-        for k = 1:15
+        for k = 1:numpics
             if isempty(ylim_array{i,j,k}); % makes empty cells NaN
                 ylim_array{i,j,k} = NaN;
             elseif ylim_array{i,j,k} <= 500; 
@@ -135,9 +152,9 @@ ymax = max(ymax);
 ymax = max(ymax);
 %% graph averages
 warning('off')
-t = 0:14; %numpics - 1
+t = 1:numpics; % pictures start at t = 0
 for i = 1:numrows
-   figure(15 + 1); % numpics +1
+   figure(numpics + 1); 
     for j = 1:numcols
     ypoints = {};
         for k = 1:15
@@ -147,24 +164,25 @@ for i = 1:numrows
         ypoints = cell2mat(ypoints); legend('show')
         coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
         newypoints = polyval(coefficients,t); % creates new y points that are smoooth
-       subplot(ceil(sqrt(numrows)),ceil(sqrt(numrows/2)),i) 
+        subplot(ceil(sqrt(numrows)),ceil(sqrt(numrows)),i) 
         plot(t,newypoints,'-','DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
         title(['row ' num2str(i)])
         xlabel('time')
         ylabel('pixel value')
         ylim([ymin,ymax]); %specify y limits
+        xlim([1,numpics])
       end
     end
 end
 
 %% graph Standard deviations
 
-% t = [0:14];
+% t = [0:numpics - 1];
 % for i = 1:numrows
 %     figure
 %     for j = 1:numcols
 %     xpoints = {};
-%         for k = 1:15
+%         for k = 1:numpics
 %    
 %         xpoints{k} = stdv{i,j,k};
 %         end
