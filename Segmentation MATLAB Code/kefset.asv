@@ -240,12 +240,11 @@ title('Hot Pixel');
 figure, imshow(I,[]), title('Upper and Lower Bound Detection')
 fprintf('Select Upper Bound \n');
 [Xup,Yup] = ginput(1);
-fprintf('Select Lower Bound \n');
-[Xlo,Ylo] = ginput(1);
-if in == 's'
-     kefsmall1
-elseif in == 'l'
-     keflarge1
-end
+fprintf('Select Upper Bound \n');
+% if in == 's'
+%     kefsmall1
+% elseif in == 'l'
+%     keflarge1
+% end
 
 

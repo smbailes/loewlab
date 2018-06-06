@@ -1,4 +1,3 @@
-% keflarge1
 %%  Part 1, Large Points
 largepoints=zeros(img_y,img_x);
 
@@ -28,18 +27,20 @@ for aa = 1:img_y
     end
 end
 
+%largepoints = largepoints(Yup:Ylo,:); 
 figure,imshow(largepoints,[])
 title('Combined Point Systems')
 
 overlayedpoints = zeros(img_y,img_x); 
 for cc=1:img_y 
     for dd=1:img_x
-        if largepoints(cc,dd)>2
+        if largepoints(cc,dd)>2 && cc<Ylo && cc>Yup
             overlayedpoints(cc,dd)=1;
         end
     end
 end
 
+ 
 [e,f]=size(ellipses);
 bottoms=zeros(e,f);
 for fir=1:f

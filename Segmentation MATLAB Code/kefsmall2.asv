@@ -19,7 +19,7 @@ for aa = 1:img_y
     end
 end
 
-smallpoints = smallpoints(Yup:Ylo,:); 
+smallpoints = smallpoints(Xup:Xlo,:); 
 
 figure,imshow(smallpoints,[])
 title('Combined Point Systems(S)')
