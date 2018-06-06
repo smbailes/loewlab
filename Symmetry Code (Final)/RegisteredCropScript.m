@@ -1,10 +1,9 @@
 % function newcrop = RegisteredCropScript(location)
 
-[location, ptID] = pathFinder;
+path = uigetdir;
+location = strcat(path, '\');
 
-a=inputdlg('Enter first image number: '); 
-strt=a{1};  
-strt = str2double(strt); 
+strt = 0;
 for i=1:15          
     I_mat{i} = imread([location sprintf('%04d.tif',strt)]);    % Read each image into I_mat
     strt=strt+120;            % Go to next image (for cropped), HAS TO BE CHANGED TO INCREMENT BY 1
@@ -12,7 +11,7 @@ end
 
 %% Apply Crop to All Registered Images based on User Drawn Input
 % cd ([homedir 'Registered/' ptID 'Registered/']);
-firstImage = imread(location);
+firstImage = I_mat{1};
 figure
 set(gcf,'units','inches', 'Position',[4 2 10 8])
 imshow(firstImage,[]);
@@ -46,8 +45,9 @@ height = bottomLine - topLine + 1;
 newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
 close;
 
-mkdir ALGCropped;
-cd ALGCropped;
+newLocation = strcat(location, '\', 'ALGCropped');
+mkdir newLocation;
+cd newLocation;
 
 imwrite(newCrop,'0000.tif');
 
