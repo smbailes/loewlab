@@ -96,8 +96,8 @@ end
 
 for i = 1:numrows
     for j = 1:numcols
-        for k = 1:14 %number of total pictures - 1
-            if abs(averages{i,j,k} - averages{i,j,k+1}) >500  %eliminates data that deviates too much at any one point
+        for k = 1:15 %number of total pictures - 1
+            if abs(stdv{i,j,k}) >500  %THIS WILL  HAVE TO BE CHANGED TO STDV WHEN PICTURES ARE PROPERLY CROPPED eliminates data that deviates too much at any one point
                 for d = 1:15 % total number of pictures
                 averages{i,j,d} = NaN;
                 end   
@@ -115,9 +115,9 @@ ylim_array = gooddata;
 for i = 1:numrows
     for j = 1:numcols
         for k = 1:15
-            if isempty(ylim_array{i,j,k});
+            if isempty(ylim_array{i,j,k}); % makes empty cells NaN
                 ylim_array{i,j,k} = NaN;
-            elseif ylim_array{i,j,k} <= 500;
+            elseif ylim_array{i,j,k} <= 500; 
                 ylim_array{i,j,k} = NaN;
             elseif ylim_array{i,j,k} == 0
                 for d = 1:15
@@ -135,25 +135,21 @@ ymax = max(ymax);
 ymax = max(ymax);
 %% graph averages
 warning('off')
-t = 0:14;
-counter = 1;
-jcounter = 0;
-%colcount = zeros(1,numcols)
+t = 0:14; %numpics - 1
 for i = 1:numrows
-    figure; 
+   figure(15 + 1); % numpics +1
     for j = 1:numcols
     ypoints = {};
         for k = 1:15
         ypoints{k} = averages{i,j,k};      
         end
-      if isnan(ypoints{k}) == 0 %determines if the data is good for graphing
-        % xpoints = {NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN};
-        
+      if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
         ypoints = cell2mat(ypoints); legend('show')
-        coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve
+        coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
         newypoints = polyval(coefficients,t); % creates new y points that are smoooth
-        plot(t,newypoints,'-','DisplayName',num2str(j)), hold on %line{i,j,k} can be used in place of *
-        title(['change of regions over time: row ' num2str(i)])
+       subplot(ceil(sqrt(numrows)),ceil(sqrt(numrows/2)),i) 
+        plot(t,newypoints,'-','DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
+        title(['row ' num2str(i)])
         xlabel('time')
         ylabel('pixel value')
         ylim([ymin,ymax]); %specify y limits
@@ -162,23 +158,22 @@ for i = 1:numrows
 end
 
 %% graph Standard deviations
-%{
-t = [0:14];
-for i = 1:numrows
-    figure
-    for j = 1:numcols
-    xpoints = {};
-        for k = 1:15
-   
-        xpoints{k} = stdv{i,j,k};
-        end
-    xpoints = cell2mat(xpoints);
-    plot(t,xpoints), hold on
-    legend({'col 1','col 2', 'col 3', 'col 4', 'col 5', 'col 6', 'col 7', 'col 8', 'col 9', 'col 10'})
-    title(['Standard Deviation: row ' num2str(i)])
-    xlabel('time')
-    ylabel('pixel value')
-    end
 
-end
-%}
+% t = [0:14];
+% for i = 1:numrows
+%     figure
+%     for j = 1:numcols
+%     xpoints = {};
+%         for k = 1:15
+%    
+%         xpoints{k} = stdv{i,j,k};
+%         end
+%     xpoints = cell2mat(xpoints);
+%     plot(t,xpoints), hold on
+%     legend({'col 1','col 2', 'col 3', 'col 4', 'col 5', 'col 6', 'col 7', 'col 8', 'col 9', 'col 10'})
+%     title(['Standard Deviation: row ' num2str(i)])
+%     xlabel('time')
+%     ylabel('pixel value')
+%     end
+% 
+% end
