@@ -1,51 +1,52 @@
 function registerEveryMinute(user, ptID) 
 
-% Takes User Input for Patient Directory and applies a Rectangular crop to
-% all images in the Patient Directory
-%% Inputs
-%Input dialog box 
-if nargin == 0
-    ptID = patientselect;% obtain first value in answer matrix
-    user = userselect;          % Dialog Box for user selection
-end 
+    % Takes User Input for Patient Directory and applies a Rectangular crop to
+    % all images in the Patient Directory
+    %% Inputs
+    %Input dialog box 
+    %     [location, ptID] = pathfinder;
+    %     ptID = patientselect;
+        location = uigetdir;
+        newLocation = strcat(location, '\Registered\');
+        mkdir(newLocation)
 
-a = strcmp(user,'Aidan');   % Compare user input to 'Aidan"
-b = strcmp(user,'Lovelace');
+    %% Register Images and Show Alignment 
+    ref = imread([location '\0840.tif']); %reference image
+    ref1 = getMatrixOutliers(ref);
+    ref_nonzero = ref1(find(ref1>0));
+    high = max(ref_nonzero);
+    low = min(ref_nonzero);
 
-if (a == 1 && b == 0)                 % If Aidan was selected
-    location = (['/Users/AidanMurray/Data/GWBox/GRP_Loew-Doc/NadaKamona/Clinic Patients/' ptID ]);
-    newLocation = (['/Users/AidanMurray/Data/GWBox/GRP_Loew-Doc/NadaKamona/Clinic Patients/Registered/' ptID 'Registered/']);
-elseif (a == 0 && b == 0)
-    location = (['\Users\shann\Box\GRP_Loew-Doc\NadaKamona\Clinic Patients\' ptID ]);
-    newLocation = (['\Users\shann\Box\GRP_Loew-Doc\NadaKamona\Clinic Patients\Registered\' ptID 'Registered\']);
-elseif (a == 0 && b == 1)
-    location = (['D:\BreastPatients\' ptID ]);
-    newLocation = (['D:\BreastPatients\Registered\' ptID 'Registered\']);
-end     
-      
+    cd(newLocation);
+    figure, subplot(4,4,1);
+    for i = 0000:120:1680
+        newFile = [location '\' sprintf('%04d.tif',i)];
+        I = imread(newFile);
+%         I_outliers = getMatrixOutliers(I);
+%         figure
+%         set(gcf,'units','inches', 'Position',[4 2 10 8])
+%         imshow(newImage,[]);
+%         imcontrast
+%         figure
 
-mkdir(newLocation)
-        
-%% Image Crop: Each Image
-cd(newLocation)
+        [optimizer, metric] = imregconfig('monomodal');
+        optimizer.MaximumStepLength = 0.05;
+        optimizer.MaximumIterations = 150; %SETTING FOR NEW MATLAB
 
-stay = imread([location '/0000.tif']);
-imwrite(stay,'0000.tif');
+        registeredImage = imregister(I,ref,'affine',optimizer,metric);
+        imwrite(registeredImage,sprintf('%04d.tif',i))
+        j = (i/120)+1;
+        subplot(4,4,j);
+        imshowpair(ref, registeredImage, 'Scaling', 'joint');
+    end
 
-for i = 0120:120:1680
-    newFile = [location '/' sprintf('%04d.tif',i)];
-    newImage = imread(newFile);
-    figure
-    set(gcf,'units','inches', 'Position',[4 2 10 8])
-    imshow(newImage,[]);
-%     imcontrast
-    
-    [optimizer, metric] = imregconfig('monomodal');
-    optimizer.MaximumStepLength = 0.05;
-    optimizer.MaximumIterations = 100; %SETTING FOR NEW MATLAB
-
-    registeredImage = imregister(newImage,stay,'similarity',optimizer,metric);
-    imshow(registeredImage,[]);
-    imwrite(registeredImage,sprintf('%04d.tif',i))
-    close;
+    figure, subplot(4,4,1);
+    %Show all 15 newly registeted images on subplot 
+    for k = 0000:120:1680
+        path = [newLocation '\' sprintf('%04d.tif',k)];
+        image = imread(path);
+        m = (k/120)+1;
+        subplot(4,4,m);
+        imshow(image, [low high]);
+    end
 end
