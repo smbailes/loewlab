@@ -199,9 +199,7 @@ for n = 1:CC.NumObjects - 1 %the number of lines in the middle region of the pat
 %     Draw a line between the two points (xx1,yy1) and (xx2,yy2) and insert
 %     it in newboundaries4
     shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
-    if (abs(yy1-yy2) < 50) && (abs(xx1-xx2) < 50)
         newboundaries = step(shapeInserter, newboundaries, uint16([yy1 xx1 yy2 xx2]));
-    end 
 %      figure, imshow(newboundaries4), title('After step shapeinserter');
     
 end
