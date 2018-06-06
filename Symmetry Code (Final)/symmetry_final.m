@@ -126,13 +126,20 @@ percent = str2num(answer{3});
     %% Plot Image with Clusters using DBSCAN
 for n = 1:15                    % Iterate through cell matrix for each minute
     I = I_mat{n};               % Get Image
-    [ClusterStruct, ClusterData] = symmetry_cluster(I, epsilon, minPts, percent, ptID);
+    [ClusterStruct, ClusterData, CC] = symmetry_cluster(I, epsilon, minPts, percent, ptID);
    
     %ClusterInfo CELL ARRAY
     ClusterInfo{n,1} = ClusterStruct;       %Cell 1 is ClusterStructure
     ClusterInfo{n,2} = I;                   %Cell2 is Image
     ClusterInfo{n,3} = ClusterData;         %Cell 3 is the ClusterData output from DBSCAN
-end    
+    ConCompStore(n) = CC; 
+end  
+%% Plot Image from CONNCOMP
+figure
+I_con = I(find(I>0)); 
+imshow(I(CC.PixelIdxList{1:CC.NumObjects-1}), [min(I_con) max(I_con)])
+
+
     %% Identify vertical centerline (BY FINDING CENTER OF CROP REGION)
     % USES THE SHORTEST COLUMN OF NONZERO PIXELS as MIDLINE COLUMN
     
