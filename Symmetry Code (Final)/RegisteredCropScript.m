@@ -3,18 +3,23 @@
 path = uigetdir;
 location = strcat(path, '\');
 
-strt = 0;
-for i=1:15          
+strt = 120;
+for i=1:14          
     I_mat{i} = imread([location sprintf('%04d.tif',strt)]);    % Read each image into I_mat
     strt=strt+120;            % Go to next image (for cropped), HAS TO BE CHANGED TO INCREMENT BY 1
 end
 
 %% Apply Crop to All Registered Images based on User Drawn Input
 % cd ([homedir 'Registered/' ptID 'Registered/']);
-firstImage = I_mat{1};
+image = I_mat{7};
+I = getMatrixOutliers(image);
+nonzero = I(find(I>0));
+h = max(nonzero);
+l = min(nonzero);
+
 figure
 set(gcf,'units','inches', 'Position',[4 2 10 8])
-imshow(firstImage,[]);
+imshow(image,[l h]);
 %     imcontrast
 message = sprintf('Left click and hold to begin outlining the breast region.\nSimply lift the mouse button to finish');
 uiwait(msgbox(message));
@@ -31,7 +36,7 @@ y = xy(:, 1);   % Rows.
 % Mask the image outside the mask, and display it.
 
 % Will keep only the part of the image that's inside the mask, zero outside mask.
-blackMaskedImage = firstImage;
+blackMaskedImage = image;
 blackMaskedImage(~binaryImage) = 0;
 
 % Now crop the image.
@@ -45,21 +50,21 @@ height = bottomLine - topLine + 1;
 newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
 close;
 
-newLocation = strcat(location, '\', 'ALGCropped');
-mkdir newLocation;
-cd newLocation;
+newLocation = strcat(location, '\', 'Cropped');
+mkdir(newLocation);
+cd(newLocation);
 
-imwrite(newCrop,'0000.tif');
+imwrite(newCrop,'0120.tif');
 
-for i = 120:120:1680
-    cd ..
+for i = 240:120:1680
+    cd(location)
     newImage = imread(sprintf('%04d.tif',i));
    
     blackMaskedImage = newImage;
     blackMaskedImage(~binaryImage) = 0;
     newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
 
-    cd ALGCropped    
+    cd(newLocation)    
     imwrite(newCrop, sprintf('%04d.tif',i));    
 end
 
