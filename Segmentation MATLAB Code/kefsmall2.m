@@ -1,5 +1,4 @@
 %%Small Points
-
 smallpoints=zeros(img_y,img_x);
 
 for aa = 1:img_y
@@ -13,13 +12,12 @@ for aa = 1:img_y
         if newI(aa,bb)~=0
             smallpoints(aa,bb)=smallpoints(aa,bb)+1;
         end
-        if ellipses(aa,bb)==1
-            smallpoints(aa,bb)=smallpoints(aa,bb)+1;
-        end
+%         if ellipses(aa,bb)==1
+%             smallpoints(aa,bb)=smallpoints(aa,bb)+1;
+%         end
     end
 end
 
-smallpoints = smallpoints(Yup:Ylo,:); 
 
 figure,imshow(smallpoints,[])
 title('Combined Point Systems(S)')
@@ -27,7 +25,7 @@ title('Combined Point Systems(S)')
 smalloverlayedpoints = zeros(img_y,img_x);
 for cc=1:img_y
     for dd=1:img_x
-        if smallpoints(cc,dd)>1
+        if smallpoints(cc,dd)>1 && cc<Ylo && cc>Yup %WAS 1!!
             smalloverlayedpoints(cc,dd)=1;
         end
     end
