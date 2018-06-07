@@ -3,40 +3,33 @@ clear, clc
 answer = questdlg('ID Patient Type:','Patient Type','Patient','Volunteer','Patient');
 if (strcmp(answer, 'Patient'))
     ptID = patientselect;    % Dialog Box for patient selection
-    %% User Selection (CHANGE THIS TO NEW USERS / DIRECTORY REF SYSTEM)
-    user = userselect;          % Dialog Box for user selection
-    a = strcmp(user,'Sydney');   % Compare user input to 'Sydney"
-    b = strcmp(user,'Samhita');
-    c = strcmp(user,'Jacob');
-    if (a == 1 && b == 0)                 % If Sydney was selected
-        location = (['C:\Users\smbailes\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\' ptID '\Cropped Image\']);
-    elseif (a == 0 && b == 1)  % If Samhita was selected
-         location = (['C:\Users\samhitamurthy\GitHub\loewlab\Symmetry Code (Final)\Images\' ptID '\Cropped Image\']);
-    elseif (a == 0 && b == 0 && c == 1) % If Jacob was selected
-        location = (['C:\Users\Jacob\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Patients\' ptID '\Cropped Image\']);
-    end
+    prompt = {'Enter User name:','Enter length of square in pixels:','Enter total number of pictures:'};
+    dlgtitle = 'Input';
+    defaultans = {'Jacob','50','14'};
+    numlines = 1;
+    answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
+    name = answers{1};
+    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Patient Images\' ptID '\Cropped\']);
+    
 end
 if (strcmp(answer, 'Volunteer'))
     vtID = volunteerselect;
-    %% User Selection (CHANGE THIS TO NEW USERS / DIRECTORY REF SYSTEM)
-    user = userselect;          % Dialog Box for user selection
-    a = strcmp(user,'Sydney');   % Compare user input to 'Sydney"
-    b = strcmp(user,'Samhita');
-    c = strcmp(user,'Jacob');
-    if (a == 1 && b == 0)                 % If Sydney was selected
-        location = (['C:\Users\smbailes\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\' ptID '\Cropped Image\']);
-    elseif (a == 0 && b == 1)  % If Samhita was selected
-         location = (['C:\Users\samhitamurthy\GitHub\loewlab\Symmetry Code (Final)\Images\' ptID '\Cropped Image\']);
-    elseif (a == 0 && b == 0 && c == 1) % If Jacob was selected
-        location = (['C:\Users\Jacob\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Volunteers\' vtID '\']);
-    end
+    prompt = {'Enter User name:','Enter length of square in pixels:','Enter total number of pictures:'};
+    dlgtitle = 'Input';
+    defaultans = {'Jacob','50','14'};
+    numlines = 1;
+    answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
+    name = answers{1};
+    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Volunteers\' vtID '\']);
+    
 end
     
     %% Image Input
-    
-    % Read 15 images to cell matrix I_mat
-    a=0;
-    for i=1:15          
+    numpics = str2double(answers{3}); % allocates number of pictures
+    % Read images to cell matrix I_mat
+    a=120; % set equal to the number of the first picture
+    I_mat = cell(1,numpics);
+    for i=1:numpics % set equal to total number of pictures being ran          
         I_mat{i} = imread([location sprintf('%04d.tif',a)]);    % Read each image into I_mat
         a=a+120;            % Go to next image (for cropped)
     end
@@ -44,15 +37,14 @@ end
     I1 = I_mat{1};              % Display first image
     I = getMatrixOutliers(I1);  % Remove outliers
     I_adj1 = I1(find(I1>0));    % Remove zero pixels
-    numpics = numel(I_mat);     % allocated number of pictures
+    
      
 %% create grid over image and find averages
 prompt = ('Enter size of one box on grid in pixels'); % make dialog box
 dlgtitle = ('input');
 num_lines = 1;
 defaultans = {'50'};
-ans = inputdlg(prompt,dlgtitle,num_lines,defaultans);
-squareside = str2num(cell2mat(ans)); %converts ans to a number
+squareside = str2double(answers{2}); %converts ans to a number
 for k = 1:numpics
 I_mat{k}(squareside:squareside:end,:,:) = 0;% converts every nth row to black
 I_mat{k}(:,squareside:squareside:end,:) = 0;% converts every nth column to black
@@ -74,6 +66,7 @@ end
 figure, imshow(I_mat{k},[min(I_adj1) max(I_adj1)]) % displays each image at each minute
 
 end
+
 %% standard Deviation
 for k = 1:numpics
 I_mat{k}(squareside:squareside:end,:,:) = 0;% converts every nth row to black
@@ -99,7 +92,7 @@ for i = 1:numrows
     for j = 1:numcols
         for k = 1:numpics
             if stdv{i,j,k} > 500 %possibly include an if loop to eliminate entire columns
-                line{i,j,k} = '--';
+                line{i,j,k} = '--'; %used in 
                % averages{i,j,k} = NaN; %eliminates bad data
             else 
                 line{i,j,k} = '-';
@@ -109,12 +102,13 @@ for i = 1:numrows
         end
     end
 end
+
 %% find good data for 
 
 for i = 1:numrows
     for j = 1:numcols
         for k = 1:numpics 
-            if abs(stdv{i,j,k}) >500  %THIS WILL  HAVE TO BE CHANGED TO STDV WHEN PICTURES ARE PROPERLY CROPPED eliminates data that deviates too much at any one point
+            if abs(stdv{i,j,k}) >500  % eliminates data that deviates too, mostly edge squares
                 for d = 1:15 % total number of pictures
                 averages{i,j,d} = NaN;
                 end   
@@ -132,9 +126,9 @@ ylim_array = gooddata;
 for i = 1:numrows
     for j = 1:numcols
         for k = 1:numpics
-            if isempty(ylim_array{i,j,k}); % makes empty cells NaN
+            if isempty(ylim_array{i,j,k}) % makes empty cells NaN
                 ylim_array{i,j,k} = NaN;
-            elseif ylim_array{i,j,k} <= 500; 
+            elseif ylim_array{i,j,k} <= 500 
                 ylim_array{i,j,k} = NaN;
             elseif ylim_array{i,j,k} == 0
                 for d = 1:15
@@ -153,16 +147,17 @@ ymax = max(ymax);
 %% graph averages
 warning('off')
 t = 1:numpics; % pictures start at t = 0
+ypoints = cell(1,numpics); % preallocates y points
 for i = 1:numrows
    figure(numpics + 1); 
     for j = 1:numcols
     ypoints = {};
-        for k = 1:15
+        for k = 1:numpics
         ypoints{k} = averages{i,j,k};      
         end
       if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
         ypoints = cell2mat(ypoints); legend('show')
-        coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
+        coefficients = polyfit(t,ypoints,2); % creates the coefficients of the fitted curve. degree changes
         newypoints = polyval(coefficients,t); % creates new y points that are smoooth
         subplot(ceil(sqrt(numrows)),ceil(sqrt(numrows)),i) 
         plot(t,newypoints,'-','DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
