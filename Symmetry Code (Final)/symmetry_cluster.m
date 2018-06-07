@@ -16,7 +16,7 @@ A = find(I_matr>=percent_val);
 B = find(I_matr<percent_val);
 I_matr(A) = true; 
 I_matr(B) = false; 
-CC = CONNCOMP(I_matr);
+CC = bwconncomp(I_matr);
 
 % Find HotRegions
 for a = 1:length(overlay_r)
