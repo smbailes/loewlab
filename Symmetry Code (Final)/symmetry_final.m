@@ -126,13 +126,12 @@ percent = str2num(answer{3});
     %% Plot Image with Clusters using DBSCAN
 for n = 1:15                    % Iterate through cell matrix for each minute
     I = I_mat{n};               % Get Image
-    [ClusterStruct, ClusterData, CC] = symmetry_cluster(I, epsilon, minPts, percent, ptID);
+    [ClusterStruct, ClusterData] = symmetry_cluster(I, epsilon, minPts, percent, ptID);
    
     %ClusterInfo CELL ARRAY
     ClusterInfo{n,1} = ClusterStruct;       %Cell 1 is ClusterStructure
     ClusterInfo{n,2} = I;                   %Cell2 is Image
-    ClusterInfo{n,3} = ClusterData;         %Cell 3 is the ClusterData output from DBSCAN
-    ConCompStore(n) = CC; 
+    ClusterInfo{n,3} = ClusterData;         %Cell 3 is the ClusterData output from DBSCAN 
 end  
 %% Plot Image from CONNCOMP
 for n = 1:15
@@ -143,26 +142,14 @@ for n = 1:15
     title('Clusters Formed By Connected Components'); 
     [ro, co] = size(I);
     hold on;
+    CC = CONNCOMP(I, percent);
     for i = 1:CC.NumObjects
         Style = '.';
         MarkerSize = 8;
         Colors = hsv(CC.NumObjects);
         Color = Colors(i,:);
-        inmat = CC.PixelIdxList{1,i}; 
-        outmat = [];
-        for j = 1:size(inmat)
-            num = inmat(j);
-            if (mod(num,ro) == 0)
-                outrow = ro;
-                outcol = num/ro;
-            else
-                outcol = uint8(num/ro)+1;
-                outrow = mod(num,ro); 
-            end
-            outmat(j,1) = outrow;
-            outmat(j,2) = outcol; 
-        end 
-        plot(outmat(:,1), outmat(:,2),Style,'MarkerSize',MarkerSize,'Color',Color)
+        [outcol, outrow] = ind2sub(size(I), CC.PixelIdxList{1,i});
+        plot(outrow(:), outcol(:),Style,'MarkerSize',MarkerSize,'Color',Color)
         hold on; 
     end
 end
