@@ -86,8 +86,8 @@ percent = str2num(answer{3});
     %% Image Input
     
     % Read 15 images to cell matrix I_mat
-    a=0;
-    for i=1:15          
+    a=120;
+    for i=1:14          
         I_mat{i} = imread([location sprintf('%04d.tif',a)]);    % Read each image into I_mat
         a=a+120;            % Go to next image (for cropped)
     end
