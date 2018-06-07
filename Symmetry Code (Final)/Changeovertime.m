@@ -157,10 +157,20 @@ for i = 1:numrows
         end
       if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
         ypoints = cell2mat(ypoints); legend('show')
-        coefficients = polyfit(t,ypoints,2); % creates the coefficients of the fitted curve. degree changes
+        coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
         newypoints = polyval(coefficients,t); % creates new y points that are smoooth
-        subplot(ceil(sqrt(numrows)),ceil(sqrt(numrows)),i) 
-        plot(t,newypoints,'-','DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
+        if sqrt(numrows) - floor(sqrt(numrows))  <0.5
+            k = 1;
+        else 
+            k = 0;
+        end
+        subplot(ceil(sqrt(numrows)),ceil(sqrt(numrows)),i) % creates subplot
+        r = rand;, g = rand;, b = rand; %sets random rgb values to make lots of colots
+        plot(t,newypoints,'-','Color',[r g b],'DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
+        g =  plot(t,ypoints,'.','Color',[r g b]); %Adds true data points to graph
+        gAnno = get(g, 'Annotation'); %following three lines make the true data points not appear in legend
+        gLegend = get(gAnno, 'LegendInformation');
+        set(gLegend,'IconDisplayStyle','off');
         title(['row ' num2str(i)])
         xlabel('time')
         ylabel('pixel value')
