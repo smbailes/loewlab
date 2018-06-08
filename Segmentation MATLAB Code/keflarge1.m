@@ -27,14 +27,13 @@ for aa = 1:img_y
     end
 end
 
-%largepoints = largepoints(Yup:Ylo,:); 
 figure,imshow(largepoints,[])
 title('Combined Point Systems')
 
 overlayedpoints = zeros(img_y,img_x); 
 for cc=1:img_y 
     for dd=1:img_x
-        if largepoints(cc,dd)>2 && cc<Ylo && cc>Yup
+        if largepoints(cc,dd)>2 && cc<Ylo && cc>Yup && dd<Xright && dd>Xleft
             overlayedpoints(cc,dd)=1;
         end
     end

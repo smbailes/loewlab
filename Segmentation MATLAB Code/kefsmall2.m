@@ -25,7 +25,7 @@ title('Combined Point Systems(S)')
 smalloverlayedpoints = zeros(img_y,img_x);
 for cc=1:img_y
     for dd=1:img_x
-        if smallpoints(cc,dd)>1 && cc<Ylo && cc>Yup %WAS 1!!
+        if smallpoints(cc,dd)>1 && cc<Ylo && cc>Yup && dd<Xright && dd>Xleft
             smalloverlayedpoints(cc,dd)=1;
         end
     end
