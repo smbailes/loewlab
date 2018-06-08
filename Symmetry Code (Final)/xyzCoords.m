@@ -13,7 +13,11 @@ for a = 1:length(r)
     region(a,3) = I(r(a), c(a)); %value at that x,y coordinate
 end  
 
+xcoords = region(:,1,:);
+ycoords = region(:,2,:);
+intensity = region(:,3,:);
 
+scatter3(xcoords, ycoords, intensity); 
 
 % for r = 1:rows
 %     for c = 1:cols
