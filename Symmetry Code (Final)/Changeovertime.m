@@ -145,40 +145,40 @@ ymax = max(cell2mat(ylim_array));
 ymax = max(ymax);
 ymax = max(ymax);
 %% graph averages
-warning('off')
-t = 1:numpics; % pictures start at t = 0
-ypoints = cell(1,numpics); % preallocates y points
-for i = 1:numrows
-   figure(numpics + 1); 
-    for j = 1:numcols
-    ypoints = {};
-        for k = 1:numpics
-        ypoints{k} = averages{i,j,k};      
-        end
-      if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
-        ypoints = cell2mat(ypoints); legend('show')
-        coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
-        newypoints = polyval(coefficients,t); % creates new y points that are smoooth
-        if sqrt(numrows) - floor(sqrt(numrows))  <0.5
-            k = 1;
-        else 
-            k = 0;
-        end
-        subplot(ceil(sqrt(numrows)),ceil(sqrt(numrows)),i) % creates subplot
-        r = rand;, g = rand;, b = rand; %sets random rgb values to make lots of colots
-        plot(t,newypoints,'-','Color',[r g b],'DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
-        g =  plot(t,ypoints,'.','Color',[r g b]); %Adds true data points to graph
-        gAnno = get(g, 'Annotation'); %following three lines make the true data points not appear in legend
-        gLegend = get(gAnno, 'LegendInformation');
-        set(gLegend,'IconDisplayStyle','off');
-        title(['row ' num2str(i)])
-        xlabel('time')
-        ylabel('pixel value')
-        ylim([ymin,ymax]); %specify y limits
-        xlim([1,numpics])
-      end
-    end
-end
+% warning('off')
+% t = 2:numpics; % pictures start at t = 0, first pictue is lower than second. Strange
+% ypoints = cell(1,numpics); % preallocates y points
+% for i = 1:numrows
+%    figure(numpics + 1); 
+%     for j = 1:numcols
+%     ypoints = {};
+%         for k = 2:numpics
+%         ypoints{k} = averages{i,j,k};      
+%         end
+%       if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
+%         ypoints = cell2mat(ypoints); legend('show')
+%         coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
+%         newypoints = polyval(coefficients,t); % creates new y points that are smoooth
+%         if sqrt(numrows) - floor(sqrt(numrows))  <0.5
+%             k = 1;
+%         else 
+%             k = 0;
+%         end
+%         subplot(ceil(sqrt(numrows)),ceil(sqrt(numrows)),i) % creates subplot
+%         r = rand;, g = rand;, b = rand; %sets random rgb values to make lots of colots
+%         plot(t,newypoints,'-','Color',[r g b],'DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
+%         g =  plot(t,ypoints,'o','Color',[r g b]); %Adds true data points to graph
+%         gAnno = get(g, 'Annotation'); %following three lines make the true data points not appear in legend
+%         gLegend = get(gAnno, 'LegendInformation');
+%         set(gLegend,'IconDisplayStyle','off');
+%         title(['row ' num2str(i)])
+%         xlabel('time')
+%         ylabel('pixel value')
+%         ylim([ymin,ymax]); %specify y limits
+%         xlim([2,numpics])
+%       end
+%     end
+% end
 
 %% graph Standard deviations
 
@@ -199,4 +199,20 @@ end
 %     ylabel('pixel value')
 %     end
 % 
-% end
+%  end
+%% finding change from start to finish
+for i = 1:numrows
+    for j = 1:numcols
+        totchange{i,j} = (averages{i,j,2} - averages{i,j,numpics}); %creats a cell array of the change in T for each square
+    end
+end
+
+[xpoints,ypoints] = meshgrid(1:numcols,1:numrows);
+zpoints = cell2mat(totchange);
+figure(numpics + 2), surface(xpoints,ypoints,zpoints)
+view(-37,64);
+xlabel('Column')
+ylabel('Row')
+zlabel('Change in pixel value')
+title('Relative Change in Temperature Of Sections Of The Breasts')
+axis ij % makes axis match the figures
