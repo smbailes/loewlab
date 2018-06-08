@@ -86,8 +86,8 @@ percent = str2num(answer{3});
     %% Image Input
     
     % Read 15 images to cell matrix I_mat
-    a=0;
-    for i=1:15          
+    a=120;
+    for i=1:14         
         I_mat{i} = imread([location sprintf('%04d.tif',a)]);    % Read each image into I_mat
         a=a+120;            % Go to next image (for cropped)
     end
@@ -124,7 +124,7 @@ percent = str2num(answer{3});
     close
     
     %% Plot Image with Clusters using DBSCAN
-for n = 1:15                    % Iterate through cell matrix for each minute
+for n = 1:14                    % Iterate through cell matrix for each minute
     I = I_mat{n};               % Get Image
     [ClusterStruct, ClusterData] = symmetry_cluster(I, epsilon, minPts, percent, ptID);
    
@@ -134,7 +134,7 @@ for n = 1:15                    % Iterate through cell matrix for each minute
     ClusterInfo{n,3} = ClusterData;         %Cell 3 is the ClusterData output from DBSCAN 
 end  
 %% Plot Image from CONNCOMP
-for n = 1:15
+for n = 1:14
     I = I_mat{n};
     figure
     I_con = I(find(I>0)); 
@@ -157,7 +157,7 @@ end
     %% Identify vertical centerline (BY FINDING CENTER OF CROP REGION)
     % USES THE SHORTEST COLUMN OF NONZERO PIXELS as MIDLINE COLUMN
     
-    for b = 1:15
+    for b = 1:14
         currentImage = ClusterInfo{b,2};    %Current image
         [r,c] = size(currentImage);         %Get Size of Current Image
         
@@ -195,7 +195,7 @@ end
   
     
     %% First Cluster Check: Midline
-    for c = 1:15
+    for c = 1:14
         thisImage = ClusterInfo{c,1}; %Current Image Struct
         
         numClusters = length(thisImage); %Number of Clusters in Image
@@ -216,7 +216,7 @@ end
     
     
     %% Second Check: Check for Cluster Reflections
-    for c = 1:15    
+    for c = 1:14    
         
         thisImage = ClusterInfo{c,1};
         
@@ -261,7 +261,7 @@ end
     
     
     %% Third Check: Clusters on Bottom Border
-for c = 1:15
+for c = 1:14
    thisImage = ClusterInfo{c,1};
    pic = ClusterInfo{c,2};
    
@@ -283,7 +283,7 @@ end
     
     
     %% Extract Cluster Data
-for c = 1:15
+for c = 1:14
     
     thisImage = ClusterInfo{c,1}; %Get Current Image Info
     
@@ -337,7 +337,7 @@ end
 
 ClusterHeats = [];
 
-for n = 1:15
+for n = 1:14
     for o = 1:length(newClustInfo{n,1})
         ClusterHeats(newClustInfo{n,1}(o).NormalizedCluster,n) = newClustInfo{n,1}(o).ClusterMeanIntensity;
     end 
