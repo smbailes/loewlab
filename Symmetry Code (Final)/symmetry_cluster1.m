@@ -30,9 +30,9 @@ PlotClusterinResult(xyzNew, ClustersNew); hold on;              % Plot Clusters 
 title(sprintf('%s - Pre Symmetrical Cluster Analysis',ptID));
 
 hold off;
-ClusterData(:,(1:2)) = xyzNew;    % Columns 1,2 are X,Y Indices
-ClusterData(:,3) = ClustersNew;         % Column 3 is Cluster Number
-numClusters = max(ClusterData(:,3));    % Number of Clusters in Image
+ClusterData(:,(1:3)) = xyzNew;    % Columns 1,2 are X,Y Indices
+ClusterData(:,4) = ClustersNew;         % Column 3 is Cluster Number
+numClusters = max(ClusterData(:,4));    % Number of Clusters in Image
 
 % Allocate Cluster Structure with Necessary Fields for Data Tracking
 ClusterStruct(1:numClusters) = struct('ClusterNumber',0,'ClusterIndices',[],'ClusterMeanIntensity',[],'ClusterStdIntensity',[],'StdDivMean',[],'ClusterCentroid',[],'RemoveCluster',0,'NormalizedCluster',[]);
@@ -44,7 +44,7 @@ end
 
 % Cluster Indices
 for a = 1:length(ClusterData) %Sort Through ClusterData Matrix
-    b = ClusterData(a,3); %B is the Cluster Number of Indices in Column A
+    b = ClusterData(a,4); %B is the Cluster Number of Indices in Column A
     if isempty(ClusterStruct(b).ClusterIndices) %If ClusterStruct entry has no indices, input the first indices from the cluster
         ClusterStruct(b).ClusterIndices(1,:) = ClusterData(a,(1:2));
     else %If Cluster entry already has indices, place new ones in end+1 row
