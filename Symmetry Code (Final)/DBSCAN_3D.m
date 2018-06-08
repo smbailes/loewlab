@@ -72,7 +72,15 @@ for n = 1:14                    % Iterate through cell matrix for each minute
     %% Plot Image with Clusters using DBSCAN
 
     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID)
-    
+%     for n = 1:14                    % Iterate through cell matrix for each minute
+%     I = I_mat{n};               % Get Image
+%     [ClusterStruct, ClusterData] = symmetry_cluster1(I, epsilon, minPts, ptID);
+%    
+% %     %ClusterInfo CELL ARRAY
+% %     ClusterInfo{n,1} = ClusterStruct;       %Cell 1 is ClusterStructure
+% %     ClusterInfo{n,2} = I;                   %Cell2 is Image
+% %     ClusterInfo{n,3} = ClusterData;         %Cell 3 is the ClusterData output from DBSCAN
+% end    
 end    
 
 

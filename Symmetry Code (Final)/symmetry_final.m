@@ -124,7 +124,7 @@ percent = str2num(answer{3});
     close
     
     %% Plot Image with Clusters using DBSCAN
-for n = 1:15                    % Iterate through cell matrix for each minute
+for n = 1:14                    % Iterate through cell matrix for each minute
     I = I_mat{n};               % Get Image
     [ClusterStruct, ClusterData] = symmetry_cluster(I, epsilon, minPts, percent, ptID);
    
@@ -136,7 +136,7 @@ end
     %% Identify vertical centerline (BY FINDING CENTER OF CROP REGION)
     % USES THE SHORTEST COLUMN OF NONZERO PIXELS as MIDLINE COLUMN
     
-    for b = 1:15
+    for b = 1:14
         currentImage = ClusterInfo{b,2};    %Current image
         [r,c] = size(currentImage);         %Get Size of Current Image
         
@@ -174,7 +174,7 @@ end
   
     
     %% First Cluster Check: Midline
-    for c = 1:15
+    for c = 1:14
         thisImage = ClusterInfo{c,1}; %Current Image Struct
         
         numClusters = length(thisImage); %Number of Clusters in Image
@@ -195,7 +195,7 @@ end
     
     
     %% Second Check: Check for Cluster Reflections
-    for c = 1:15    
+    for c = 1:14    
         
         thisImage = ClusterInfo{c,1};
         
@@ -240,7 +240,7 @@ end
     
     
     %% Third Check: Clusters on Bottom Border
-for c = 1:15
+for c = 1:14
    thisImage = ClusterInfo{c,1};
    pic = ClusterInfo{c,2};
    
@@ -262,7 +262,7 @@ end
     
     
     %% Extract Cluster Data
-for c = 1:15
+for c = 1:14
     
     thisImage = ClusterInfo{c,1}; %Get Current Image Info
     
@@ -316,7 +316,7 @@ end
 
 ClusterHeats = [];
 
-for n = 1:15
+for n = 1:14
     for o = 1:length(newClustInfo{n,1})
         ClusterHeats(newClustInfo{n,1}(o).NormalizedCluster,n) = newClustInfo{n,1}(o).ClusterMeanIntensity;
     end 

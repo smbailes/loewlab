@@ -52,26 +52,26 @@ for a = 1:length(ClusterData) %Sort Through ClusterData Matrix
     end
 end
 
-%Cluster Centroids
-for j = 1:numClusters
-    %Make Binary Mask of Full Image with Cluster Isolated
-    ImBinMask = zeros(size(I));
-    for a = 1:length(ClusterStruct(j).ClusterIndices)
-        ImBinMask(ClusterStruct(j).ClusterIndices(a,2),ClusterStruct(j).ClusterIndices(a,1)) = 1;
-    end
-    centroid = regionprops(true(size(ImBinMask)), ImBinMask, 'WeightedCentroid');
-    ClusterStruct(j).ClusterCentroid = round(centroid.WeightedCentroid);
-end
-
-% Calculate Statistics 
-for i = 1:numClusters %For each cluster, calculate the Mean and Standard Deviation for Intensity 
-    ClusterStruct(i).ClusterMeanIntensity = mean2(I(ClusterStruct(i).ClusterIndices(:,2),ClusterStruct(i).ClusterIndices(:,1)));
-    ClusterStruct(i).ClusterStdIntensity = std2(I(ClusterStruct(i).ClusterIndices(:,2),ClusterStruct(i).ClusterIndices(:,1)));
-
-    %StandardDeviation / Mean is the indicator from Li Jiang Paper 
-    ClusterStruct(i).StdDivMean = ClusterStruct(i).ClusterStdIntensity / ClusterStruct(i).ClusterMeanIntensity;
-     %Matrix Referral is (Row,Column) so must reverse the indices when calling the statistics
-end
+% %Cluster Centroids
+% for j = 1:numClusters
+%     %Make Binary Mask of Full Image with Cluster Isolated
+%     ImBinMask = zeros(size(I));
+%     for a = 1:length(ClusterStruct(j).ClusterIndices)
+%         ImBinMask(ClusterStruct(j).ClusterIndices(a,2),ClusterStruct(j).ClusterIndices(a,1)) = 1;
+%     end
+%     centroid = regionprops(true(size(ImBinMask)), ImBinMask, 'WeightedCentroid');
+%     ClusterStruct(j).ClusterCentroid = round(centroid.WeightedCentroid);
+% end
+% 
+% % Calculate Statistics 
+% for i = 1:numClusters %For each cluster, calculate the Mean and Standard Deviation for Intensity 
+%     ClusterStruct(i).ClusterMeanIntensity = mean2(I(ClusterStruct(i).ClusterIndices(:,2),ClusterStruct(i).ClusterIndices(:,1)));
+%     ClusterStruct(i).ClusterStdIntensity = std2(I(ClusterStruct(i).ClusterIndices(:,2),ClusterStruct(i).ClusterIndices(:,1)));
+% 
+%     %StandardDeviation / Mean is the indicator from Li Jiang Paper 
+%     ClusterStruct(i).StdDivMean = ClusterStruct(i).ClusterStdIntensity / ClusterStruct(i).ClusterMeanIntensity;
+%      %Matrix Referral is (Row,Column) so must reverse the indices when calling the statistics
+% end
 
 ClustStruct = ClusterStruct;
 ClustData = ClusterData;

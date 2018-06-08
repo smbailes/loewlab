@@ -3,7 +3,7 @@ newClustInfo = ClustInfo; %Copy CLUSTINFO
 % ClustCentroids = {};
 CentInd = [];
 
-for a = 1:15
+for a = 1:14
    ImStruct = ClustInfo{a,1};
    for b = 1:length(ImStruct)
        if (isempty(CentInd))
@@ -20,7 +20,7 @@ minPts = 0;
 CentIDX = DBSCAN(CentInd,epsilon,minPts);
 
 spt = 1;
-for a = 1:15
+for a = 1:14
     for b = 1:length(newClustInfo{a,1})
         newClustInfo{a,1}(b).NormalizedCluster = CentIDX(spt);
         spt=spt+1;
