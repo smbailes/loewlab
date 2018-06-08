@@ -239,10 +239,23 @@ title('Hot Pixel');
 
 %% Part 4: Small/Large 
 figure, imshow(I,[]), title('Upper and Lower Bound Detection')
+hold on; 
 fprintf('Select Upper Bound \n');
 [Xup,Yup] = ginput(1);
+plot(Yup,:,'g')
+hold on;
 fprintf('Select Lower Bound \n');
 [Xlo,Ylo] = ginput(1);
+plot(Ylo,:,'g')
+hold on; 
+fprintf('Select Left Bound \n');
+[Xleft,Yleft] = ginput(1);
+plot(:,Xleft,'g')
+hold on; 
+fprintf('Select Right Bound \n');
+[Xright,Yright] = ginput(1);
+plot(:,Xright,'g')
+hold off;
 if in == 's'
      kefsmall1
 elseif in == 'l'
