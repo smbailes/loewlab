@@ -75,24 +75,7 @@ for n = 1:14                    % Iterate through cell matrix for each minute
     ClustersNew = Clusters;
     ClustersNew(isNoise) = [];      % Remove all Noise Pixels from Clusters
 
-    figure('Name','Pre-Symmetrical Cluster Analysis')
-    imshow(I,[min(I_adj) max(I_adj)]);                          % Display Image w Contrast
-    hold on;
-    PlotClusterinResult(ClustersNew, I); hold on;              % Plot Clusters on Image
-    % plot([c1(1) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
-    % plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
-    % plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
-    % plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
-    title(sprintf('%s - Pre Symmetrical Cluster Analysis',ptID));
-    xlabel(sprintf('Top %.2f of Pixels',percent2*100));
-    hold off;
-    hold off;
-%     [ClusterStruct, ClusterData] = symmetry_cluster1(I, epsilon, minPts, percent, ptID);
-%    
-%     %ClusterInfo CELL ARRAY
-%     ClusterInfo{n,1} = ClusterStruct;       %Cell 1 is ClusterStructure
-%     ClusterInfo{n,2} = I;                   %Cell2 is Image
-%     ClusterInfo{n,3} = ClusterData;         %Cell 3 is the ClusterData output from DBSCAN
+    
 end    
 
 
