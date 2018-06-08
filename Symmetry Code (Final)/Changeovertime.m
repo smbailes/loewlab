@@ -144,15 +144,15 @@ ymin = min(ymin);
 ymax = max(cell2mat(ylim_array));
 ymax = max(ymax);
 ymax = max(ymax);
-%% graph averages
+%% graph averages. flat out destroys computers with very small squares
 % warning('off')
 % t = 2:numpics; % pictures start at t = 0, first pictue is lower than second. Strange
-% ypoints = cell(1,numpics); % preallocates y points
+% ypoints = cell(1,numpics); % preallocates y points. Might need to change
 % for i = 1:numrows
 %    figure(numpics + 1); 
 %     for j = 1:numcols
 %     ypoints = {};
-%         for k = 2:numpics
+%         for k = 2:numpics % need to change
 %         ypoints{k} = averages{i,j,k};      
 %         end
 %       if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
@@ -175,7 +175,7 @@ ymax = max(ymax);
 %         xlabel('time')
 %         ylabel('pixel value')
 %         ylim([ymin,ymax]); %specify y limits
-%         xlim([2,numpics])
+%         xlim([2,numpics]); % need to change
 %       end
 %     end
 % end
@@ -200,7 +200,7 @@ ymax = max(ymax);
 %     end
 % 
 %  end
-%% finding change from start to finish
+%% finding change from start to finish. Isn't helpful with large squares
 for i = 1:numrows
     for j = 1:numcols
         totchange{i,j} = (averages{i,j,2} - averages{i,j,numpics}); %creats a cell array of the change in T for each square
