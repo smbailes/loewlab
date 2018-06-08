@@ -71,10 +71,7 @@ for n = 1:14                    % Iterate through cell matrix for each minute
 
     %% Plot Image with Clusters using DBSCAN
 
-    [Clusters, isNoise] = DBSCAN(xyz,epsilon,minPts); % Run DBSCAN on Pixels above Intensity Percentage
-    ClustersNew = Clusters;
-    ClustersNew(isNoise) = [];      % Remove all Noise Pixels from Clusters
-
+    [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID)
     
 end    
 

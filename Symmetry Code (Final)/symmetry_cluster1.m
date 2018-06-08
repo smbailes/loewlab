@@ -1,4 +1,4 @@
-function [ClustStruct,ClustData] = symmetry_cluster1(ImageMatrix, epsilon, minPts, percent, ptID) %CHANGED PERCENT to PERCENT_VAL
+function [ClustStruct,ClustData] = symmetry_cluster1(ImageMatrix, epsilon, minPts, ptID) %CHANGED PERCENT to PERCENT_VAL
 
 I = getMatrixOutliers(ImageMatrix);   % Remove Outliers
 I_adj = I(find(I>0));
@@ -10,7 +10,7 @@ for a = 1:length(r)
     xyz(a,1) = c(a); %X-coordinate
     xyz(a,2) = r(a); %Y-coordinate
     xyz(a,3) = I(r(a), c(a)); %value at that x,y coordinate
-end  
+end
 
 
 [Clusters, isNoise] = DBSCAN(xyz,epsilon,minPts); % Run DBSCAN on Pixels above Intensity Percentage
@@ -28,8 +28,7 @@ PlotClusterinResult(xyzNew, ClustersNew); hold on;              % Plot Clusters 
 % plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
 % plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
 title(sprintf('%s - Pre Symmetrical Cluster Analysis',ptID));
-xlabel(sprintf('Top %.2f of Pixels',percent2*100));
-hold off;
+
 hold off;
 ClusterData(:,(1:2)) = xyzNew;    % Columns 1,2 are X,Y Indices
 ClusterData(:,3) = ClustersNew;         % Column 3 is Cluster Number
