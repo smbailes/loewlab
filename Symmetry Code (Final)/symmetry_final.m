@@ -144,13 +144,15 @@ for n = 1:14
     hold on;
     CC = CONNCOMP(I, percent);
     for i = 1:CC.NumObjects
-        Style = '.';
-        MarkerSize = 8;
-        Colors = hsv(CC.NumObjects);
-        Color = Colors(i,:);
-        [outcol, outrow] = ind2sub(size(I), CC.PixelIdxList{1,i});
-        plot(outrow(:), outcol(:),Style,'MarkerSize',MarkerSize,'Color',Color)
-        hold on; 
+        if length(CC.PixelIdxList{1,i}) > 10
+            Style = '.';
+            MarkerSize = 8;
+            Colors = hsv(CC.NumObjects);
+            Color = Colors(i,:);
+            [outcol, outrow] = ind2sub(size(I), CC.PixelIdxList{1,i});
+            plot(outrow(:), outcol(:),Style,'MarkerSize',MarkerSize,'Color',Color)
+            hold on; 
+        end 
     end
 end
 
