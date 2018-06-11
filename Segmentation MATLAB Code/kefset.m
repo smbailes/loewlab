@@ -1,6 +1,6 @@
 
 close all;
-clear;
+clear all;
 clc;
 
 %% Part 1 Intial Loading of Images
