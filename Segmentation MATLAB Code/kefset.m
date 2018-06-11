@@ -26,10 +26,13 @@ title('Outliers Removed')
 [N, edges] = histcounts(I,2);
 
 pts = I(I<edges(2));
+pts = im2double(pts);
 pts2 = isoutlier(pts); 
 for q = 1:length(pts)
-    if pts2
+    if pts2(q)
         pts(q) = [];
+        pts2(q) = [];
+        q = q - 1; 
     end 
 end
 I(pts) = 0; 
