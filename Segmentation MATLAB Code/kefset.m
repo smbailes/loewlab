@@ -22,6 +22,18 @@ I=getMatrixOutliers(I);
 figure, imshow(I,[]) %to help decide if it should be cropped or not
 title('Outliers Removed')
 
+%set background to black
+[N, edges] = histcounts(I,2);
+
+pts = I(I<edges(2));
+pts2 = isoutlier(pts); 
+for q = 1:length(pts)
+    if pts2
+        pts(q) = [];
+    end 
+end
+I(pts) = 0; 
+
 close Figure 1
 %perc = input('What is your desired percentage? '); 
 perc = 5; %top 5% of pixels used

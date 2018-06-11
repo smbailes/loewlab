@@ -154,33 +154,33 @@ end
 
 %% 
 
-% Create a binary image ("mask") from the ROI object.
-binaryImage = createMask(connectedtop);
-
-%% 
-
-% Get coordinates of the boundary of the freehand drawn region.
-structBoundaries = bwboundaries(binaryImage);
-xy=structBoundaries{1}; % Get n by 2 array of x,y coordinates.
-x = xy(:, 2);   % Columns.
-y = xy(:, 1);   % Rows.
-% Mask the image outside the mask, and display it.
-
-% Will keep only the part of the image that's inside the mask, zero outside mask.
-blackMaskedImage = firstImage;
-blackMaskedImage(~binaryImage) = 0;
-
-% Now crop the image.
-leftColumn = min(x);
-rightColumn = max(x);
-topLine = min(y);
-bottomLine = max(y);
-width = rightColumn - leftColumn + 1;
-height = bottomLine - topLine + 1;    
-
-newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
-close;
+% % Create a binary image ("mask") from the ROI object.
+% binaryImage = createMask(connectedtop);
 % 
+% %% 
+% 
+% % Get coordinates of the boundary of the freehand drawn region.
+% structBoundaries = bwboundaries(binaryImage);
+% xy=structBoundaries{1}; % Get n by 2 array of x,y coordinates.
+% x = xy(:, 2);   % Columns.
+% y = xy(:, 1);   % Rows.
+% % Mask the image outside the mask, and display it.
+% 
+% % Will keep only the part of the image that's inside the mask, zero outside mask.
+% blackMaskedImage = firstImage;
+% blackMaskedImage(~binaryImage) = 0;
+% 
+% % Now crop the image.
+% leftColumn = min(x);
+% rightColumn = max(x);
+% topLine = min(y);
+% bottomLine = max(y);
+% width = rightColumn - leftColumn + 1;
+% height = bottomLine - topLine + 1;    
+% 
+% newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
+% close;
+% % 
 % 
 % BW2= imfill(connectedtop,'holes');
 % figure,imshow(BW2)
