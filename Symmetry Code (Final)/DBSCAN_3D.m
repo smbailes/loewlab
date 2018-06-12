@@ -119,7 +119,6 @@ n = 1;
     ClusterInfo{n,2} = I;                   %Cell2 is Image
     ClusterInfo{n,3} = ClustData;         %Cell 3 is the ClusterData output from DBSCAN
     
-    fprintf('DBSCAN on %d done \n', n);
 % end    
 
 %{
