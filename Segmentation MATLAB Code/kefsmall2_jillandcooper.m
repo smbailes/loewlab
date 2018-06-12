@@ -1,5 +1,5 @@
 %%Small Points
-
+close all;
 smallpoints=zeros(img_y,img_x);
 
 for aa = 1:img_y
@@ -524,8 +524,14 @@ sonX = [lowestX highestX];
 plot(sonX, sonY, 'go');
 hold on
 %line([rows(indexOfLowestX) rows(indexOfHighestX)], [lowestx highestx])
+horiz=line([0:highestX], [rows(indexOfLowestX)*ones(size(0:highestX))])
 plot(0:highestX, rows(indexOfLowestX)*ones(size(0:highestX)))
+
+vert=line([highestX*ones(size(0:rows(indexOfHighestX)))],[0:rows(indexOfHighestX)])
 plot(highestX*ones(size(0:rows(indexOfHighestX))),0:rows(indexOfHighestX))
+ipoint=intersect(horiz,vert)
+
+plot(ipoint)
 %plot(0:rows(indexOfHighestX), lowestX*ones(size(0:rows(indexOfHighestX))))
 %line([0 sonX], [0 inf], 'rs')
 
