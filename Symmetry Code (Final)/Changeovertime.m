@@ -16,11 +16,11 @@ if (strcmp(answer, 'Volunteer'))
     vtID = volunteerselect;
     prompt = {'Enter User name:','Enter length of square in pixels:','Enter total number of pictures:'};
     dlgtitle = 'Input';
-    defaultans = {'Jacob','50','14'};
+    defaultans = {'Jacob','20','14'};
     numlines = 1;
     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     name = answers{1};
-    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Volunteers\' vtID '\']);
+    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Volunteer Images\' vtID '\Cropped\']);
     
 end
     
