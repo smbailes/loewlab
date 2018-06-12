@@ -5,7 +5,7 @@ if (strcmp(answer, 'Patient'))
     ptID = patientselect;    % Dialog Box for patient selection
     prompt = {'Enter User name:','Enter length of square in pixels:','Enter total number of pictures:'};
     dlgtitle = 'Input';
-    defaultans = {'Jacob','50','14'};
+    defaultans = {'Jacob','20','14'};
     numlines = 1;
     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     name = answers{1};
@@ -145,40 +145,40 @@ ymax = max(cell2mat(ylim_array));
 ymax = max(ymax);
 ymax = max(ymax);
 %% graph averages. flat out destroys computers with very small squares
-% warning('off')
-% t = 2:numpics; % pictures start at t = 0, first pictue is lower than second. Strange
-% ypoints = cell(1,numpics); % preallocates y points. Might need to change
-% for i = 1:numrows
-%    figure(numpics + 1); 
-%     for j = 1:numcols
-%     ypoints = {};
-%         for k = 2:numpics % need to change
-%         ypoints{k} = averages{i,j,k};      
-%         end
-%       if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
-%         ypoints = cell2mat(ypoints); legend('show')
-%         coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
-%         newypoints = polyval(coefficients,t); % creates new y points that are smoooth
-%         if sqrt(numrows) - floor(sqrt(numrows))  <0.5
-%             k = 1;
-%         else 
-%             k = 0;
-%         end
-%         subplot(ceil(sqrt(numrows)),ceil(sqrt(numrows)),i) % creates subplot
-%         r = rand;, g = rand;, b = rand; %sets random rgb values to make lots of colots
-%         plot(t,newypoints,'-','Color',[r g b],'DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
-%         g =  plot(t,ypoints,'o','Color',[r g b]); %Adds true data points to graph
-%         gAnno = get(g, 'Annotation'); %following three lines make the true data points not appear in legend
-%         gLegend = get(gAnno, 'LegendInformation');
-%         set(gLegend,'IconDisplayStyle','off');
-%         title(['row ' num2str(i)])
-%         xlabel('time')
-%         ylabel('pixel value')
-%         ylim([ymin,ymax]); %specify y limits
-%         xlim([2,numpics]); % need to change
-%       end
-%     end
-% end
+warning('off')
+t = 2:numpics; % pictures start at t = 0, first pictue is lower than second. Strange
+ypoints = cell(1,numpics); % preallocates y points. Might need to change
+for i = 1:numrows
+   figure(numpics + 1); 
+    for j = 1:numcols
+    ypoints = {};
+        for k = 2:numpics % need to change
+        ypoints{k} = averages{i,j,k};      
+        end
+      if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
+        ypoints = cell2mat(ypoints); legend('show')
+        coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
+        newypoints = polyval(coefficients,t); % creates new y points that are smoooth
+        if sqrt(numrows) - floor(sqrt(numrows))  <0.5
+            k = 1;
+        else 
+            k = 0;
+        end
+        subplot(ceil(sqrt(numrows)),ceil(sqrt(numrows)),i) % creates subplot
+        r = rand;, g = rand;, b = rand; %sets random rgb values to make lots of colots
+        plot(t,newypoints,'-','Color',[r g b],'DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
+        g =  plot(t,ypoints,'o','Color',[r g b]); %Adds true data points to graph
+        gAnno = get(g, 'Annotation'); %following three lines make the true data points not appear in legend
+        gLegend = get(gAnno, 'LegendInformation');
+        set(gLegend,'IconDisplayStyle','off');
+        title(['row ' num2str(i)])
+        xlabel('time')
+        ylabel('pixel value')
+        ylim([ymin,ymax]); %specify y limits
+        xlim([2,numpics]); % need to change
+      end
+    end
+end
 
 %% graph Standard deviations
 
@@ -203,7 +203,10 @@ ymax = max(ymax);
 %% finding change from start to finish. Isn't helpful with large squares
 for i = 1:numrows
     for j = 1:numcols
-        totchange{i,j} = (averages{i,j,2} - averages{i,j,numpics}); %creats a cell array of the change in T for each square
+        totchange{i,j} = (averages{i,j,numpics} - averages{i,j,2}); %creats a cell array of the change in T for each square
+        if totchange{i,j} > 0
+            totchange{i,j} = NaN;
+        end
     end
 end
 
@@ -216,3 +219,55 @@ ylabel('Row')
 zlabel('Change in pixel value')
 title('Relative Change in Temperature Of Sections Of The Breasts')
 axis ij % makes axis match the figures
+%% find the averages of each breast
+prompt = ('Enter middle column');
+dlgtitle = ('Middle column');
+numlines = 1;
+figure(numpics)
+midcol = inputdlg(prompt,dlgtitle,numlines);
+
+for i = 1:numrows % gets the average for the right breast
+    for j = 1:str2double(midcol{1})
+        for k = 2:numpics % will have start at 1 
+            Rbreastmean{i,j,k} = averages{i,j,k};
+            if isempty(Rbreastmean{i,j,k}) == 1
+                Rbreastmean{i,j,k} = NaN;
+            end
+        end
+    end 
+end
+totRbreastmean = cell(1,numpics -1);
+for k =2:numpics % will have to get rid of -1 
+    rightmean = cell2mat(Rbreastmean(:,:,k));
+    rightmean = nanmean(rightmean);
+    totRbreastmean{k} = nanmean(rightmean);
+end
+for i = 1:numrows %gets the averages for the left breast
+    for j = str2double(midcol{1}):numcols
+        for k = 2:numpics % will have start at 1 
+            Lbreastmean{i,j,k} = averages{i,j,k};
+            if isempty(Lbreastmean{i,j,k}) == 1
+                Lbreastmean{i,j,k} = NaN;
+            end
+        end
+    end 
+end
+totLbreastmean = cell(1,numpics -1);
+for k =2:numpics % will have to get rid of -1 
+    leftmean = cell2mat(Lbreastmean(:,:,k));
+    leftmean = nanmean(leftmean);
+    totLbreastmean{k} = nanmean(leftmean);
+end
+
+figure(numpics + 3)
+t = 2:numpics;
+totRbreastmean = cell2mat(totRbreastmean);
+totLbreastmean = cell2mat(totLbreastmean);
+
+plot(t,totRbreastmean,'r',t,totLbreastmean,'b')
+title('Left vs Right Change Over Time')
+legend('Right','Left')
+xlabel('Time (min)')
+ylabel('Pixel Value')
+
+
