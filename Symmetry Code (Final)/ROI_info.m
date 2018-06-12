@@ -85,11 +85,11 @@ clc;
     
 %% Show Image and ROI
 for n = 1:14
-    I2 = I_mat{n};
+    I2 = I_mat{n}(find(I_mat{n}>0));
     newCrop = imcrop(I_mat{n}, xy);
     figure, title('Histogram for Patient %4f (with ROI highlighted)');
-    imhist(I_mat{n});
+    histogram(I2,1000,'FaceColor','y');
     hold on
-    imhist(newCrop);
+    histogram(newCrop,1000,'FaceColor','b');
 end
 
