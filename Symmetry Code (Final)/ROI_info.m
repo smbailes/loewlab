@@ -51,7 +51,7 @@ clc;
     [r c] = size(I1);
     figure('Name','Nipple Identification')
     imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
-
+    
     if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
         xlabel('-->')
     else
@@ -71,46 +71,25 @@ clc;
     c4 = [round(Xnew + xbox/2), round(Ynew - ybox/2)];  % Top Right Corner      
     hold off  
     close    
-    
-%% Show Image and ROI
-for n = 1:13:14
-    I2 = I_mat{n};
-    figure
-    imshow(I2,[min(I_adj) max(I_adj)]);
+%% Crop area
+    imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
     hold on;
     plot([c1(1) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
     plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
     plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
     plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
-    hold off;
+    hold on;
+    hFH = imrect();
+    binaryImage = hFH.createMask();
+    xy = hFH.getPosition;
+    
+%% Show Image and ROI
+for n = 1:14
+    I2 = I_mat{n};
+    newCrop = imcrop(I_mat{n}, xy);
+    figure, title('Histogram for Patient %4f (with ROI highlighted)');
+    imhist(I_mat{n});
+    hold on
+    imhist(newCrop);
 end
 
-top = c1(1);
-bottom = c3(1);
-left = c1(2);
-right = c3(2);
-
-%% 
-left = c1(1);
-right = c3(1);
-bottom = c1(2);
-top = c3(2);
-
-figure,
-imhist(I_adj)
-
-roi = ones(size(I));
- 
-for i = 1:1:r
-    for j = 1:c
-        fprintf('(%d, %d)\n', i, j);
-        if r < top && r > bottom
-            fprintf('Top & Bottom');
-            if c >left && c < right
-                roi(c,r) = 0;
-                fprintf('Left & Right');
-            end
-        end
-    end
-end
-  
