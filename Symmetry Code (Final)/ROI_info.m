@@ -47,6 +47,8 @@ clc;
     I = getMatrixOutliers(I1);  % Remove outliers
     I_adj = I1(find(I1>0));    % Remove zero pixels
     I_sort1 = sort(I_adj);
+    
+    [r c] = size(I1);
     figure('Name','Nipple Identification')
     imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
 
@@ -71,8 +73,10 @@ clc;
     close    
     
 %% Show Image and ROI
-for n = 1:14
-    imshow(I,[min(I_adj) max(I_adj)]);
+for n = 1:13:14
+    I2 = I_mat{n};
+    figure
+    imshow(I2,[min(I_adj) max(I_adj)]);
     hold on;
     plot([c1(1) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
     plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
@@ -80,3 +84,33 @@ for n = 1:14
     plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
     hold off;
 end
+
+top = c1(1);
+bottom = c3(1);
+left = c1(2);
+right = c3(2);
+
+%% 
+left = c1(1);
+right = c3(1);
+bottom = c1(2);
+top = c3(2);
+
+figure,
+imhist(I_adj)
+
+roi = ones(size(I));
+ 
+for i = 1:1:r
+    for j = 1:c
+        fprintf('(%d, %d)\n', i, j);
+        if r < top && r > bottom
+            fprintf('Top & Bottom');
+            if c >left && c < right
+                roi(c,r) = 0;
+                fprintf('Left & Right');
+            end
+        end
+    end
+end
+  
