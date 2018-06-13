@@ -179,6 +179,34 @@ displ = imshow(blue);
 hold off
 set(displ, 'AlphaData', gett)
 
+%% Cleaning using average intensity comparison
+
+cyan = cat(3, zeros(size(I)), ones(size(I)), ones(size(I)));
+
+% split image in half
+figure;
+imshow(I,[]);
+hold on;
+mid_col = zeros(img_y,img_x);
+mid_col(:,img_x/2) = 1;
+h6a = imshow(cyan);
+set(h6a, 'AlphaData', mid_col);
+hold off;
+
+%find coordinates of midline
+[midx midy] = find(mid_col==1); 
+midlinez(:,1) = midx;
+midlinez(:,2) = midy;
+
+%find intersection between upper bound and midline
+ptofcompx = find(Yup==midlinez(:,1));
+ptofcompy = midlinez(ptofcompx,2);
+ptofcomp(:,1) = ptofcompx;
+ptofcomp(:,2) = ptofcompy;
+
+
+
+
 %% Part 3, Connect
 
 CC = bwconncomp(gett);
