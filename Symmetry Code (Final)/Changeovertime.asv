@@ -5,7 +5,7 @@ if (strcmp(answer, 'Patient'))
     ptID = patientselect;    % Dialog Box for patient selection
     prompt = {'Enter User name:','Enter length of square in pixels:','Enter total number of pictures:'};
     dlgtitle = 'Input';
-    defaultans = {'Jacob','50','14'};
+    defaultans = {'Jacob','20','14'};
     numlines = 1;
     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     name = answers{1};
@@ -16,11 +16,11 @@ if (strcmp(answer, 'Volunteer'))
     vtID = volunteerselect;
     prompt = {'Enter User name:','Enter length of square in pixels:','Enter total number of pictures:'};
     dlgtitle = 'Input';
-    defaultans = {'Jacob','50','14'};
+    defaultans = {'Jacob','20','14'};
     numlines = 1;
     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     name = answers{1};
-    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Volunteers\' vtID '\']);
+    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Volunteer Images\' vtID '\Cropped\']);
     
 end
     
@@ -82,7 +82,7 @@ for j = 1:1:numcols
     for i = 1:1:numrows
         col = squareside*(i-1)+1 ;
 square = [row, col, squareside-2, squareside-2]; %  creates the square to be averaged
-stdv{i,j,k} = std2(imcrop(I_mat{k},square)); % takes the average of each block
+stdv{i,j,k} = std2(imcrop(I_mat{k},square)); % takes the std2 of each block
 
     end
 end
@@ -109,11 +109,11 @@ for i = 1:numrows
     for j = 1:numcols
         for k = 1:numpics 
             if abs(stdv{i,j,k}) >500  % eliminates data that deviates too, mostly edge squares
-                for d = 1:15 % total number of pictures
+                for d = 1:numpics % total number of pictures
                 averages{i,j,d} = NaN;
                 end   
             elseif averages{i,j,k} == 0
-                for d = 1:15
+                for d = 1:numpics
                     averages{i,j,k} = NaN;
                 end
             end
@@ -179,6 +179,20 @@ ymax = max(ymax);
 %       end
 %     end
 % end
+%% Find the average slope of each square (ohgod)
+for i = 1:numrows
+    for j = 1:numcols
+        for k = 1:numpics -1
+            change{i,j,k}= averages{i,j,k+1} - averages{i,j,k};
+        end
+    end
+end
+avechange = cell(numrows,numcols)
+for i = 1:numrows
+    for j =1:numcols
+        avechange{i,j} = nanmean(cell2mat(change(i,j,:)))
+    end
+end
 
 %% graph Standard deviations
 
@@ -201,64 +215,106 @@ ymax = max(ymax);
 % 
 %  end
 %% finding change from start to finish. Isn't helpful with large squares
-for i = 1:numrows
-    for j = 1:numcols
-        totchange{i,j} = (averages{i,j,numpics} - averages{i,j,2}); %creats a cell array of the change in T for each square
-        if totchange{i,j} > 0
-            totchange{i,j} = NaN;
-        end
-    end
-end
-
-[xpoints,ypoints] = meshgrid(1:numcols,1:numrows);
-zpoints = cell2mat(totchange);
-figure(numpics + 2), surface(xpoints,ypoints,zpoints)
-view(-37,64);
-xlabel('Column')
-ylabel('Row')
-zlabel('Change in pixel value')
-title('Relative Change in Temperature Of Sections Of The Breasts')
-axis ij % makes axis match the figures
-%% find the averages of each breast
+% for i = 1:numrows
+%     for j = 1:numcols
+%         totchange{i,j} = (averages{i,j,numpics} - averages{i,j,2}); %creats a cell array of the change in T for each square
+%         if totchange{i,j} > 0
+%             totchange{i,j} = NaN;
+%         end
+%     end
+% end
+% 
+% [xpoints,ypoints] = meshgrid(1:numcols,1:numrows);
+% zpoints = cell2mat(totchange);
+% figure(numpics + 2), surface(xpoints,ypoints,zpoints)
+% view(-37,64);
+% xlabel('Column')
+% ylabel('Row')
+% zlabel('Change in pixel value')
+% title('Relative Change in Temperature Of Sections Of The Breasts')
+% axis ij % makes axis match the figures
+ %% find the averages of each breast
 prompt = ('Enter middle column');
 dlgtitle = ('Middle column');
 numlines = 1;
 figure(numpics)
 midcol = inputdlg(prompt,dlgtitle,numlines);
-for i = 1:numrows % gets the average for the right breast
+
+for i = 1:numrows % Takes data from right breast
     for j = 1:str2double(midcol{1})
         for k = 2:numpics % will have start at 1 
             Rbreastmean{i,j,k} = averages{i,j,k};
-            
+            if Rbreastmean{i,j,k} == 0
+                Rbreastmean{i,j,k} = NaN;
+            end
         end
     end 
 end
-totRbreastmean = cell(1,numpics -1)
-for k =2:numpics % will have to get rid of -1 
+totRbreastmean = cell(1,numpics -1); % allocate arrays
+Rstdv = cell(1,numpics-1);
+for k =2:numpics % will have to get rid of -1. Finds averages of Rbreast and stdv 
     rightmean = cell2mat(Rbreastmean(:,:,k));
     rightmean = nanmean(rightmean);
-    totRbreastmean{k} = mean(rightmean);
+    totRbreastmean{k} = nanmean(rightmean);
+    Rightstdv = cell2mat(Rbreastmean(:,:,k));
+    Rightstdv = nanstd(Rightstdv);
+    Rstdv{k} = nanstd(Rightstdv);
 end
-for i = 1:numrows %gets the averages for the left breast
+for i = 1:numrows %gets the data for the left breast
     for j = str2double(midcol{1}):numcols
         for k = 2:numpics % will have start at 1 
             Lbreastmean{i,j,k} = averages{i,j,k};
+            if Lbreastmean{i,j,k} == 0
+                Lbreastmean{i,j,k} = NaN;
+            end
+        end
+    end 
+end
+for i = 1:numrows %Makes all zero cells = NaN
+    for j = 1:str2double(midcol{1})-1
+        for k = 2:numpics % will have start at 1 
+            Lbreastmean{i,j,k} = NaN;
             
         end
     end 
 end
-totLbreastmean = cell(1,numpics -1)
-for k =2:numpics % will have to get rid of -1 
+totLbreastmean = cell(1,numpics -1);
+Lstdv = cell(1,numpics-1);
+for k =2:numpics % will have to get rid of -1. calculates mean and stdv
     leftmean = cell2mat(Lbreastmean(:,:,k));
     leftmean = nanmean(leftmean);
-    totLbreastmean{k} = mean(leftmean);
+    totLbreastmean{k} = nanmean(leftmean);
+    Leftstdv = cell2mat(Lbreastmean(:,:,k));
+    Leftstdv = nanstd(Leftstdv);
+    Lstdv{k} = nanstd(Leftstdv);
 end
-figure(numpics + 3)
-t = 2:numpics
+
+figure(numpics + 3) % get everything into a matrix
+t = 2:numpics;
 totRbreastmean = cell2mat(totRbreastmean);
 totLbreastmean = cell2mat(totLbreastmean);
+Lstdv = cell2mat(Lstdv);
+Rstdv = cell2mat(Rstdv);
 
-plot(t,totRbreastmean,t,totLbreastmean)
-title('Left vs Right
 
+Rplot = errorbar(t,totRbreastmean,Rstdv,'r');, hold on % plot everything
+Lplot = errorbar(t,totLbreastmean,Lstdv,'b');
 
+title('Left vs Right Change Over Time')
+legend('Right','Left')
+xlabel('Time (min)')
+ylabel('Pixel Value')
+a = Rplot.Color;
+Rplot.Color = 'r'
+b = Lplot.Color;
+Lplot.Color = 'b';
+
+%% find average slope for each breast
+for k = 1:numpics-2 % will have to make 1
+    Lbreastchange{k} =  totLbreastmean(k+1) - totLbreastmean(k);
+end
+aveLbreastchange = mean(cell2mat(Lbreastchange));
+for k = 1:numpics-2 % will have to make 1
+    Rbreastchange{k} =  totRbreastmean(k+1) - totRbreastmean(k);
+end
+aveRbreastchange = mean(cell2mat(Rbreastchange));
