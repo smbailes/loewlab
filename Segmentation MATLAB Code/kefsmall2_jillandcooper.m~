@@ -527,35 +527,28 @@ hold on
 %line([rows(indexOfLowestX) rows(indexOfHighestX)], [lowestx highestx])
 horiz=line([0:highestX], [rows(indexOfLowestX)*ones(size(0:highestX))])
 plot(0:highestX, rows(indexOfLowestX)*ones(size(0:highestX))) %highestx is x value of red, rows(indexOfHighestX) y coordinate
-hold on
+
 vert=line([highestX*ones(size(0:rows(indexOfHighestX)))],[0:rows(indexOfHighestX)])
 plot(highestX*ones(size(0:rows(indexOfHighestX))),0:rows(indexOfHighestX))
-hold on
 
-xval1=[0:highestX];
-xval2=[highestX*ones(size(0:rows(indexOfHighestX)))];
-yval1=[rows(indexOfLowestX)*ones(size(0:highestX))];
-yval2=[0:rows(indexOfHighestX)];
+intersectpointx=1;
+intersectpointy=1;
+n=0;
+while intersectpointx~=0
+    xval1=[0:highestX];
+    xval2=[highestX*ones(size(0:rows(indexOfHighestX)))];
+    yval1=[rows(indexOfLowestX)*ones(size(0:highestX))];
+    yval2=[0:rows(indexOfHighestX)];
+    while intersectpointy~=0
+      ytest1=yval[n+1];  
+    end
+    xtest1=xval[n+1];
+    
 
-xvalintersect=find(xval1==xval2(1));
-disp(xvalintersect)
-yvalintersect=find(yval2==yval1(1));
-disp(yvalintersect)
+    intersectpointx=0;
+    n=n+1;
+end
 
-plot(xvalintersect,yvalintersect,'go');
-hold off
-
- %{ while intersectpointx~=0    
-  %while intersectpointy~=0
-   %   ytest1=yval1[n+1];
-    %  ytest2=yval2[n+1];
-     % intersectpointy=ytest2-ytest1
-      
-    %end
-    %xtest1=xval[n+1];
-    %intersectpointx=0;
-    %n=n+1;
- %end
 
 
 %ipoint=intersect(horiz,vert)

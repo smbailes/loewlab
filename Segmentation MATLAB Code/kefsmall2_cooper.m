@@ -1,5 +1,5 @@
 %%Small Points
-close all;
+
 smallpoints=zeros(img_y,img_x);
 
 for aa = 1:img_y
@@ -434,8 +434,8 @@ hold off
 
 %% Part 7
 
-connected=bwmorph(connected,'fill');
-connected1=bwmorph(connected,'bridge');
+connected=bwmorph(connected,'bridge');
+connected1=bwmorph(connected,'fill');
 connected2=bwmorph(connected1,'close');
 
 
@@ -491,77 +491,14 @@ shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','L
 connectedtop = step(shapeInserter, bibi, uint16([x1 y1 x2 y2]));
 
 
-%figure, imshow(I,[]), title('Connect Tops')
-%blue on top on figure
-%blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
-%hold on 
-%displ = imshow(blue); 
-%hold off 
-%Use our diff1 as the AlphaData for the solid red image. 
-%set(displ, 'AlphaData', connectedtop)
-
-
-%JILLIAN
-%find the left most endpoint of breast outline
-% (x1,y1)
-%[x1,y1]=find()
-%find the right most endpoint of the breast outline
-% (x2,y2)
-%{x2,y2]=find()
-%create a line connecting the endpoints
-%hold on
-%line([x1 x2], [y1 y2])
 figure, imshow(I,[]), title('Connect Tops')
-hold on
-BW2 = bwmorph(connectedtop,'skel',inf);
-endPoints = bwmorph(BW2, 'endpoints');
-%imshow(BW2);hold on;
-imshowpair(I,BW2);hold on;
-[rows cols] = find(endPoints);
-[lowestX indexOfLowestX] = min(rows);
-[highestX indexOfHighestX] = max(cols);
-sonY = [rows(indexOfLowestX) rows(indexOfHighestX)];
-sonX = [lowestX highestX];
-plot(sonX, sonY, 'go');
-hold on
-%line([rows(indexOfLowestX) rows(indexOfHighestX)], [lowestx highestx])
-horiz=line([0:highestX], [rows(indexOfLowestX)*ones(size(0:highestX))])
-plot(0:highestX, rows(indexOfLowestX)*ones(size(0:highestX))) %highestx is x value of red, rows(indexOfHighestX) y coordinate
-hold on
-vert=line([highestX*ones(size(0:rows(indexOfHighestX)))],[0:rows(indexOfHighestX)])
-plot(highestX*ones(size(0:rows(indexOfHighestX))),0:rows(indexOfHighestX))
-hold on
-
-xval1=[0:highestX];
-xval2=[highestX*ones(size(0:rows(indexOfHighestX)))];
-yval1=[rows(indexOfLowestX)*ones(size(0:highestX))];
-yval2=[0:rows(indexOfHighestX)];
-
-xvalintersect=find(xval1==xval2(1));
-disp(xvalintersect)
-yvalintersect=find(yval2==yval1(1));
-disp(yvalintersect)
-
-plot(xvalintersect,yvalintersect,'go');
-hold off
-
- %{ while intersectpointx~=0    
-  %while intersectpointy~=0
-   %   ytest1=yval1[n+1];
-    %  ytest2=yval2[n+1];
-     % intersectpointy=ytest2-ytest1
-      
-    %end
-    %xtest1=xval[n+1];
-    %intersectpointx=0;
-    %n=n+1;
- %end
-
-
-%ipoint=intersect(horiz,vert)
-%plot(ipoint)
-%plot(0:rows(indexOfHighestX), lowestX*ones(size(0:rows(indexOfHighestX))))
-%line([0 sonX], [0 inf], 'rs')
+%blue on top on figure
+blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+hold on 
+displ = imshow(blue); 
+hold off 
+%Use our diff1 as the AlphaData for the solid red image. 
+set(displ, 'AlphaData', connectedtop)
 
 
 % BW2= imfill(connectedtop,'holes');

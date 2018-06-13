@@ -160,6 +160,6 @@ else
     % Use our diff1 as the AlphaData for the solid red image. 
     set(displ, 'AlphaData', lowers) 
 
-    kefsmall2_jillandcooper
+    kefsmall2_cooper
 end
 

@@ -240,7 +240,7 @@ title('Hot Pixel');
 %% Part 4: Small/Large 
 
 if in == 's'
-    kefsmall1
+    kefsmall1_cooper
 elseif in == 'l'
     keflarge1
 end
