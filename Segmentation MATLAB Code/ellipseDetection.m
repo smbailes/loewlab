@@ -118,7 +118,7 @@ function bestFits = ellipseDetection(img, params)
     fprintf('..after distance constraint: %d\n', length(I));
     
     % compute pairwise angles and filter
-    if params.rotationSpan>0
+    if params.rotationSpan>0jkl;jk
         tangents = (Y(I)-Y(J)) ./ (X(I)-X(J));
         tanLo = tand(params.rotation-params.rotationSpan);
         tanHi = tand(params.rotation+params.rotationSpan);    
@@ -188,3 +188,17 @@ function bestFits = ellipseDetection(img, params)
         end
     end
 end
+
+%% Creating Boundaries for Ellipses
+figure, imshow(I,[]), title(Bound Detection)
+fprintf('Select Upper Bound \n');
+[Xup,Yup] = ginput(1);
+fprintf('Select Lower Bound \n');
+[Xlo,Ylo] = ginput(1);
+fprintf('Select Left Bound \n');
+[Xleft, Yleft] = ginput(1);
+fprintf('Slect Right Bound \n');
+[Xright, Yright] = ginput(1);
+
+
+
