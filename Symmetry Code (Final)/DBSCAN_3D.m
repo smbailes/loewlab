@@ -194,14 +194,13 @@ n = 1;
    for i = 1:numClust %Iterate through Clusters
        clustPoints = thisImage(i).ClusterIndices; %Get cluster indices
        for a = 1:length(clustPoints(:,1)) %Search through cluster indices
-           if (pic((clustPoints(a,2)+2), clustPoints(a,1)) == 0) %If pixel below any cluster has intensity 0, mark cluster for removal
+           if (pic((clustPoints(a,2)+1), clustPoints(a,1)) == 0) %If pixel below any cluster has intensity 0, mark cluster for removal
                thisImage(i).RemoveCluster = 1;
                break
            end
        end       
    end    
    
-   fprintf('Done');
    ClusterInfo{c,1} = thisImage; %Save Info to ClusterInfo
 % end  
 %% Extract Cluster Data
