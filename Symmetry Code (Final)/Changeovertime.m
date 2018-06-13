@@ -187,10 +187,10 @@ for i = 1:numrows
         end
     end
 end
-avechange = cell(numrows,numcols)
+avechange = cell(numrows,numcols);
 for i = 1:numrows
     for j =1:numcols
-        avechange{i,j} = nanmean(cell2mat(change(i,j,:)))
+        avechange{i,j} = nanmean(cell2mat(change(i,j,:)));
     end
 end
 %% Find the total change of each square
@@ -304,7 +304,8 @@ Lstdv = cell2mat(Lstdv);
 Rstdv = cell2mat(Rstdv);
 
 
-Rplot = errorbar(t,totRbreastmean,Rstdv,'r');, hold on % plot everything
+Rplot = errorbar(t,totRbreastmean,Rstdv,'r');
+hold on % plot everything
 Lplot = errorbar(t,totLbreastmean,Lstdv,'b');
 
 title('Left vs Right Change Over Time')
@@ -312,7 +313,7 @@ legend('Right','Left')
 xlabel('Time (min)')
 ylabel('Pixel Value')
 a = Rplot.Color;
-Rplot.Color = 'r'
+Rplot.Color = 'r';
 b = Lplot.Color;
 Lplot.Color = 'b';
 
