@@ -3,15 +3,15 @@
 path = uigetdir;
 location = strcat(path, '\');
 
-strt = 120;
-for i=1:14          
+strt = 0;
+for i=1:15          
     I_mat{i} = imread([location sprintf('%04d.tif',strt)]);    % Read each image into I_mat
     strt=strt+120;            % Go to next image (for cropped), HAS TO BE CHANGED TO INCREMENT BY 1
 end
 
 %% Apply Crop to All Registered Images based on User Drawn Input
 % cd ([homedir 'Registered/' ptID 'Registered/']);
-image = I_mat{7};
+image = I_mat{8};
 I = getMatrixOutliers(image);
 nonzero = I(find(I>0));
 h = max(nonzero);
@@ -54,9 +54,9 @@ newLocation = strcat(location, '\', 'Cropped');
 mkdir(newLocation);
 cd(newLocation);
 
-imwrite(newCrop,'0120.tif');
+imwrite(newCrop,'0000.tif');
 
-for i = 240:120:1680
+for i = 120:120:1680
     cd(location)
     newImage = imread(sprintf('%04d.tif',i));
    
