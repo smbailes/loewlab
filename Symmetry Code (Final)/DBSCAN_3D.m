@@ -10,8 +10,8 @@ clc;
 %% Image Input
     
     % Read 14 images to cell matrix I_mat
-    a=120;
-    for i=1:14          
+    a=0;
+    for i=1:15          
         I_mat{i} = imread([location sprintf('%04d.tif',a)]);    % Read each image into I_mat
         a=a+120;            % Go to next image (for cropped)
     end
@@ -86,22 +86,32 @@ fprintf('Epsilon: %d \nminPts: %d \n', epsilon, minPts);
     c4 = [round(Xnew + xbox/2), round(Ynew - ybox/2)];  % Top Right Corner      
     hold off  
     close    
-%}    
-%% Store x,y,intensity information for all images
-for n = 1:14                    % Iterate through cell matrix for each minute
-    I_n = I_mat{n};               % Get Image
-    I = getMatrixOutliers(I_n);   % Remove Outliers
-    I_adj = I(find(I>0));
-    
-    [r b] = find(I);
+%}
 
-    % Find xyz info
-%     for a = 1:length(r)
-%         xyz(a,1) = b(a); %X-coordinate
-%         xyz(a,2) = r(a); %Y-coordinate
-%         xyz(a,3) = I(r(a), b(a)); %value at that x,y coordinate
-%     end  
-end 
+%% Show Histogram for whole image and Truth Region
+    imshow(I_mat{1},[min(I_adj1) max(I_adj1)]);               % Display with contrast
+    hold on;
+    plot([c1(1) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
+    plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
+    plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
+    plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
+    hold on;
+    hFH = imrect();
+    binaryImage = hFH.createMask();
+    xy = hFH.getPosition;
+    close
+    
+    figure('Name','Histogram'), subplot(4,4,1);
+    for n = 1:14
+        I2 = I_mat{n}(find(I_mat{n}>0));
+        newCrop = imcrop(I_mat{n}, xy);
+
+        subplot(4,4,n)
+        histogram(I2,1000,'FaceColor','r','EdgeColor','r');
+        hold on
+        histogram(newCrop,1000,'FaceColor','k','EdgeColor','k');
+    end
+
 %% Plot Image with Clusters using DBSCAN
 n = 1;
 %     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID);
@@ -194,7 +204,7 @@ n = 1;
    for i = 1:numClust %Iterate through Clusters
        clustPoints = thisImage(i).ClusterIndices; %Get cluster indices
        for a = 1:length(clustPoints(:,1)) %Search through cluster indices
-           if (pic((clustPoints(a,2)+2), clustPoints(a,1)) == 0) %If pixel below any cluster has intensity 0, mark cluster for removal
+           if (pic((clustPoints(a,2)+5), clustPoints(a,1)) == 0) %If pixel below any cluster has intensity 0, mark cluster for removal
                thisImage(i).RemoveCluster = 1;
                break
            end
@@ -214,8 +224,9 @@ n = 1;
    for p = 1:numClust
       clustPoints = thisImage(p).ClusterIndices;
       for b = 1:length(clustPoints(:,1))
-          if length(clustPoints(:,1)) < 5 || length(clustPoints(:,1)) > 100
+          if length(clustPoints(:,1)) < 10 || length(clustPoints(:,1)) > 85
               thisImage(p).RemoveCluster = 1;
+              numClust = numClust - 1;
           end
       end
    end
@@ -266,7 +277,7 @@ n = 1;
     hrEnd = clustData(:,(1:2)); %Cluster Indices of remaining Clusters
     clEnd = clustData(:,3); %Cluster Number for remaining clusters
     
-    figure, imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
+    figure('Name','Remaining Clusters'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
     hold on
     PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
     title(sprintf('%s - Post Symmetrical Cluster Analysis',ptID));

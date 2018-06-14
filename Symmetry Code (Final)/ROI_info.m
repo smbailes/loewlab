@@ -82,14 +82,18 @@ clc;
     hFH = imrect();
     binaryImage = hFH.createMask();
     xy = hFH.getPosition;
+    close
     
 %% Show Image and ROI
+figure('Name','Histograms (with ROI highlighted)');
+subplot(4,4,1);
 for n = 1:14
     I2 = I_mat{n}(find(I_mat{n}>0));
     newCrop = imcrop(I_mat{n}, xy);
-    figure, title('Histogram for Patient %4f (with ROI highlighted)');
-    histogram(I2,1000,'FaceColor','y');
+
+    subplot(4,4,n)
+    histogram(I2,1000,'FaceColor','r','EdgeColor','r');
     hold on
-    histogram(newCrop,1000,'FaceColor','b');
+    histogram(newCrop,1000,'FaceColor','k','EdgeColor','k');
 end
 
