@@ -145,40 +145,46 @@ ymax = max(cell2mat(ylim_array));
 ymax = max(ymax);
 ymax = max(ymax);
 %% graph averages. flat out destroys computers with very small squares
-% warning('off')
-% t = 1:numpics; % pictures start at t = 0, first pictue is lower than second. Strange
-% ypoints = cell(1,numpics); % preallocates y points. Might need to change
-% for i = 1:numrows
-%    figure(numpics + 1); 
-%     for j = 1:numcols
-%     ypoints = {};
-%         for k = 1:numpics % need to change
-%         ypoints{k} = averages{i,j,k};      
-%         end
-%       if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
-%         ypoints = cell2mat(ypoints); legend('show')
-%         coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
-%         newypoints = polyval(coefficients,t); % creates new y points that are smoooth
-%         if sqrt(numrows) - floor(sqrt(numrows))  <0.5
-%             k = 1;
-%         else 
-%             k = 0;
-%         end
-%         subplot(ceil(sqrt(numrows)),ceil(sqrt(numrows)),i) % creates subplot
-%         r = rand;, g = rand;, b = rand; %sets random rgb values to make lots of colots
-%         plot(t,newypoints,'-','Color',[r g b],'DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
-%         g =  plot(t,ypoints,'o','Color',[r g b]); %Adds true data points to graph
-%         gAnno = get(g, 'Annotation'); %following three lines make the true data points not appear in legend
-%         gLegend = get(gAnno, 'LegendInformation');
-%         set(gLegend,'IconDisplayStyle','off');
-%         title(['row ' num2str(i)])
-%         xlabel('time')
-%         ylabel('pixel value')
-%         ylim([ymin,ymax]); %specify y limits
-%         xlim([1,numpics]); % need to change
-%       end
-%     end
-% end
+warning('off')
+t = 0:numpics-1; % pictures start at t = 0, first pictue is lower than second. Strange
+ypoints = cell(1,numpics); % preallocates y points. Might need to change
+colors = {[1,0,0],[0.9,0,0],[0.8,0,0],[0.7,0,0],[0.6,0,0],[0,1,0],[0,0.9,0],[0,0.8,0],[0,0.7,0],[0,0.6,0],[0,0,1],[0,0,0.9],[0,0,0.8],[0,0,0.7],[0,0,0.6],[1,0,1],[0.9,0,0.9],[0.8,0,0.8],[0.7,0,0.7],[0.6,0,0.6],[0,1,1],[0,0.9,0.9],[0,0.8,0.8],[0,0.7,0.7],[0,0.6,0.6],[1,1,0],[0.9,0.9,0],[0.8,0.8,0],[0.7,0.7,0],[0.6,0.6,0],[.85,0.325,0],[0.9,0.6,0.1],[0.4,0.2,0.6],[0.6,0.4,0.8],[0.3,0.74,0.9]};
+lowerrow = 1; % set these parameters equal to the rows and columns of target area
+upperrow = numrows; % default: numrows
+leftcol = 1; %default: 1
+rightcol = numcols; %default: unmcols
+for i = lowerrow:upperrow
+   figure(numpics + 1); 
+    for j = leftcol:rightcol
+    ypoints = {};
+        for k = 1:numpics % need to change
+        ypoints{k} = averages{i,j,k};      
+        end
+      if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
+        ypoints = cell2mat(ypoints); legend('show')
+        coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
+        newypoints = polyval(coefficients,t); % creates new y points that are smoooth
+        if sqrt(numrows) - floor(sqrt(numrows))  <0.5
+            k = 1;
+        else 
+            k = 0;
+        end
+        color = colors{j};
+        subplot(ceil(sqrt(upperrow-lowerrow)),ceil(sqrt(upperrow-lowerrow)),i-lowerrow+1) % creates subplot
+        r = rand;, g = rand;, b = rand; %sets random rgb values to make lots of colots
+        plot(t,newypoints,'-','Color',color,'DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
+        g =  plot(t,ypoints,'o','Color',color); %Adds true data points to graph
+        gAnno = get(g, 'Annotation'); %following three lines make the true data points not appear in legend
+        gLegend = get(gAnno, 'LegendInformation');
+        set(gLegend,'IconDisplayStyle','off');
+        title(['row ' num2str(i)])
+        xlabel('time')
+        ylabel('pixel value')
+        ylim([ymin,ymax]); %specify y limits
+        xlim([0,numpics-1]);
+      end
+    end
+end
 %% Find the average slope of each square (ohgod)
 for i = 1:numrows
     for j = 1:numcols
@@ -224,10 +230,10 @@ end
 %% finding change from start to finish. Isn't helpful with large squares
 for i = 1:numrows
     for j = 1:numcols
-        totchange{i,j} = (averages{i,j,numpics} - averages{i,j,2}); %creats a cell array of the change in T for each square
-        if totchange{i,j} > 0
-            totchange{i,j} = NaN;
-        end
+        totchange{i,j} = (averages{i,j,numpics} - averages{i,j,1}); %creats a cell array of the change in T for each square
+        %if totchange{i,j} > 0
+         %   totchange{i,j} = NaN;
+        %end
     end
 end
 
@@ -241,15 +247,16 @@ zlabel('Change in pixel value')
 title('Relative Change in Temperature Of Sections Of The Breasts')
 axis ij % makes axis match the figures
  %% find the averages of each breast
+ figure(numpics)
 prompt = ('Enter middle column');
 dlgtitle = ('Middle column');
 numlines = 1;
-figure(numpics)
+
 midcol = inputdlg(prompt,dlgtitle,numlines);
 
 for i = 1:numrows % Takes data from right breast
     for j = 1:str2double(midcol{1})
-        for k = 2:numpics % will have start at 1 
+        for k = 1:numpics % will have start at 1 
             Rbreastmean{i,j,k} = averages{i,j,k};
             if Rbreastmean{i,j,k} == 0
                 Rbreastmean{i,j,k} = NaN;
@@ -257,9 +264,9 @@ for i = 1:numrows % Takes data from right breast
         end
     end 
 end
-totRbreastmean = cell(1,numpics -1); % allocate arrays
-Rstdv = cell(1,numpics-1);
-for k =2:numpics % will have to get rid of -1. Finds averages of Rbreast and stdv 
+totRbreastmean = cell(1,numpics ); % allocate arrays
+Rstdv = cell(1,numpics);
+for k =1:numpics % will have to get rid of -1. Finds averages of Rbreast and stdv 
     rightmean = cell2mat(Rbreastmean(:,:,k));
     rightmean = nanmean(rightmean);
     totRbreastmean{k} = nanmean(rightmean);
@@ -269,7 +276,7 @@ for k =2:numpics % will have to get rid of -1. Finds averages of Rbreast and std
 end
 for i = 1:numrows %gets the data for the left breast
     for j = str2double(midcol{1}):numcols
-        for k = 2:numpics % will have start at 1 
+        for k = 1:numpics % will have start at 1 
             Lbreastmean{i,j,k} = averages{i,j,k};
             if Lbreastmean{i,j,k} == 0
                 Lbreastmean{i,j,k} = NaN;
@@ -279,15 +286,15 @@ for i = 1:numrows %gets the data for the left breast
 end
 for i = 1:numrows %Makes all zero cells = NaN
     for j = 1:str2double(midcol{1})-1
-        for k = 2:numpics % will have start at 1 
+        for k = 1:numpics % will have start at 1 
             Lbreastmean{i,j,k} = NaN;
             
         end
     end 
 end
-totLbreastmean = cell(1,numpics -1);
-Lstdv = cell(1,numpics-1);
-for k =2:numpics % will have to get rid of -1. calculates mean and stdv
+totLbreastmean = cell(1,numpics );
+Lstdv = cell(1,numpics);
+for k =1:numpics % will have to get rid of -1. calculates mean and stdv
     leftmean = cell2mat(Lbreastmean(:,:,k));
     leftmean = nanmean(leftmean);
     totLbreastmean{k} = nanmean(leftmean);
@@ -297,7 +304,7 @@ for k =2:numpics % will have to get rid of -1. calculates mean and stdv
 end
 
 figure(numpics + 3) % get everything into a matrix
-t = 2:numpics;
+t = 0:numpics-1;
 totRbreastmean = cell2mat(totRbreastmean);
 totLbreastmean = cell2mat(totLbreastmean);
 Lstdv = cell2mat(Lstdv);
@@ -318,17 +325,15 @@ b = Lplot.Color;
 Lplot.Color = 'b';
 
 %% find average slope for each breast
-for k = 1:numpics-2 % will have to make 1
+for k = 1:numpics-1 % will have to make 1
     Lbreastchange{k} =  totLbreastmean(k+1) - totLbreastmean(k);
 end
 aveLbreastchange = mean(cell2mat(Lbreastchange));
-for k = 1:numpics-2 % will have to make 1
+for k = 1:numpics-1 % will have to make 1
     Rbreastchange{k} =  totRbreastmean(k+1) - totRbreastmean(k);
 end
 aveRbreastchange = mean(cell2mat(Rbreastchange));
 %% Find total change for each breast
-totLbreastchange = totLbreastmean(numpics-1) - totLbreastmean(1);
-totLbreastchange = totRbreastmean(numpics-1) - totRbreastmean(1);
-%%
-
+totLbreastchange = totLbreastmean(numpics) - totLbreastmean(1);
+totRbreastchange = totRbreastmean(numpics) - totRbreastmean(1);
 
