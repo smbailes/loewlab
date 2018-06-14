@@ -185,7 +185,7 @@ n = 1;
 %}
 %% Check: Clusters on Bottom Border
 % for c = 1:14
-    c = 1;
+   c = 1;
    thisImage = ClusterInfo{c,1};
    pic = ClusterInfo{c,2}; %pic = I
    
@@ -194,7 +194,7 @@ n = 1;
    for i = 1:numClust %Iterate through Clusters
        clustPoints = thisImage(i).ClusterIndices; %Get cluster indices
        for a = 1:length(clustPoints(:,1)) %Search through cluster indices
-           if (pic((clustPoints(a,2)+1), clustPoints(a,1)) == 0) %If pixel below any cluster has intensity 0, mark cluster for removal
+           if (pic((clustPoints(a,2)+2), clustPoints(a,1)) == 0) %If pixel below any cluster has intensity 0, mark cluster for removal
                thisImage(i).RemoveCluster = 1;
                break
            end
@@ -203,7 +203,24 @@ n = 1;
    
    ClusterInfo{c,1} = thisImage; %Save Info to ClusterInfo
 % end  
-%% Extract Cluster Data
+
+%% Remove small and large clusters
+   c = 1;
+   thisImage = ClusterInfo{c,1};
+   pic = ClusterInfo{c,2}; %pic = I
+   
+   numClust = length(thisImage);
+   
+   for p = 1:numClust
+      clustPoints = thisImage(p).ClusterIndices;
+      for b = 1:length(clustPoints(:,1))
+          if length(clustPoints(:,1)) < 5 || length(clustPoints(:,1)) > 100
+              thisImage(p).RemoveCluster = 1;
+          end
+      end
+   end
+
+%% Remove Cluster Data
 % for c = 1:14
     thisImage = ClusterInfo{c,1}; %Get Current Image Info
     
@@ -219,23 +236,25 @@ n = 1;
             thisImage(i).ClusterMeanIntensity = 0;
         end     
     end    
-    
-    for a = 1:numClusters
-        CI(a) = thisImage(a).ClusterMeanIntensity;
-    end
-    
-    CI_nonzero = CI(find(CI>0));
-    CI_sorted = sort(CI_nonzero);
-    percent1 = percent/100;
-    percent_ind1 = round(percent1*numel(CI_sorted));
-    percent_val = CI_sorted(end-percent_ind1);
-    
-    for k = 1:numClusters
-        if thisImage(k).ClusterMeanIntensity < percent_val
-            thisImage(k).RemoveCluster = 1;
-        end
-    end
-   
+%% Keep top 5%
+%     
+%     for a = 1:numClusters
+%         CI(a) = thisImage(a).ClusterMeanIntensity;
+%     end
+%     
+%     CI_nonzero = CI(find(CI>0));
+%     CI_sorted = sort(CI_nonzero);
+%     percent1 = percent/100;
+%     percent_ind1 = round(percent1*numel(CI_sorted));
+%     percent_val = CI_sorted(end-percent_ind1);
+%     
+%     for k = 1:numClusters
+%         if thisImage(k).ClusterMeanIntensity < percent_val
+%             thisImage(k).RemoveCluster = 1;
+%         end
+%     end
+%    
+%% Plot left over clusters
     
     for m = 1:numClusters %Sort through clusters for image
         if thisImage(m).RemoveCluster == 1 %Remove Indices from Marked Clusters from Cluster Data copy
