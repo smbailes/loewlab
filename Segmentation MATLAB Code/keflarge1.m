@@ -184,14 +184,8 @@ set(displ, 'AlphaData', gett)
 cyan = cat(3, zeros(size(I)), ones(size(I)), ones(size(I)));
 
 % split image in half
-figure;
-imshow(I,[]);
-hold on;
 mid_col = zeros(img_y,img_x);
 mid_col(:,img_x/2) = 1;
-h6a = imshow(cyan);
-set(h6a, 'AlphaData', mid_col);
-hold off;
 
 %find coordinates of midline
 [midx midy] = find(mid_col==1); 
@@ -204,8 +198,58 @@ ptofcompy = midlinez(ptofcompx,2);
 ptofcomp(:,1) = ptofcompx;
 ptofcomp(:,2) = ptofcompy;
 
+intwind = [];
 
+%find x and y distances of each pixel from ptofcomp and save into first 2 columns
+%use distances to find angle and save into 3rd column of matrix
+%find x1, y1, x2, and y2 for each pixel and save into columns 4-7
+[gettx getty] = find(gett==1);
+linepix1 = []; %creates matrix for coordinates on line 1
+linepix2 = []; %creates matrix for coordinates on line 2
+% len = 2; %length dimension for line - set at 2 FOR NOW (may need to change later) 
+for i = 1:length(gettx)
+    intwind(i,1) = abs(ptofcompx - gettx(i,1));
+    intwind(i,2) = abs(ptofcompy - getty(i,1));
+    intwind(i,3) = atan(intwind(i,2)/intwind(i,1));
+    for j = 1:10 %line dimension set as 3 pixels
+        xdiff(i,j) = j*cos(intwind(i,3));
+        ydiff(i,j) = j*sin(intwind(i,3));
+    end
+    for k = 1:10
+        linepix1(i,k,1) = intwind(i,1) - xdiff(i,k);
+        linepix1(i,k,2) = intwind(i,1) - xdiff(i,k);
+        linepix2(i,k,1) = intwind(i,1) + xdiff(i,k);
+        linepix2(i,k,2) = intwind(i,1) + xdiff(i,k);
+    end
+end 
 
+%find pixel intensities to corresponding coordinates 
+%should be 2 182x3 matrix (P10) 
+for i = 1:length(gettx)
+    for j = 1:10
+        xbel(j) = linepix1(i,j,1);
+        ybel(j) = linepix1(i,j,2);
+        intensities1(i,j) = I(round(xbel(j)),round(ybel(j))); 
+        xab(j) = linepix2(i,j,1);
+        yab(j) = linepix2(i,j,2);
+        intensities2(i,j) = I(round(xab(j)),round(yab(j))); 
+    end
+    mean1 = mean(intensities1(i,1:j));
+    mean2 = mean(intensities2(i,1:j));
+    if abs(mean1-mean2)<50
+        xrem = gettx(i);
+        yrem = getty(i);
+        gett(xrem,yrem) = 0; %removes pixels 
+    end
+end 
+
+figure, imshow(I,[]), title('Cleaned FINAL')
+% blue on top on figure
+blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+hold on
+displ = imshow(blue);
+hold off
+set(displ, 'AlphaData', gett)
 
 %% Part 3, Connect
 
