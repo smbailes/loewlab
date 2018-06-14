@@ -5,11 +5,11 @@ if (strcmp(answer, 'Patient'))
     ptID = patientselect;    % Dialog Box for patient selection
     prompt = {'Enter User name:','Enter length of square in pixels:','Enter total number of pictures:'};
     dlgtitle = 'Input';
-    defaultans = {'Jacob','20','14'};
+    defaultans = {'Jacob','17','15'};
     numlines = 1;
     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     name = answers{1};
-    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Patient Images\' ptID '\Cropped\']);
+    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\NEW Patients\' ptID '\NEW Cropped\']);
     
 end
 if (strcmp(answer, 'Volunteer'))
@@ -27,7 +27,7 @@ end
     %% Image Input
     numpics = str2double(answers{3}); % allocates number of pictures
     % Read images to cell matrix I_mat
-    a=120; % set equal to the number of the first picture
+    a=0000; % set equal to the number of the first picture
     I_mat = cell(1,numpics);
     for i=1:numpics % set equal to total number of pictures being ran          
         I_mat{i} = imread([location sprintf('%04d.tif',a)]);    % Read each image into I_mat
@@ -35,7 +35,7 @@ end
     end
     
     I1 = I_mat{1};              % Display first image
-    I = getMatrixOutliers(I1);  % Remove outliers
+    I1 = getMatrixOutliers(I1);  % Remove outliers
     I_adj1 = I1(find(I1>0));    % Remove zero pixels
     
      
@@ -145,40 +145,40 @@ ymax = max(cell2mat(ylim_array));
 ymax = max(ymax);
 ymax = max(ymax);
 %% graph averages. flat out destroys computers with very small squares
-warning('off')
-t = 2:numpics; % pictures start at t = 0, first pictue is lower than second. Strange
-ypoints = cell(1,numpics); % preallocates y points. Might need to change
-for i = 1:numrows
-   figure(numpics + 1); 
-    for j = 1:numcols
-    ypoints = {};
-        for k = 2:numpics % need to change
-        ypoints{k} = averages{i,j,k};      
-        end
-      if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
-        ypoints = cell2mat(ypoints); legend('show')
-        coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
-        newypoints = polyval(coefficients,t); % creates new y points that are smoooth
-        if sqrt(numrows) - floor(sqrt(numrows))  <0.5
-            k = 1;
-        else 
-            k = 0;
-        end
-        subplot(ceil(sqrt(numrows)),ceil(sqrt(numrows)),i) % creates subplot
-        r = rand;, g = rand;, b = rand; %sets random rgb values to make lots of colots
-        plot(t,newypoints,'-','Color',[r g b],'DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
-        g =  plot(t,ypoints,'o','Color',[r g b]); %Adds true data points to graph
-        gAnno = get(g, 'Annotation'); %following three lines make the true data points not appear in legend
-        gLegend = get(gAnno, 'LegendInformation');
-        set(gLegend,'IconDisplayStyle','off');
-        title(['row ' num2str(i)])
-        xlabel('time')
-        ylabel('pixel value')
-        ylim([ymin,ymax]); %specify y limits
-        xlim([2,numpics]); % need to change
-      end
-    end
-end
+% warning('off')
+% t = 1:numpics; % pictures start at t = 0, first pictue is lower than second. Strange
+% ypoints = cell(1,numpics); % preallocates y points. Might need to change
+% for i = 1:numrows
+%    figure(numpics + 1); 
+%     for j = 1:numcols
+%     ypoints = {};
+%         for k = 1:numpics % need to change
+%         ypoints{k} = averages{i,j,k};      
+%         end
+%       if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
+%         ypoints = cell2mat(ypoints); legend('show')
+%         coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
+%         newypoints = polyval(coefficients,t); % creates new y points that are smoooth
+%         if sqrt(numrows) - floor(sqrt(numrows))  <0.5
+%             k = 1;
+%         else 
+%             k = 0;
+%         end
+%         subplot(ceil(sqrt(numrows)),ceil(sqrt(numrows)),i) % creates subplot
+%         r = rand;, g = rand;, b = rand; %sets random rgb values to make lots of colots
+%         plot(t,newypoints,'-','Color',[r g b],'DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
+%         g =  plot(t,ypoints,'o','Color',[r g b]); %Adds true data points to graph
+%         gAnno = get(g, 'Annotation'); %following three lines make the true data points not appear in legend
+%         gLegend = get(gAnno, 'LegendInformation');
+%         set(gLegend,'IconDisplayStyle','off');
+%         title(['row ' num2str(i)])
+%         xlabel('time')
+%         ylabel('pixel value')
+%         ylim([ymin,ymax]); %specify y limits
+%         xlim([1,numpics]); % need to change
+%       end
+%     end
+% end
 %% Find the average slope of each square (ohgod)
 for i = 1:numrows
     for j = 1:numcols
@@ -197,7 +197,7 @@ end
 totsquarechange = cell(numrows,numcols);
 for i = 1:numrows
     for j = 1:numcols
-        totsquarechange{i,j} = averages{i,j,numpics} - averages{i,j,2};
+        totsquarechange{i,j} = averages{i,j,numpics} - averages{i,j,1}; % changed
     end
 end
    
@@ -329,4 +329,6 @@ aveRbreastchange = mean(cell2mat(Rbreastchange));
 %% Find total change for each breast
 totLbreastchange = totLbreastmean(numpics-1) - totLbreastmean(1);
 totLbreastchange = totRbreastmean(numpics-1) - totRbreastmean(1);
+%%
+
 
