@@ -101,7 +101,7 @@ fprintf('Epsilon: %d \nminPts: %d \n', epsilon, minPts);
     xy = hFH.getPosition;
     close
     
-    figure('Name','Histogram'), subplot(4,4,1);
+    figure('Name','Histograms'), subplot(4,4,1);
     for n = 1:14
         I2 = I_mat{n}(find(I_mat{n}>0));
         newCrop = imcrop(I_mat{n}, xy);
@@ -204,8 +204,9 @@ n = 1;
    for i = 1:numClust %Iterate through Clusters
        clustPoints = thisImage(i).ClusterIndices; %Get cluster indices
        for a = 1:length(clustPoints(:,1)) %Search through cluster indices
-           if (pic((clustPoints(a,2)+5), clustPoints(a,1)) == 0) %If pixel below any cluster has intensity 0, mark cluster for removal
+           if (pic((clustPoints(a,2)+3), clustPoints(a,1)) == 0) %If pixel below any cluster has intensity 0, mark cluster for removal
                thisImage(i).RemoveCluster = 1;
+               fprintf('Cluster marked for removal');
                break
            end
        end       
@@ -226,7 +227,7 @@ n = 1;
       for b = 1:length(clustPoints(:,1))
           if length(clustPoints(:,1)) < 10 || length(clustPoints(:,1)) > 85
               thisImage(p).RemoveCluster = 1;
-              numClust = numClust - 1;
+              fprintf('Cluster marked for removal');
           end
       end
    end
