@@ -9,7 +9,7 @@ l = min(I_nonzero);
 
 
 figure
-for k = 120:120:1680
+for k = 0:120:1680
     path = [newLocation '\' sprintf('%04d.tif',k)];
     image = imread(path);
     i = (k/120)+1;

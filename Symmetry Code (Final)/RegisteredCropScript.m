@@ -24,6 +24,7 @@ imshow(image,[l h]);
 message = sprintf('Left click and hold to begin outlining the breast region.\nSimply lift the mouse button to finish');
 uiwait(msgbox(message));
 hFH = imfreehand();
+% hFH = imrect();
 % Create a binary image ("mask") from the ROI object.
 binaryImage = hFH.createMask();
 xy = hFH.getPosition;
@@ -47,16 +48,16 @@ bottomLine = max(y);
 width = rightColumn - leftColumn + 1;
 height = bottomLine - topLine + 1;    
 
-newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
+% newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
 close;
 
-newLocation = strcat(location, '\', 'Cropped');
+newLocation = strcat(location, '\', 'NEW Cropped');
 mkdir(newLocation);
-cd(newLocation);
+% cd(newLocation);
+% 
+% imwrite(newCrop,'0000.tif');
 
-imwrite(newCrop,'0000.tif');
-
-for i = 120:120:1680
+for i = 0:120:1680
     cd(location)
     newImage = imread(sprintf('%04d.tif',i));
    
