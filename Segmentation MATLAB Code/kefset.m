@@ -22,23 +22,29 @@ I=getMatrixOutliers(I);
 figure, imshow(I,[]) %to help decide if it should be cropped or not
 title('Outliers Removed')
 
-mini = min(min(I));
-maxi = max(max(I));
+in = input('Is the breast small or large? Enter s/l: ','s');
 
-%set background to black
-[N, edges] = histcounts(I,2);
+%if in == 'l'
+    mini = min(min(I));
+    maxi = max(max(I));
 
-pts = I(I<edges(2));
-pts = im2double(pts);
-pts2 = isoutlier(pts); 
-outlierz = I(pts2);
-[N2, edges2] = histcounts(outlierz, 2); 
-threshold = edges2(2);
-if threshold>1000
-    I(I<threshold) = 0; 
-else 
-    I(I<edges(2)) = 0; 
-end
+    %set background to black
+    [N, edges] = histcounts(I,2);
+
+    pts = I(I<edges(2));
+    pts = im2double(pts);
+    pts2 = isoutlier(pts); 
+    outlierz = I(pts2);
+%   [N2, edges2] = histcounts(outlierz, 2); 
+%   threshold = edges2(2);
+    pts(pts2==1)= [];
+    threshold = max(pts);
+    if threshold>1000
+        I(I<threshold*.95) = 0; 
+    else 
+        I(I<edges(2)*.95) = 0; 
+    end
+%end
 
 close Figure 1
 %perc = input('What is your desired percentage? '); 
@@ -56,7 +62,6 @@ figure;
 imshow(I,[]); %produce an image to overlay the ellipses onto
 title('Image with Ellipses')
 
-in = input('Is the breast small or large? Enter s/l: ','s');
 % if in == 's'
 %         %RIGHT SIDE
 %     % override some default parameters
@@ -99,7 +104,7 @@ in = input('Is the breast small or large? Enter s/l: ','s');
 %     for n=1:length(bestFitsl)
 %         ql{n} = ellipse(bestFitsl(n,3),bestFitsl(n,4),bestFitsl(n,5)*pi/180,bestFitsl(n,1),bestFitsl(n,2),'k');
 %     end
-%     
+% end   
 if in == 'l'
     %RIGHT SIDE
     % override some default parameters
@@ -274,6 +279,8 @@ fprintf('Select Right Bound \n');
 [Xright,Yright] = ginput(1);
 %plot(:,Xright,'g')
 %hold off;
+%% 
+
 if in == 's'
      kefsmall1
 elseif in == 'l'

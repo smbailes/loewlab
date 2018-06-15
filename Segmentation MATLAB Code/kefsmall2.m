@@ -6,7 +6,7 @@ for aa = 1:img_y
         if edgecanny(aa,bb)==1
             smallpoints(aa,bb)=smallpoints(aa,bb)+2;
         end
-        if lowers(aa,bb)==1
+        if circ_matrix(aa,bb)==1
             smallpoints(aa,bb)=smallpoints(aa,bb)+3;
         end
         if newI(aa,bb)~=0
@@ -17,7 +17,6 @@ for aa = 1:img_y
 %         end
     end
 end
-
 
 figure,imshow(smallpoints,[])
 title('Combined Point Systems(S)')
@@ -31,14 +30,12 @@ for cc=1:img_y
     end
 end
 
-
 [distover,dindover]=bwdist(smalloverlayedpoints);
 righto=find(distover<2&distover>0);
 if righto==0
     righto=1;
 end
 smalloverlayedpoints(righto)=1;
-
 
 figure, imshow(I,[]), title('Small Pre-Clean')
 % blue on top on figure
@@ -56,17 +53,14 @@ sl=bwmorph(sb,'clean');
 
 [dist,dind]=bwdist(sl);
 
-
 for a=1:length(dist) 
 if dist(a)==1
      sl(dind(a))=1;
 end
 end
 
-
 strell = strel('disk',2); %Create a Morphological structuring element, you change the shape used and diameter
 sl= imclose(sl,strell); 
-
 
 C2 = bwconncomp(sl); %Find connected components
 
@@ -100,147 +94,146 @@ set(displ, 'AlphaData', beforeconnect)
 [rowsbc,colsbc]=size(beforeconnect);
 
 
-
-    %RIGHT SIDE
-% override some default parameters
-paramsr2.minMajorAxis = 150;
-paramsr2.maxMajorAxis = 300;
-paramsr2.numBest = 12; %draws 12 ellipses
-paramsr2.rotation = 45; %If rotationSpan is in (0,90), only angles within [rotation-rotationSpan,rotation+rotationSpan] are accepted.
-paramsr2.rotationSpan = 35;
-%paramsr2.randomize = 0; %randomization component that may reduce changing of
-%ellipses
-
-% note that the edge (or gradient) image is used
-bestFits2r = ellipseDetection(beforeconnect(:,1:round(colsbc/2)), paramsr2);
-fprintf('Output %d best fits.\n', size(bestFits2r,1));
-
-
-% ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
-
-% takes the information that was found of the ellipses and draws them;also
-% keeping the information for each ellipse in a cell in qr(and later ql for those):
-secondqr{1,length(bestFits2r)}=0;
-for n=1:length(bestFits2r)
-    secondqr{n} = ellipse(bestFits2r(n,3),bestFits2r(n,4),bestFits2r(n,5)*pi/180,bestFits2r(n,1),bestFits2r(n,2),'k');
-end
-
-
-
-%overriding parameters:
-paramslr.minMajorAxis = 150;
-paramslr.maxMajorAxis = 300;
-paramslr.numBest = 12; %draws 12 ellipses
-paramslr.rotation = 135; %If rotationSpan is in (0,90), only angles within [rotation-rotationSpan,rotation+rotationSpan] are accepted.
-paramslr.rotationSpan = 43;
-%paramslr.randomize = 0; %randomization component that may reduce changing of
-%ellipses
-
-
-%LEFT SIDE
-bestFitslr = ellipseDetection(beforeconnect, paramslr);
-fprintf('Output %d best fits.\n', size(bestFitslr,1));
-
-%ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
-secondql{1,length(bestFitslr)}=0;
-for n=1:length(bestFitslr)
-    secondql{n} = ellipse(bestFitslr(n,3),bestFitslr(n,4),bestFitslr(n,5)*pi/180,bestFitslr(n,1),bestFitslr(n,2),'k');
-end
-
-
-[img_y, img_x] = size(I);
-laterellipses=zeros(img_y,img_x);
-
-% draw in LEFT breast pixel by pixel
-for a = 1:length(secondql)                %a,b,n,m are just used as counters in the for loops - delete at end of section
-    e1 = secondql{a};
-    for b = 1:length(e1.XData)              %get x and y data from cell array of ellipses and round so we can use them as indices
-        xe1(a,b) = e1.XData(b);
-        xe1(a,b) = round(xe1(a,b));
-        ye1(a,b) = e1.YData(b);
-        ye1(a,b) = round(ye1(a,b));
-        if xe1(a,b)<0.5
-            xe1(a,b)=1;
-        end
-        if ye1(a,b)<0.5
-            ye1(a,b)=1;
-        end
-    end
-    for d = 1:length(xe1)
-        laterellipses(ye1(a,d),xe1(a,d)) = 1;      %fill in 1's wherever there is a point in the ellipse
-    end
-    
-end
-
-% draw in RIGHT breast pixel by pixel
-for a = 1:length(secondqr)                %a,b,n,m are just used as counters in the for loops - delete at end of section
-    e2 = secondqr{a};
-    for b = 1:length(e2.XData)
-        xe2(a,b) = e2.XData(b);
-        xe2(a,b) = round(xe2(a,b));
-        ye2(a,b) = e2.YData(b);
-        ye2(a,b) = round(ye2(a,b));   
-        if xe2(a,b)<0.5
-            xe2(a,b)=1;
-        end
-        if ye2(a,b)<0.5
-            ye2(a,b)=1;
-        end
-    end
-    for d = 1:length(xe2)
-        laterellipses(ye2(a,d),xe2(a,d)) = 1;      %fill in 1's wherever there is a point in the ellipse
-    end
-end
-
-[checky,checkx]=size(laterellipses);
-if checkx > img_x
-    laterellipses=laterellipses(1:img_y,1:img_x);
-end
-if checky > img_y
-    laterellipses=laterellipses(1:img_y,1:img_x);
-end
-    
-[e,f]=size(laterellipses);
-
-[elliprows,ellipcols]=find(laterellipses>0);
-maxx=max(elliprows);
-minn=min(elliprows);
-diff=maxx-minn;
-topthird=round((diff*2)/5);
-
-laterellipses(1:topthird,:)=0;
-
 % 
-% for fir=1:f
-%     y=find(laterellipses(:,fir)==1);
-%     if ~isempty(y)
-%     bott(y(end),fir)=1;
+%     %RIGHT SIDE
+% % override some default parameters
+% paramsr2.minMajorAxis = 150;
+% paramsr2.maxMajorAxis = 300;
+% paramsr2.numBest = 12; %draws 12 ellipses
+% paramsr2.rotation = 45; %If rotationSpan is in (0,90), only angles within [rotation-rotationSpan,rotation+rotationSpan] are accepted.
+% paramsr2.rotationSpan = 35;
+% %paramsr2.randomize = 0; %randomization component that may reduce changing of
+% %ellipses
+% 
+% % note that the edge (or gradient) image is used
+% bestFits2r = ellipseDetection(beforeconnect(:,1:round(colsbc/2)), paramsr2);
+% fprintf('Output %d best fits.\n', size(bestFits2r,1));
+% 
+% 
+% % ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
+% 
+% % takes the information that was found of the ellipses and draws them;also
+% % keeping the information for each ellipse in a cell in qr(and later ql for those):
+% secondqr{1,length(bestFits2r)}=0;
+% for n=1:length(bestFits2r)
+%     secondqr{n} = ellipse(bestFits2r(n,3),bestFits2r(n,4),bestFits2r(n,5)*pi/180,bestFits2r(n,1),bestFits2r(n,2),'k');
+% end
+% 
+% 
+% 
+% %overriding parameters:
+% paramslr.minMajorAxis = 150;
+% paramslr.maxMajorAxis = 300;
+% paramslr.numBest = 12; %draws 12 ellipses
+% paramslr.rotation = 135; %If rotationSpan is in (0,90), only angles within [rotation-rotationSpan,rotation+rotationSpan] are accepted.
+% paramslr.rotationSpan = 43;
+% %paramslr.randomize = 0; %randomization component that may reduce changing of
+% %ellipses
+% 
+% 
+% %LEFT SIDE
+% bestFitslr = ellipseDetection(beforeconnect, paramslr);
+% fprintf('Output %d best fits.\n', size(bestFitslr,1));
+% 
+% %ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
+% secondql{1,length(bestFitslr)}=0;
+% for n=1:length(bestFitslr)
+%     secondql{n} = ellipse(bestFitslr(n,3),bestFitslr(n,4),bestFitslr(n,5)*pi/180,bestFitslr(n,1),bestFitslr(n,2),'k');
+% end
+% 
+% 
+% [img_y, img_x] = size(I);
+% laterellipses=zeros(img_y,img_x);
+% 
+% % draw in LEFT breast pixel by pixel
+% for a = 1:length(secondql)                %a,b,n,m are just used as counters in the for loops - delete at end of section
+%     e1 = secondql{a};
+%     for b = 1:length(e1.XData)              %get x and y data from cell array of ellipses and round so we can use them as indices
+%         xe1(a,b) = e1.XData(b);
+%         xe1(a,b) = round(xe1(a,b));
+%         ye1(a,b) = e1.YData(b);
+%         ye1(a,b) = round(ye1(a,b));
+%         if xe1(a,b)<0.5
+%             xe1(a,b)=1;
+%         end
+%         if ye1(a,b)<0.5
+%             ye1(a,b)=1;
+%         end
+%     end
+%     for d = 1:length(xe1)
+%         laterellipses(ye1(a,d),xe1(a,d)) = 1;      %fill in 1's wherever there is a point in the ellipse
+%     end
+%     
+% end
+% 
+% % draw in RIGHT breast pixel by pixel
+% for a = 1:length(secondqr)                %a,b,n,m are just used as counters in the for loops - delete at end of section
+%     e2 = secondqr{a};
+%     for b = 1:length(e2.XData)
+%         xe2(a,b) = e2.XData(b);
+%         xe2(a,b) = round(xe2(a,b));
+%         ye2(a,b) = e2.YData(b);
+%         ye2(a,b) = round(ye2(a,b));   
+%         if xe2(a,b)<0.5
+%             xe2(a,b)=1;
+%         end
+%         if ye2(a,b)<0.5
+%             ye2(a,b)=1;
+%         end
+%     end
+%     for d = 1:length(xe2)
+%         laterellipses(ye2(a,d),xe2(a,d)) = 1;      %fill in 1's wherever there is a point in the ellipse
 %     end
 % end
-
-figure, imshow(I,[]), title('Lower Half Second Ellipses')
-% blue on top on figure
-blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
-hold on
-displ = imshow(blue);
-hold off
-set(displ, 'AlphaData', laterellipses)
+% 
+% [checky,checkx]=size(laterellipses);
+% if checkx > img_x
+%     laterellipses=laterellipses(1:img_y,1:img_x);
+% end
+% if checky > img_y
+%     laterellipses=laterellipses(1:img_y,1:img_x);
+% end
+%     
+% [e,f]=size(laterellipses);
+% 
+% [elliprows,ellipcols]=find(laterellipses>0);
+% maxx=max(elliprows);
+% minn=min(elliprows);
+% diff=maxx-minn;
+% topthird=round((diff*2)/5);
+% 
+% laterellipses(1:topthird,:)=0;
+% 
+% % 
+% % for fir=1:f
+% %     y=find(laterellipses(:,fir)==1);
+% %     if ~isempty(y)
+% %     bott(y(end),fir)=1;
+% %     end
+% % end
+% 
+% figure, imshow(I,[]), title('Lower Half Second Ellipses')
+% % blue on top on figure
+% blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+% hold on
+% displ = imshow(blue);
+% hold off
+% set(displ, 'AlphaData', laterellipses)
     
 %% Part 3, Small Second set of points
 secondpoints=zeros(img_y,img_x);
 
 for aa = 1:img_y
     for bb = 1:img_x
-
-        if lowers(aa,bb)==1
+        if circ_matrix(aa,bb)==1
             secondpoints(aa,bb)=secondpoints(aa,bb)+3;
         end
         if newI(aa,bb)~=0
             secondpoints(aa,bb)=secondpoints(aa,bb)+1;
         end 
-        if laterellipses(aa,bb)==1
-            secondpoints(aa,bb)=secondpoints(aa,bb)+2;
-        end
+%         if laterellipses(aa,bb)==1
+%             secondpoints(aa,bb)=secondpoints(aa,bb)+2;
+%         end
     end
 end
 

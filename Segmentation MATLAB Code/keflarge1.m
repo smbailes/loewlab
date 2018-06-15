@@ -179,9 +179,7 @@ displ = imshow(blue);
 hold off
 set(displ, 'AlphaData', gett)
 
-%% Cleaning using average intensity comparison
-
-cyan = cat(3, zeros(size(I)), ones(size(I)), ones(size(I)));
+%% Part 2.5: Cleaning using average intensity comparison
 
 % split image in half
 mid_col = zeros(img_y,img_x);
