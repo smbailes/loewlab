@@ -149,13 +149,9 @@ warning('off')
 t = 0:numpics-1; % pictures start at t = 0, first pictue is lower than second. Strange
 ypoints = cell(1,numpics); % preallocates y points. Might need to change
 colors = {[1,0,0],[0.9,0,0],[0.8,0,0],[0.7,0,0],[0.6,0,0],[0,1,0],[0,0.9,0],[0,0.8,0],[0,0.7,0],[0,0.6,0],[0,0,1],[0,0,0.9],[0,0,0.8],[0,0,0.7],[0,0,0.6],[1,0,1],[0.9,0,0.9],[0.8,0,0.8],[0.7,0,0.7],[0.6,0,0.6],[0,1,1],[0,0.9,0.9],[0,0.8,0.8],[0,0.7,0.7],[0,0.6,0.6],[1,1,0],[0.9,0.9,0],[0.8,0.8,0],[0.7,0.7,0],[0.6,0.6,0],[.85,0.325,0],[0.9,0.6,0.1],[0.4,0.2,0.6],[0.6,0.4,0.8],[0.3,0.74,0.9]};
-lowerrow = 1; % set these parameters equal to the rows and columns of target area
-upperrow = numrows; % default: numrows
-leftcol = 1; %default: 1
-rightcol = numcols; %default: unmcols
-for i = lowerrow:upperrow
+for i = 1:numrows
    figure(numpics + 1); 
-    for j = leftcol:rightcol
+    for j = 1:numcols
     ypoints = {};
         for k = 1:numpics % need to change
         ypoints{k} = averages{i,j,k};      
@@ -170,7 +166,7 @@ for i = lowerrow:upperrow
             k = 0;
         end
         color = colors{j};
-        subplot(ceil(sqrt(upperrow-lowerrow)),ceil(sqrt(upperrow-lowerrow)),i-lowerrow+1) % creates subplot
+        subplot(ceil(sqrt(numrows)-k),ceil(sqrt(numrows)),i) % creates subplot
         r = rand;, g = rand;, b = rand; %sets random rgb values to make lots of colots
         plot(t,newypoints,'-','Color',color,'DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
         g =  plot(t,ypoints,'o','Color',color); %Adds true data points to graph
@@ -193,10 +189,10 @@ for i = 1:numrows
         end
     end
 end
-avechange = cell(numrows,numcols);
+avesquarechange = cell(numrows,numcols);
 for i = 1:numrows
     for j =1:numcols
-        avechange{i,j} = nanmean(cell2mat(change(i,j,:)));
+        avesquarechange{i,j} = nanmean(cell2mat(change(i,j,:)));
     end
 end
 %% Find the total change of each square
@@ -336,4 +332,51 @@ aveRbreastchange = mean(cell2mat(Rbreastchange));
 %% Find total change for each breast
 totLbreastchange = totLbreastmean(numpics) - totLbreastmean(1);
 totRbreastchange = totRbreastmean(numpics) - totRbreastmean(1);
+%% Graphs target area
+
+prompt = {'Top row','Bottom row','Left column','Right column'};
+dlgtitle = 'tumor region';
+answers = inputdlg(prompt,dlgtitle,1);
+warning('off')
+t = 0:numpics-1; % pictures start at t = 0, first pictue is lower than second. Strange
+ypoints = cell(1,numpics); % preallocates y points. Might need to change
+colors = {[1,0,0],[0.9,0,0],[0.8,0,0],[0.7,0,0],[0.6,0,0],[0,1,0],[0,0.9,0],[0,0.8,0],[0,0.7,0],[0,0.6,0],[0,0,1],[0,0,0.9],[0,0,0.8],[0,0,0.7],[0,0,0.6],[1,0,1],[0.9,0,0.9],[0.8,0,0.8],[0.7,0,0.7],[0.6,0,0.6],[0,1,1],[0,0.9,0.9],[0,0.8,0.8],[0,0.7,0.7],[0,0.6,0.6],[1,1,0],[0.9,0.9,0],[0.8,0.8,0],[0.7,0.7,0],[0.6,0.6,0],[.85,0.325,0],[0.9,0.6,0.1],[0.4,0.2,0.6],[0.6,0.4,0.8],[0.3,0.74,0.9]};
+toprow = str2double(answers{1}); 
+bottomrow = str2double(answers{2}); 
+leftcol = str2double(answers{3}); 
+rightcol = str2double(answers{4}); 
+for i = toprow:bottomrow
+   figure(numpics + 4); 
+    for j = leftcol:rightcol
+    ypoints = {};
+        for k = 1:numpics % need to change
+        ypoints{k} = averages{i,j,k};      
+        end
+      if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
+        ypoints = cell2mat(ypoints); legend('show')
+        coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
+        newypoints = polyval(coefficients,t); % creates new y points that are smoooth
+        if sqrt(numrows) - floor(sqrt(numrows))  <0.5
+            k = 1;
+        else 
+            k = 0;
+        end
+        color = colors{j};
+        subplot(ceil(sqrt(bottomrow-toprow)),ceil(sqrt(bottomrow-toprow)),i-toprow+1) % creates subplot
+        r = rand;, g = rand;, b = rand; %sets random rgb values to make lots of colots
+        plot(t,newypoints,'-','Color',color,'DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
+        g =  plot(t,ypoints,'o','Color',color); %Adds true data points to graph
+        gAnno = get(g, 'Annotation'); %following three lines make the true data points not appear in legend
+        gLegend = get(gAnno, 'LegendInformation');
+        set(gLegend,'IconDisplayStyle','off');
+        title(['row ' num2str(i)])
+        xlabel('time')
+        ylabel('pixel value')
+        ylim([ymin,ymax]); %specify y limits
+        xlim([0,numpics-1]);
+      end
+    end
+end
+
+
 
