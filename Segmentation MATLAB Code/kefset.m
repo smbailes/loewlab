@@ -32,6 +32,36 @@ edgecanny=bwareaopen(edgecanny,10); %removes very small edge lines
 figure,imshow(edgecanny)
 title('Canny edges');
 
+%% Creating Boundaries for Ellipses
+    
+figure, imshow(edgecanny,[]), title('Bound Detection')
+fprintf('Pick bounds for the right breast.');
+fprintf('Select Upper Bound \n');
+[Xupr,Yupr] = ginput(1);
+fprintf('Select Lower Bound \n');
+[Xlor,Ylor] = ginput(1);
+fprintf('Select Left Bound \n');
+[Xleftr, Yleftr] = ginput(1);
+fprintf('Slect Right Bound \n');
+[Xrightr, Yrightr] = ginput(1);
+xr = [Xleftr, Xrightr, Xrightr, Xleftr, Xleftr];
+yr = [Yupr, Yupr, Ylor, Ylor, Yupr];
+plot(xr,yr, 'white');
+
+figure, imshow(edgecanny,[]), title('Bound Detection')
+fprintf('Pick bounds for the left breast.');
+fprintf('Select Upper Bound \n');
+[Xupl,Yupl] = ginput(1);
+fprintf('Select Lower Bound \n');
+[Xlol,Ylol] = ginput(1);
+fprintf('Select Left Bound \n');
+[Xleftl, Yleftl] = ginput(1);
+fprintf('Slect Right Bound \n');
+[Xrightl, Yrightl] = ginput(1);
+xl = [Xleftl, Xrightl, Xrightl, Xleftl, Xleftl];
+yl = [Yupl, Yupl, Ylol, Ylol, Yupl];
+plot(xl,yl, 'white');
+
 %% Part 2, Ellipse Detection
 
 figure;
@@ -39,49 +69,7 @@ imshow(I,[]); %produce an image to overlay the ellipses onto
 title('Image with Ellipses')
 
 in = input('Is the breast small or large? Enter s/l: ','s');
-% if in == 's'
-%         %RIGHT SIDE
-%     % override some default parameters
-%     paramsr.minMajorAxis = 150;
-%     paramsr.maxMajorAxis = 300;
-%     paramsr.numBest = 12; %draws 12 ellipses
-%     paramsr.rotation = 45; %If rotationSpan is in (0,90), only angles within [rotation-rotationSpan,rotation+rotationSpan] are accepted.
-%     paramsr.rotationSpan = 35;
-%     paramsr.randomize = 7; %randomization component that may reduce changing of
-%     %ellipses
-% 
-%     % note that the edge (or gradient) image is used
-%     bestFitsr = ellipseDetection(edgecanny, paramsr);
-%     fprintf('Output %d best fits.\n', size(bestFitsr,1));
-% 
-%     %ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
-% 
-%     %takes the information that was found of the ellipses and draws them;also
-%     %keeping the information for each ellipse in a cell in qr(and later ql for those):
-%     qr{1,length(bestFitsr)}=0;
-%     for n=1:length(bestFitsr)
-%         qr{n} = ellipse(bestFitsr(n,3),bestFitsr(n,4),bestFitsr(n,5)*pi/180,bestFitsr(n,1),bestFitsr(n,2),'k');
-%     end
-%     %overriding parameters:
-%     paramsl.minMajorAxis = 150;
-%     paramsl.maxMajorAxis = 300;
-%     paramsl.numBest = 12; %draws 12 ellipses
-%     paramsl.rotation = 135; %If rotationSpan is in (0,90), only angles within [rotation-rotationSpan,rotation+rotationSpan] are accepted.
-%     paramsl.rotationSpan = 35;
-%     paramsl.randomize = 7; %randomization component that may reduce changing of
-%     %ellipses
-%     
-%     
-%     %LEFT SIDE
-%     bestFitsl = ellipseDetection(edgecanny, paramsl);
-%     fprintf('Output %d best fits.\n', size(bestFitsl,1));
-%     
-%     %ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
-%     ql{1,length(bestFitsl)}=0;
-%     for n=1:length(bestFitsl)
-%         ql{n} = ellipse(bestFitsl(n,3),bestFitsl(n,4),bestFitsl(n,5)*pi/180,bestFitsl(n,1),bestFitsl(n,2),'k');
-%     end
-%     
+
 if in == 'l'
     %RIGHT SIDE
     % override some default parameters
@@ -94,6 +82,7 @@ if in == 'l'
     %ellipses
     
     % note that the edge (or gradient) image is used
+    fprintf('Pick bounds for the right breast. \n');
     bestFitsr = ellipseDetection(edgecanny, paramsr);
     fprintf('Output %d best fits.\n', size(bestFitsr,1));
     
