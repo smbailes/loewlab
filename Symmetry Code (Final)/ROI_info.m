@@ -43,7 +43,7 @@ clc;
     [dx,dy] = pol2cart(theta, rho); % Convert tumor location as angle & dist to pixel location  
     
     
-    I1 = I_mat{1};              % Display first image
+    I1 = I_mat{8};              % Display first image
     I = getMatrixOutliers(I1);  % Remove outliers
     I_adj = I1(find(I1>0));    % Remove zero pixels
     I_sort1 = sort(I_adj);
