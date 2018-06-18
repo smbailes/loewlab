@@ -9,29 +9,30 @@ for i=1:15
     I_mat{i} = imread([location sprintf('%04d.tif',strt)]);    % Read each image into I_mat
     strt=strt+120;            % Go to next image (for cropped), HAS TO BE CHANGED TO INCREMENT BY 1
 end
-newLocation = strcat(location, '\Registered\');
+newLocation = strcat(location, 'Registered 2\');
 mkdir(newLocation)
 
-%% Check if small/large breasts
+%% Show images to determine whether to use affine or demons registration
 image = I_mat{8};
 I = getMatrixOutliers(image);
 nonzero = I(find(I>0));
 h = max(nonzero);
 l = min(nonzero);
 
-figure
-set(gcf,'units','inches', 'Position',[4 2 10 8])
-imshow(image,[l h]);
-pause(2);
-close;
-
-in = input('Is the breast small or large? Enter s/l: ','s');
-
+for i = 1:15
+    figure
+    imshow(I_mat{i}, [l h]);
+end
+pause
+close all
 %% Register Images
+%Use demons for patients that move more or with larger breasts
+
+in = input('Affine or demons? Enter a/d: ','s');
 fixed = I_mat{8};
 cd(newLocation);
 
-if strcmp(in, 's')%Affine registration
+if strcmp(in, 'a')%Affine registration
     for i = 0:120:1680
     newFile = [location '/' sprintf('%04d.tif',i)];
     newImage = imread(newFile);
@@ -44,10 +45,9 @@ if strcmp(in, 's')%Affine registration
     imwrite(registeredImage,sprintf('%04d.tif',i))
     end
     fprintf('Finished Affine Registration\n');
-elseif strcmp(in, 'l') %demons registration
+elseif strcmp(in, 'd') %demons registration
+    
     fixedGPU = gpuArray(fixed); %Create gpuArray
-    cd(newLocation);
-
     for i = 0:120:1680
         imgpath = [location '\' sprintf('%04d.tif',i)];
         moving = imread(imgpath);
@@ -62,3 +62,21 @@ elseif strcmp(in, 'l') %demons registration
     end 
     fprintf('Finished Demons Registration\n'); 
 end
+
+%% Show newly registered images
+n = 0;
+for j = 1:15
+    I_reg{j} = imread([newLocation sprintf('%04d.tif',n)]);
+    n = n+120;
+end
+
+for p = 1:15
+    figure
+    imshow(I_mat{p}, [l h]);
+end
+pause 
+close all;
+
+%% Crop Images
+RegisteredCropScript;
+pause, close all
