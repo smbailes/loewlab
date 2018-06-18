@@ -1,4 +1,4 @@
-function bestFits = ellipseDetection(img, params)
+function bestFits = ellipseDetection(img, params, Xright, Xleft, Ylo)
 % ellipseDetection: Ellipse detection
 %
 % Overview:
@@ -155,6 +155,16 @@ function bestFits = ellipseDetection(img, params)
         aSq = distsSq(I(p),J(p))/4;
         thirdPtDistsSq = (X-x0).^2 + (Y-y0).^2;
         K = thirdPtDistsSq <= aSq; % (otherwise the formulae in paper do not work)
+        ang = atand((y1-y2)/(x1-x2));
+        
+        %user input constraints checkpoint
+        checkpt = 0;
+        if (y1>y2), toppt = [x1 y1]; botpt = [x2 y2]; else, toppt = [x2 y2]; botpt = [x1 y1]; end
+        if (ang>0) %right breast
+            if botpt(1)>=Xleft, checkpt = 1; end 
+        else %left breast
+            if botpt(1)<=Xright, checkpt = 1; end 
+        end
 
         %get minor ax propositions for all other points
         fSq = (X(K)-x2).^2 + (Y(K)-y2).^2;
@@ -178,9 +188,9 @@ function bestFits = ellipseDetection(img, params)
         accumulator(1:ceil(sqrt(aSq)*params.minAspectRatio)) = 0;
         [score, idx] = max(accumulator);
 
-        %keeping only the params.numBest best hypothesis (no non-maxima suppresion)
-        if (bestFits(end,end) < score)
-            bestFits(end,:) = [x0 y0 sqrt(aSq) idx atand((y1-y2)/(x1-x2)) score];
+        %keeping only the params.numBest best hypothesis (no non-maxima suppression)
+        if (bestFits(end,end) < score) && botpt(2)>=Ylo && checkpt==1
+            bestFits(end,:) = [x0 y0 sqrt(aSq) idx ang score];
             if params.numBest>1
                 [~,si]=sort(bestFits(:,end),'descend');
                 bestFits = bestFits(si,:);

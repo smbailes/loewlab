@@ -231,7 +231,7 @@ for i = 1:length(gettx)
         xab(j) = linepix2(i,j,1);
         yab(j) = linepix2(i,j,2);
         intensities2(i,j) = I(round(xab(j)),round(yab(j))); 
-    end
+    end 
     mean1 = mean(intensities1(i,1:j));
     mean2 = mean(intensities2(i,1:j));
     if abs(mean1-mean2)<50

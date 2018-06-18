@@ -23,6 +23,26 @@ figure, imshow(I,[]) %to help decide if it should be cropped or not
 title('Outliers Removed')
 
 in = input('Is the breast small or large? Enter s/l: ','s');
+%% Bound Detection
+figure, imshow(I,[]), title('Bound Detection')
+%hold on; 
+fprintf('Select Upper Bound \n');
+[Xup,Yup] = ginput(1);
+%plot(Yup, :)
+%hold on;
+fprintf('Select Lower Bound \n');
+[Xlo,Ylo] = ginput(1);
+%plot(Ylo,:,'g')
+%hold on; 
+fprintf('Select Left Bound \n');
+[Xleft,Yleft] = ginput(1);
+%plot(:,Xleft,'g')
+%hold on; 
+fprintf('Select Right Bound \n');
+[Xright,Yright] = ginput(1);
+%plot(:,Xright,'g')
+%hold off;
+%% 
 
 %if in == 'l'
     mini = min(min(I));
@@ -117,7 +137,7 @@ if in == 'l'
     %ellipses
     
     % note that the edge (or gradient) image is used
-    bestFitsr = ellipseDetection(edgecanny, paramsr);
+    bestFitsr = ellipseDetection(edgecanny, paramsr, Xright, Xleft, Ylo);
     fprintf('Output %d best fits.\n', size(bestFitsr,1));
     
     
@@ -140,7 +160,7 @@ if in == 'l'
 
 
     %LEFT SIDE
-    bestFitsl = ellipseDetection(edgecanny, paramsl);
+    bestFitsl = ellipseDetection(edgecanny, paramsl, Xright, Xleft, Ylo);
     fprintf('Output %d best fits.\n', size(bestFitsl,1));
 
     %ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
@@ -260,26 +280,7 @@ end
 figure, imshow(newI)
 title('Hot Pixel');
 
-%% Part 4: Small/Large 
-figure, imshow(I,[]), title('Bound Detection')
-%hold on; 
-fprintf('Select Upper Bound \n');
-[Xup,Yup] = ginput(1);
-%plot(Yup, :)
-%hold on;
-fprintf('Select Lower Bound \n');
-[Xlo,Ylo] = ginput(1);
-%plot(Ylo,:,'g')
-%hold on; 
-fprintf('Select Left Bound \n');
-[Xleft,Yleft] = ginput(1);
-%plot(:,Xleft,'g')
-%hold on; 
-fprintf('Select Right Bound \n');
-[Xright,Yright] = ginput(1);
-%plot(:,Xright,'g')
-%hold off;
-%% 
+%% Small/Large
 
 if in == 's'
      kefsmall1
