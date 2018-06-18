@@ -54,9 +54,9 @@ newLocation = strcat(location, '\', 'Cropped');
 mkdir(newLocation);
 cd(newLocation);
 
-imwrite(newCrop,'0120.tif');
 
-for i = 240:120:1680
+for i = 0:120:1680
+    
     cd(location)
     newImage = imread(sprintf('%04d.tif',i));
    
