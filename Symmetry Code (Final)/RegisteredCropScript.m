@@ -12,8 +12,8 @@ end
 %% Apply Crop to All Registered Images based on User Drawn Input
 % cd ([homedir 'Registered/' ptID 'Registered/']);
 image = I_mat{7};
-I = getMatrixOutliers(image);
-nonzero = I(find(I>0));
+% I = getMatrixOutliers(image);
+nonzero = image(find(image>0));
 h = max(nonzero);
 l = min(nonzero);
 
@@ -50,13 +50,13 @@ height = bottomLine - topLine + 1;
 newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
 close;
 
-newLocation = strcat(location, '\', 'Cropped');
+newLocation = strcat(location, 'Cropped\');
 mkdir(newLocation);
 cd(newLocation);
 
-imwrite(newCrop,'0120.tif');
 
-for i = 240:120:1680
+for i = 0:120:1680
+    
     cd(location)
     newImage = imread(sprintf('%04d.tif',i));
    
@@ -68,3 +68,6 @@ for i = 240:120:1680
     imwrite(newCrop, sprintf('%04d.tif',i));    
 end
 
+
+%% Show images
+showImages;
