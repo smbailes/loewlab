@@ -1,9 +1,18 @@
 function [ClustStruct,ClustData] = symmetry_cluster1(ImageMatrix, epsilon, minPts, ptID) %CHANGED PERCENT to PERCENT_VAL
 
+%With percent threshold
+% I = getMatrixOutliers(ImageMatrix);   % Remove Outliers
+% I_adj = I(find(I>0));
+% percent2 = percent / 100;
+% I_sort = sort(I_adj);       % Arrange Image Hist in Order Low -> High
+% percent_ind = round(percent2 * numel(I_sort));   % Find the index number for the User Input Percentage
+% percent_val = I_sort(end - percent_ind);        % Find Intensity for the Percentage Number
+% [r,c] = find(I >= percent_val); % Get Pixel locations above Percent Indicated
+
+%Without percent threshold
 I = getMatrixOutliers(ImageMatrix);   % Remove Outliers
 I_adj = I(find(I>0));
 [r c] = find(I);
-
 
 % Find xyz info
 for a = 1:length(r)

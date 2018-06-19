@@ -8,11 +8,18 @@ h = max(I_nonzero);
 l = min(I_nonzero);
 
 
-figure
+% figure
+% for k = 0:120:1680
+%     path = [newLocation '\' sprintf('%04d.tif',k)];
+%     image = imread(path);
+%     i = (k/120)+1;
+%     subplot(4,4,i);
+%     imshow(image, [l h]);
+% end
+
 for k = 0:120:1680
     path = [newLocation '\' sprintf('%04d.tif',k)];
     image = imread(path);
-    i = (k/120)+1;
-    subplot(4,4,i);
-    imshow(image, [l h]);
+    figure
+    imshow(image,[l h]);
 end

@@ -1,5 +1,13 @@
 %% DBSCAN before threshold
-%input = [xcoord, ycoord, intensity]
+%Function Reliances:
+% - pathfinder
+% - patientselect
+% - volunteerselect
+% - DBSCAN
+% - PlotClusterInResult
+% - getMatrixOutliers
+% - symmetry_cluster1
+
 
 clear all;
 close all;
@@ -89,28 +97,27 @@ fprintf('Epsilon: %d \nminPts: %d \n', epsilon, minPts);
 %}
 
 %% Show Histogram for whole image and Truth Region
-    imshow(I_mat{1},[min(I_adj1) max(I_adj1)]);               % Display with contrast
-    hold on;
-    plot([c1(1) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
-    plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
-    plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
-    plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
-    hold on;
-    hFH = imrect();
-    binaryImage = hFH.createMask();
-    xy = hFH.getPosition;
-    close
-    
-    figure('Name','Histograms'), subplot(4,4,1);
-    for n = 1:14
-        I2 = I_mat{n}(find(I_mat{n}>0));
-        newCrop = imcrop(I_mat{n}, xy);
-
-        subplot(4,4,n)
-        histogram(I2,1000,'FaceColor','r','EdgeColor','r');
-        hold on
-        histogram(newCrop,1000,'FaceColor','k','EdgeColor','k');
-    end
+%     imshow(I_mat{7},[min(I_adj1) max(I_adj1)]);               % Display with contrast
+%     hold on;
+%     plot([c1(1) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
+%     plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
+%     plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
+%     plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
+%     hold on;
+%     ROI = imrect();
+%     xy = wait(ROI);
+%     close
+%     
+%     figure('Name','Histograms'), subplot(4,4,1);
+%     for n = 1:14
+%         I2 = I_mat{n}(find(I_mat{n}>0));
+%         newCrop = imcrop(I_mat{n}, xy);
+% 
+%         subplot(4,4,n)
+%         histogram(I2,1000,'FaceColor','r','EdgeColor','r');
+%         hold on
+%         histogram(newCrop,1000,'FaceColor','k','EdgeColor','k');
+%     end
 
 %% Plot Image with Clusters using DBSCAN
 n = 1;
@@ -165,12 +172,14 @@ n = 1;
    for p = 1:numClust
       clustPoints = thisImage(p).ClusterIndices;
       for b = 1:length(clustPoints(:,1))
-          if length(clustPoints(:,1)) < 5 || length(clustPoints(:,1)) > 150
+          if length(clustPoints(:,1)) < minPts || length(clustPoints(:,1)) > 150
               thisImage(p).RemoveCluster = 1;
               sl = sl+1;
           end
       end
    end
+   
+ClusterInfo{c,1} = thisImage;
 
 %% Remove Cluster Data
 % for c = 1:14
@@ -188,6 +197,8 @@ n = 1;
             thisImage(i).ClusterMeanIntensity = 0;
         end     
     end    
+    
+     ClusterInfo{c,1} = thisImage;
 %% Keep certain %
     
     for a = 1:numClusters
@@ -206,6 +217,7 @@ n = 1;
         end
     end
    
+ ClusterInfo{c,1} = thisImage;
 %% Plot left over clusters
     
     for m = 1:numClusters %Sort through clusters for image
