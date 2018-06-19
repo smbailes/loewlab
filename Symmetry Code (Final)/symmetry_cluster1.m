@@ -1,4 +1,4 @@
-function [ClustStruct,ClustData] = symmetry_cluster1(ImageMatrix, epsilon, minPts, ptID) %CHANGED PERCENT to PERCENT_VAL
+function [ClustStruct,ClustData] = symmetry_cluster1(ImageMatrix, epsilon, minPts, ptID, s) %CHANGED PERCENT to PERCENT_VAL
 
 %With percent threshold
 % I = getMatrixOutliers(ImageMatrix);   % Remove Outliers
@@ -22,7 +22,7 @@ for a = 1:length(r)
 end
 
 
-[Clusters, isNoise] = DBSCAN(xyz,epsilon,minPts); % Run DBSCAN on Pixels above Intensity Percentage
+[Clusters, isNoise] = DBSCAN(xyz,epsilon,minPts,s); % Run DBSCAN on Pixels above Intensity Percentage
 ClustersNew = Clusters;
 ClustersNew(isNoise) = [];      % Remove all Noise Pixels from Clusters
 xyzNew = xyz;

@@ -38,16 +38,17 @@ clc;
 %% DBSCAN Parameters
     
 prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
-    'Enter MinPts:','Enter Desired %:'};  
+    'Enter MinPts:','Enter Desired %:','Enter desired scaling factor'};  
 dlg_title = 'DBSCAN Parameters';                                         % box title
 num_lines = 1;                                                          % lines per answer
-defaultans = {'5','10','5'};          % default inputs
+defaultans = {'5','10','5','1'};          % default inputs
 options.Resize = 'on';                                                  % allows for resizing of box
 answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
 epsilon = str2double(answer{1});                
 minPts = str2double(answer{2});                 
-percent = str2num(answer{3});            
-fprintf('Epsilon: %d \nminPts: %d \n', epsilon, minPts);
+percent = str2num(answer{3});
+s = str2num(answer{4});
+fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,s);
 
     % Convert Clock Hour to Angle (in rad) 
     if hr <= 9 && hr > 3            
@@ -124,7 +125,7 @@ n = 1;
 %     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID);
 % for n = 1:14                    % Iterate through cell matrix for each minute
     I = I_mat{n};               % Get Image
-    [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID);
+    [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID, s);
     
     plot([c1(1) c2(1)],[c1(2) c2(2)],'k');                      % Create red box region on Image Display
     plot([c2(1) c3(1)],[c2(2) c3(2)],'k');
