@@ -11,8 +11,8 @@ function [location, ptID] = choosedialog
     dir = uigetdir; %file exploerer to find image directory
     c = questdlg('Use Cropped Images?', 'Yes', 'No'); %check to see if you want to use cropped images
     if(strcmp(c, 'Yes'))
-        location = strcat(dir, '\', ptID, '\Cropped Image\');
+        location = strcat(dir, '\Cropped\');
     else
-        location = strcat(dir, '\', ptID);
+        location = strcat(dir, '\');
     end
 end
