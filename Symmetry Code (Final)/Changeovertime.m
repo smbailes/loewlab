@@ -9,7 +9,7 @@ if (strcmp(answer, 'Patient'))
     numlines = 1;
     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     name = answers{1};
-    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\NEW Patients\' ptID '\NEW Cropped\']);
+    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Patient Images\' ptID '\Cropped\']);
     
 end
 if (strcmp(answer, 'Volunteer'))
@@ -67,8 +67,14 @@ averages{i,j,k} = mean2(imcrop(I_mat{k},square)); % takes the average of each bl
     end
 end
 figure, imshow(I_mat{k},[min(I_adj1) max(I_adj1)]) % displays each image at each minute
-
+axis on
+xticks([squareside/2:squareside:c]) %adds axes to images
+xticklabels([1:1:numcols])
+yticks([squareside/2:squareside:c])
+yticklabels([1:1:numrows])
+set(gca,'XaxisLocation','top')
 end
+
 
 %% standard Deviation
 for k = 1:numpics
@@ -152,6 +158,7 @@ warning('off')
 t = 0:numpics-1; % pictures start at t = 0, first pictue is lower than second. Strange
 ypoints = cell(1,numpics); % preallocates y points. Might need to change
 colors = {[1,0,0],[0.9,0,0],[0.8,0,0],[0.7,0,0],[0.6,0,0],[0,1,0],[0,0.9,0],[0,0.8,0],[0,0.7,0],[0,0.6,0],[0,0,1],[0,0,0.9],[0,0,0.8],[0,0,0.7],[0,0,0.6],[1,0,1],[0.9,0,0.9],[0.8,0,0.8],[0.7,0,0.7],[0.6,0,0.6],[0,1,1],[0,0.9,0.9],[0,0.8,0.8],[0,0.7,0.7],[0,0.6,0.6],[1,1,0],[0.9,0.9,0],[0.8,0.8,0],[0.7,0.7,0],[0.6,0.6,0],[.85,0.325,0],[0.9,0.6,0.1],[0.4,0.2,0.6],[0.6,0.4,0.8],[0.3,0.74,0.9]};
+
 for i = 1:numrows
    figure(numpics+1); 
     for j = 1:numcols
@@ -169,7 +176,7 @@ for i = 1:numrows
             p = 0;
         end
         color = colors{j};
-        subplot(ceil(sqrt(numrows)-p),ceil(sqrt(numrows)),i) % creates subplot
+        subplot(ceil(sqrt(numrows-p)),ceil(sqrt(numrows)),i) % creates subplot
         r = rand;, g = rand;, b = rand; %sets random rgb values to make lots of colots
         plot(t,newypoints,'-','Color',color), hold on %can add real data points with t,y,'+'
         g =  plot(t,ypoints,'o','Color',color); %Adds true data points to graph
@@ -326,8 +333,8 @@ end
 t = 0:numpics-1;
 totRbreastmean = cell2mat(totRbreastmean);
 totLbreastmean = cell2mat(totLbreastmean);
-Lstdv = cell2mat(Lstdv);
-Rstdv = cell2mat(Rstdv);
+Lbreaststdv = cell2mat(Lstdv);
+Rbreaststdv = cell2mat(Rstdv);
 
 
 % Rplot = errorbar(t,totRbreastmean,Rstdv,'r');
@@ -410,7 +417,7 @@ Itumor = cell(1,numpics);
 Icorr = cell(1,numpics);
  for k =1:numpics % creates the tumor and corresponding area images
      Itumor{k} =imcrop(I_mat{k},tumrect);
-     Icorr{k} = imcrop(I_mat{k}, corrrect);           
+     Icorr{k} = imcrop(I_mat{k}, corrrect); 
  end
  [tumrow,tumcol] = size(Itumor{1});
  for k = 1:numpics % removes black pixels from grid
@@ -446,16 +453,24 @@ for k = 1:numpics
     corrregion{k} = nanmean(Icorr{k});
     tumorregion{k} = nanmean(tumorregion{k});
     corrregion{k} = nanmean(corrregion{k});
+    tumstdv{k} = nanstd(Itumor{k});
+    corrstdv{k} = nanstd(Icorr{k});
+    tumstdv{k} = nanstd(tumstdv{k});
+    corrstdv{k} = nanstd(corrstdv{k});
 %     tumorregion{k} = nanmean(tumorregion{k});
 %     corrregion{k} = nanmean(corrregion{k});
 end
-
+tumstdv = cell2mat(tumstdv);
+corrstdv = cell2mat(corrstdv);
 
 tottumorchange = tumorregion{numpics} - tumorregion{1}; %calculates the total change of the region
 totcorrchange = corrregion{numpics} - corrregion{1};
 
 t = 0:14;
-plot(t,totRbreastmean,'r',t,totLbreastmean,'b',t,cell2mat(tumorregion),'g',t,cell2mat(corrregion),'m')
+errorbar(t,totRbreastmean,Rbreaststdv,'r'), hold on
+errorbar(t,totLbreastmean,Lbreaststdv,'b')
+errorbar(t,cell2mat(tumorregion),tumstdv,'g')
+errorbar(t,cell2mat(corrregion),corrstdv,'m')
 legend('Right Breast','Left Breast','Tumor region','Corresponding region')
 xlabel('Time (min)')
 ylabel('Pixel Value')
