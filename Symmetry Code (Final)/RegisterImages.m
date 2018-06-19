@@ -51,14 +51,14 @@ elseif strcmp(in, 'd') %demons registration
     for i = 0:120:1680
         imgpath = [location '\' sprintf('%04d.tif',i)];
         moving = imread(imgpath);
-        movingGPU = gpuArray(moving); %Create gpuArray
-
-        [~,movingReg] = imregdemons(movingGPU,fixedGPU,[500 400 200],'AccumulatedFieldSmoothing',3);
+%         movingGPU = gpuArray(moving); %Create gpuArray
+        [~,movingReg] = imregdemons(moving,fixed,[500 400 200],'AccumulatedFieldSmoothing',3);
+%         [~,movingReg] = imregdemons(movingGPU,fixedGPU,[500 400 200],'AccumulatedFieldSmoothing',3);
         
         %Bring registered image back to CPU
-        registeredImage = gather(movingReg);
+%         registeredImage = gather(movingReg);
         
-        imwrite(registeredImage,sprintf('%04d.tif',i))
+        imwrite(movingReg,sprintf('%04d.tif',i))
     end 
     fprintf('Finished Demons Registration\n'); 
 end
