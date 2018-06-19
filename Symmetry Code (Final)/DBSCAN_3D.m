@@ -121,7 +121,7 @@ fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,s);
 %     end
 
 %% Plot Image with Clusters using DBSCAN
-n = 1;
+n = 7;
 %     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID);
 % for n = 1:14                    % Iterate through cell matrix for each minute
     I = I_mat{n};               % Get Image
@@ -142,7 +142,7 @@ n = 1;
 
 %% Check: Clusters on Bottom Border
 % for c = 1:14
-   c = 1;
+   c = 7;
    thisImage = ClusterInfo{c,1};
    pic = ClusterInfo{c,2}; %pic = I
    
@@ -164,7 +164,7 @@ n = 1;
 % end  
 
 %% Remove small and large clusters
-   c = 1;
+   c = 7;
    thisImage = ClusterInfo{c,1};
    pic = ClusterInfo{c,2}; %pic = I
    

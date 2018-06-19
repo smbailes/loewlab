@@ -16,8 +16,8 @@ end
 xcoords = region(:,1,:);
 ycoords = region(:,2,:);
 intensity = region(:,3,:);
+scatter3(xcoords, ycoords, intensity,1); 
 
-scatter3(xcoords, ycoords, intensity); 
 
 % for r = 1:rows
 %     for c = 1:cols
