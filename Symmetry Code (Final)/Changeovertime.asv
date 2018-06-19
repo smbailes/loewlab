@@ -492,3 +492,8 @@ figure(numpics+6)
 bardata = [aveRbreastchange,aveLbreastchange,avetumorchange,avecorrchange];
 bar(c,bardata)
 title('Average Rate of change')
+%% identiying regions of low change
+[maximum, maxidx] = maxk(totsquarechange(:),10)
+[lowrow lowcol] = ind2sub(size(totsquarechange),maxidx)
+       
+
