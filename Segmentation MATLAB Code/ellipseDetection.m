@@ -157,6 +157,7 @@ function bestFits = ellipseDetection(img, params)
         x2=X(J(p)); y2=Y(J(p));
         
         if (y1 < Ylo & y2 < Ylo)
+            if (x2 < Xlo | x1 > Xlo)
             %compute center & major axis
             x0=(x1+x2)/2; y0=(y1+y2)/2;
             aSq = distsSq(I(p),J(p))/4;
@@ -192,6 +193,7 @@ function bestFits = ellipseDetection(img, params)
                     [~,si]=sort(bestFits(:,end),'descend');
                     bestFits = bestFits(si,:);
                 end
+            end
             end
         end
     end
