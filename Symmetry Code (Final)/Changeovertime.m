@@ -1,53 +1,37 @@
 close all
 clear, clc
-answer = questdlg('ID Patient Type:','Patient Type','Patient','Volunteer','Patient');
-if (strcmp(answer, 'Patient'))
-    ptID = patientselect;    % Dialog Box for patient selection
-    prompt = {'Enter User name:','Enter length of square in pixels:','Enter total number of pictures:'};
-    dlgtitle = 'Input';
-    defaultans = {'Jacob','17','15'};
-    numlines = 1;
-    answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
-    name = answers{1};
-    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Patient Images\' ptID '\Cropped\']);
+[location ptID] = pathfinder;
+prompt = {'Enter length of square in pixels:','Enter total number of pictures:'};
+dlgtitle = 'Input';
+defaultans = {'17','15'};
+numlines = 1;
+answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     
+%% Image Input
+numpics = str2double(answers{2}); % allocates number of pictures
+% Read images to cell matrix I_mat
+a=0000; % set equal to the number of the first picture
+I_mat = cell(1,numpics);
+for i=1:numpics % set equal to total number of pictures being ran          
+    I_mat{i} = imread([location sprintf('%04d.tif',a)]);    % Read each image into I_mat
+    a=a+120;            % Go to next image (for cropped)
 end
-if (strcmp(answer, 'Volunteer'))
-    vtID = volunteerselect;
-    prompt = {'Enter User name:','Enter length of square in pixels:','Enter total number of pictures:'};
-    dlgtitle = 'Input';
-    defaultans = {'Jacob','20','14'};
-    numlines = 1;
-    answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
-    name = answers{1};
-    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Volunteer Images\' vtID '\Cropped\']);
-    
+
+I1 = I_mat{1};              % Display first image
+I1 = getMatrixOutliers(I1);  % Remove outliers
+I_adj1 = I1(find(I1>0));   % Remove zero pixels
+I = cell(1,numpics);
+for k = 1:numpics
+    I{k} = I_mat{k};
 end
-    
-    %% Image Input
-    numpics = str2double(answers{3}); % allocates number of pictures
-    % Read images to cell matrix I_mat
-    a=0000; % set equal to the number of the first picture
-    I_mat = cell(1,numpics);
-    for i=1:numpics % set equal to total number of pictures being ran          
-        I_mat{i} = imread([location sprintf('%04d.tif',a)]);    % Read each image into I_mat
-        a=a+120;            % Go to next image (for cropped)
-    end
-    
-    I1 = I_mat{1};              % Display first image
-    I1 = getMatrixOutliers(I1);  % Remove outliers
-    I_adj1 = I1(find(I1>0));   % Remove zero pixels
-    I = cell(1,numpics);
-    for k = 1:numpics
-        I{k} = I_mat{k};
-    end
      
 %% create grid over image and find averages
 prompt = ('Enter size of one box on grid in pixels'); % make dialog box
 dlgtitle = ('input');
 num_lines = 1;
 defaultans = {'50'};
-squareside = str2double(answers{2}); %converts ans to a number
+squareside = str2double(answers{1}); %converts ans to a number
+
 for k = 1:numpics
 I_mat{k}(squareside:squareside:end,:,:) = 0;% converts every nth row to black
 I_mat{k}(:,squareside:squareside:end,:) = 0;% converts every nth column to black
@@ -61,11 +45,12 @@ for j = 1:1:numcols
     row = squareside*(j-1)+1;
     for i = 1:1:numrows
         col = squareside*(i-1)+1 ;
-square = [row, col, squareside-2, squareside-2]; %  creates the square to be averaged
-averages{i,j,k} = mean2(imcrop(I_mat{k},square)); % takes the average of each block
-
+        square = [row, col, squareside-2, squareside-2]; %  creates the square to be averaged
+        averages{i,j,k} = mean2(imcrop(I_mat{k},square)); % takes the average of each block
+        stdv{i,j,k} = std2(imcrop(I_mat{k},square)); % takes the std2 of each block
     end
 end
+
 figure, imshow(I_mat{k},[min(I_adj1) max(I_adj1)]) % displays each image at each minute
 axis on
 xticks([squareside/2:squareside:c]) %adds axes to images
@@ -75,7 +60,7 @@ yticklabels([1:1:numrows])
 set(gca,'XaxisLocation','top')
 end
 
-
+%{
 %% standard Deviation
 for k = 1:numpics
 I_mat{k}(squareside:squareside:end,:,:) = 0;% converts every nth row to black
@@ -90,12 +75,12 @@ for j = 1:1:numcols
     row = squareside*(j-1)+1;
     for i = 1:1:numrows
         col = squareside*(i-1)+1 ;
-square = [row, col, squareside-2, squareside-2]; %  creates the square to be averaged
-stdv{i,j,k} = std2(imcrop(I_mat{k},square)); % takes the std2 of each block
-
+        square = [row, col, squareside-2, squareside-2]; %  creates the square to be averaged
+        
     end
 end
 end
+%}
 %% find good data via standard deviations
 for i = 1:numrows
     for j = 1:numcols
@@ -106,7 +91,6 @@ for i = 1:numrows
             else 
                 line{i,j,k} = '-';
                 gooddata{i,j,k} = averages{i,j,k}; %separates good data into separate array
-                
             end
         end
     end
@@ -119,7 +103,7 @@ for i = 1:numrows
         for k = 1:numpics 
             if abs(stdv{i,j,k}) >500  % eliminates data that deviates too, mostly edge squares
                 for d = 1:numpics % total number of pictures
-                averages{i,j,d} = NaN;
+                    averages{i,j,d} = NaN;
                 end   
             elseif averages{i,j,k} == 0
                 for d = 1:numpics
@@ -492,3 +476,4 @@ figure(numpics+6)
 bardata = [aveRbreastchange,aveLbreastchange,avetumorchange,avecorrchange];
 bar(c,bardata)
 title('Average Rate of change')
+
