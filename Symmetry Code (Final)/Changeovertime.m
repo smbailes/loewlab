@@ -5,7 +5,7 @@ if (strcmp(answer, 'Patient'))
     ptID = patientselect;    % Dialog Box for patient selection
     prompt = {'Enter User name:','Enter length of square in pixels:','Enter total number of pictures:'};
     dlgtitle = 'Input';
-    defaultans = {'Jacob','17','15'};
+    defaultans = {'Jacob','16','15'};
     numlines = 1;
     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     name = answers{1};
@@ -493,7 +493,15 @@ bardata = [aveRbreastchange,aveLbreastchange,avetumorchange,avecorrchange];
 bar(c,bardata)
 title('Average Rate of change')
 %% identiying regions of low change
-[maximum, maxidx] = maxk(totsquarechange(:),10)
-[lowrow lowcol] = ind2sub(size(totsquarechange),maxidx)
-       
-
+totsquarechange = cell2mat(totsquarechange)
+[maximum, maxidx] = maxk(totsquarechange(:),10);
+[lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);
+corrregionidentifier = I_mat{15}
+for i = 1:numel(lowcol)
+    
+   corrregionidentifier(squareside*(lowrow(i)-1):1:squareside*(lowrow(i)),...
+       squareside*(lowcol(i)-1):1:squareside*lowcol(i)) = 0;% converts every warmest regions to black
+   
+   
+end
+figure, imtool(corrregionidentifier, [min(I_adj1) max(I_adj1)])
