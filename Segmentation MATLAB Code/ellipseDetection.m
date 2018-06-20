@@ -1,4 +1,4 @@
-function bestFits = ellipseDetection(img, params)
+function bestFits = ellipseDetection(img, boundimg, params)
 % ellipseDetection: Ellipse detection
 %
 % Overview:
@@ -103,7 +103,7 @@ function bestFits = ellipseDetection(img, params)
     H = fspecial('gaussian', [params.smoothStddev*6 1], params.smoothStddev);
 
     %% Create lower bound to check
-    figure, imshow(img,[]), title('Bound Detection')
+    figure, imshow(boundimg,[]), title('Bound Detection')
     [Xlo,Ylo] = ginput(1);
     
     %% Creating the Ellipses
@@ -157,7 +157,7 @@ function bestFits = ellipseDetection(img, params)
         x2=X(J(p)); y2=Y(J(p));
         
         if (y1 < Ylo & y2 < Ylo)
-            if (x2 < Xlo | x1 > Xlo)
+            if (x1 > Xlo | x2 < Xlo)
             %compute center & major axis
             x0=(x1+x2)/2; y0=(y1+y2)/2;
             aSq = distsSq(I(p),J(p))/4;

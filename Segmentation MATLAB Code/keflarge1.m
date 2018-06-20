@@ -13,7 +13,7 @@ BW_long = bwmorph(BW_long,'thicken');
 %implementing combined point systems
 for aa = 1:img_y
     for bb = 1:img_x
-        if edgecanny(aa,bb)==1%add point if canny edge
+        if edgecanny2(aa,bb)==1%add point if canny edge
             largepoints(aa,bb)=largepoints(aa,bb)+1; 
         end
         if ellipses(aa,bb)==1 %add points if included in ellipse

@@ -27,6 +27,13 @@ title('Outliers Removed')
 close Figure 1
 %perc = input('What is your desired percentage? '); 
 perc = 5; %top 5% of pixels used
+%% Canny Edges 
+
+edgecanny = edge(I,'canny');
+edgecanny=bwareaopen(edgecanny,10); %removes very small edge lines
+
+figure,imshow(edgecanny)
+title('Canny Edges for Ellipses');
 
 %% Gets Rid of Background 
 
@@ -53,19 +60,17 @@ perc = 5; %top 5% of pixels used
 %end
 %% Canny Edges 
 
-edgecanny = edge(I,'canny');
-edgecanny=bwareaopen(edgecanny,10); %removes very small edge lines
+edgecanny2 = edge(I,'canny');
+edgecanny2=bwareaopen(edgecanny2,10); %removes very small edge lines
 
-figure,imshow(edgecanny)
-title('Canny edges');
+figure,imshow(edgecanny2)
+title('Canny Edges');
 
 %% Part 2, Ellipse Detection
 
 figure;
 imshow(I,[]); %produce an image to overlay the ellipses onto
 title('Image with Ellipses')
-
-figure; imshow(edgecanny, []);
 
 in = input('Is the breast small or large? Enter s/l: ','s');
 
@@ -82,7 +87,7 @@ if in == 'l'
     
     % note that the edge (or gradient) image is used
     fprintf('Pick lower bound for the right breast. \n');
-    bestFitsr = ellipseDetection(edgecanny, paramsr);
+    bestFitsr = ellipseDetection(edgecanny, I, paramsr);
     fprintf('Output %d best fits.\n', size(bestFitsr,1));
     
     
@@ -106,7 +111,7 @@ if in == 'l'
 
     %LEFT SIDE
     fprintf('Pick lower bound for the left breast. \n');
-    bestFitsl = ellipseDetection(edgecanny, paramsl);
+    bestFitsl = ellipseDetection(edgecanny, I, paramsl);
     fprintf('Output %d best fits.\n', size(bestFitsl,1));
 
     %ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
