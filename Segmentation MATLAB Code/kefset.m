@@ -32,41 +32,13 @@ edgecanny=bwareaopen(edgecanny,10); %removes very small edge lines
 figure,imshow(edgecanny)
 title('Canny edges');
 
-%% Creating Boundaries for Ellipses
-    
-figure, imshow(edgecanny,[]), title('Bound Detection')
-fprintf('Pick bounds for the right breast.');
-fprintf('Select Upper Bound \n');
-[Xupr,Yupr] = ginput(1);
-fprintf('Select Lower Bound \n');
-[Xlor,Ylor] = ginput(1);
-fprintf('Select Left Bound \n');
-[Xleftr, Yleftr] = ginput(1);
-fprintf('Slect Right Bound \n');
-[Xrightr, Yrightr] = ginput(1);
-xr = [Xleftr, Xrightr, Xrightr, Xleftr, Xleftr];
-yr = [Yupr, Yupr, Ylor, Ylor, Yupr];
-plot(xr,yr, 'white');
-
-figure, imshow(edgecanny,[]), title('Bound Detection')
-fprintf('Pick bounds for the left breast.');
-fprintf('Select Upper Bound \n');
-[Xupl,Yupl] = ginput(1);
-fprintf('Select Lower Bound \n');
-[Xlol,Ylol] = ginput(1);
-fprintf('Select Left Bound \n');
-[Xleftl, Yleftl] = ginput(1);
-fprintf('Slect Right Bound \n');
-[Xrightl, Yrightl] = ginput(1);
-xl = [Xleftl, Xrightl, Xrightl, Xleftl, Xleftl];
-yl = [Yupl, Yupl, Ylol, Ylol, Yupl];
-plot(xl,yl, 'white');
-
 %% Part 2, Ellipse Detection
 
 figure;
 imshow(I,[]); %produce an image to overlay the ellipses onto
 title('Image with Ellipses')
+
+figure; imshow(edgecanny, []);
 
 in = input('Is the breast small or large? Enter s/l: ','s');
 
@@ -82,7 +54,7 @@ if in == 'l'
     %ellipses
     
     % note that the edge (or gradient) image is used
-    fprintf('Pick bounds for the right breast. \n');
+    fprintf('Pick lower bound for the right breast. \n');
     bestFitsr = ellipseDetection(edgecanny, paramsr);
     fprintf('Output %d best fits.\n', size(bestFitsr,1));
     
@@ -106,6 +78,7 @@ if in == 'l'
 
 
     %LEFT SIDE
+    fprintf('Pick lower bound for the left breast. \n');
     bestFitsl = ellipseDetection(edgecanny, paramsl);
     fprintf('Output %d best fits.\n', size(bestFitsl,1));
 

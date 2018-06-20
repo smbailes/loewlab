@@ -102,7 +102,10 @@ function bestFits = ellipseDetection(img, params)
     params.rotationSpan = min(params.rotationSpan, 90);    
     H = fspecial('gaussian', [params.smoothStddev*6 1], params.smoothStddev);
 
-  
+    %% Create lower bound to check
+    figure, imshow(img,[]), title('Bound Detection')
+    [Xlo,Ylo] = ginput(1);
+    
     %% Creating the Ellipses
     
     [Y,X]=find(img);
@@ -119,7 +122,7 @@ function bestFits = ellipseDetection(img, params)
     I = uint32(I(idx)); J = uint32(J(idx));
     
     fprintf('..after distance constraint: %d\n', length(I));
-    
+     
     % compute pairwise angles and filter
     if params.rotationSpan>0
         tangents = (Y(I)-Y(J)) ./ (X(I)-X(J));
@@ -153,40 +156,42 @@ function bestFits = ellipseDetection(img, params)
         x1=X(I(p)); y1=Y(I(p));
         x2=X(J(p)); y2=Y(J(p));
         
-        %compute center & major axis
-        x0=(x1+x2)/2; y0=(y1+y2)/2;
-        aSq = distsSq(I(p),J(p))/4;
-        thirdPtDistsSq = (X-x0).^2 + (Y-y0).^2;
-        K = thirdPtDistsSq <= aSq; % (otherwise the formulae in paper do not work)
+        if (y1 < Ylo & y2 < Ylo)
+            %compute center & major axis
+            x0=(x1+x2)/2; y0=(y1+y2)/2;
+            aSq = distsSq(I(p),J(p))/4;
+            thirdPtDistsSq = (X-x0).^2 + (Y-y0).^2;
+            K = thirdPtDistsSq <= aSq; % (otherwise the formulae in paper do not work)
 
-        %get minor ax propositions for all other points
-        fSq = (X(K)-x2).^2 + (Y(K)-y2).^2;
-        cosTau = (aSq + thirdPtDistsSq(K) - fSq) ./ (2*sqrt(aSq*thirdPtDistsSq(K)));
-        cosTau = min(1,max(-1,cosTau)); %inexact float arithmetic?!
-        sinTauSq = 1 - cosTau.^2;
-        b = sqrt( (aSq * thirdPtDistsSq(K) .* sinTauSq) ./ (aSq - thirdPtDistsSq(K) .* cosTau.^2 + eps) );
+            %get minor ax propositions for all other points
+            fSq = (X(K)-x2).^2 + (Y(K)-y2).^2;
+            cosTau = (aSq + thirdPtDistsSq(K) - fSq) ./ (2*sqrt(aSq*thirdPtDistsSq(K)));
+            cosTau = min(1,max(-1,cosTau)); %inexact float arithmetic?!
+            sinTauSq = 1 - cosTau.^2;
+            b = sqrt( (aSq * thirdPtDistsSq(K) .* sinTauSq) ./ (aSq - thirdPtDistsSq(K) .* cosTau.^2 + eps) );
 
-        %proper bins for b
-        idxs = ceil(b+eps);
-        
-        if params.uniformWeights
-            weights = 1;
-        else
-            weights = img(sub2ind(size(img),Y(K),X(K)));
-        end
-        accumulator = accumarray(idxs, weights, [params.maxMajorAxis 1]);
+            %proper bins for b
+            idxs = ceil(b+eps);
+       
+            if params.uniformWeights
+                weights = 1;
+            else
+                weights = img(sub2ind(size(img),Y(K),X(K)));
+            end
+            accumulator = accumarray(idxs, weights, [params.maxMajorAxis 1]);
 
-        %a bit of smoothing and finding the most busy bin
-        accumulator = conv(accumulator,H,'same');
-        accumulator(1:ceil(sqrt(aSq)*params.minAspectRatio)) = 0;
-        [score, idx] = max(accumulator);
+            %a bit of smoothing and finding the most busy bin
+            accumulator = conv(accumulator,H,'same');
+            accumulator(1:ceil(sqrt(aSq)*params.minAspectRatio)) = 0;
+            [score, idx] = max(accumulator);
 
-        %keeping only the params.numBest best hypothesis (no non-maxima suppresion)
-        if (bestFits(end,end) < score)
-            bestFits(end,:) = [x0 y0 sqrt(aSq) idx atand((y1-y2)/(x1-x2)) score];
-            if params.numBest>1
-                [~,si]=sort(bestFits(:,end),'descend');
-                bestFits = bestFits(si,:);
+            %keeping only the params.numBest best hypothesis (no non-maxima suppresion)
+            if (bestFits(end,end) < score)
+                bestFits(end,:) = [x0 y0 sqrt(aSq) idx atand((y1-y2)/(x1-x2)) score];
+                if params.numBest>1
+                    [~,si]=sort(bestFits(:,end),'descend');
+                    bestFits = bestFits(si,:);
+                end
             end
         end
     end
