@@ -42,6 +42,7 @@ fprintf('Select Right Bound \n');
 [Xright,Yright] = ginput(1);
 %plot(:,Xright,'g')
 %hold off;
+
 %% 
 
 %if in == 'l'
@@ -66,20 +67,32 @@ fprintf('Select Right Bound \n');
     end
 %end
 
+%% Crop Image for Ellipse Detection
+
+I_crop = imcrop(I, [Xleft 1 (Xright-Xleft) Ylo]);
+
+%% Canny Edges
+
 close Figure 1
 %perc = input('What is your desired percentage? '); 
 perc = 5; %top 5% of pixels used
 
-edgecanny = edge(I,'canny');
+edgecanny = edge(I_crop,'canny');
 edgecanny=bwareaopen(edgecanny,10); %removes very small edge lines
 
 figure,imshow(edgecanny)
 title('Canny edges');
 
+% edgecanny3 = edge(I,'canny');
+% edgecanny=bwareaopen(edgecanny3,10); %removes very small edge lines
+% 
+% figure,imshow(edgecanny3)
+% title('Canny edges full');
+
 %% Part 2, Ellipse Detection
 
 figure;
-imshow(I,[]); %produce an image to overlay the ellipses onto
+imshow(I_crop,[]); %produce an image to overlay the ellipses onto
 title('Image with Ellipses')
 
 % if in == 's'
@@ -170,79 +183,116 @@ if in == 'l'
     end
 
 
-%ELLIPSES TO PIXELS
-[img_y, img_x] = size(I);
-ellipses=zeros(img_y,img_x);
+    %ELLIPSES TO PIXELS
+    [img_y, img_x] = size(I);
+    [imgc_y, imgc_x] = size(I_crop);
+    ellipses=zeros(imgc_y,imgc_x);
 
-for a = 1:length(ql)                %a,b,n,m are just used as counters in the for loops - delete at end of section
-    e1 = ql{a};
-    for b = 1:length(e1.XData)              %get x and y data from cell array of ellipses and round so we can use them as indices
-        xe1(a,b) = e1.XData(b);
-        xe1(a,b) = round(xe1(a,b));
-        ye1(a,b) = e1.YData(b);
-        ye1(a,b) = round(ye1(a,b));
-        if xe1(a,b)<0.5
-            xe1(a,b)=1;
+    for a = 1:length(ql)                %a,b,n,m are just used as counters in the for loops - delete at end of section
+        e1 = ql{a};
+        for b = 1:length(e1.XData)              %get x and y data from cell array of ellipses and round so we can use them as indices
+            xe1(a,b) = e1.XData(b);
+            xe1(a,b) = round(xe1(a,b));
+            ye1(a,b) = e1.YData(b);
+            ye1(a,b) = round(ye1(a,b));
+            if xe1(a,b)<0.5
+                xe1(a,b)=1;
+            end
+            if ye1(a,b)<0.5
+                ye1(a,b)=1;
+            end
         end
-        if ye1(a,b)<0.5
-            ye1(a,b)=1;
+        for d = 1:length(xe1)
+            ellipses(ye1(a,d),xe1(a,d)) = 1;      %fill in 1's wherever there is a point in the ellipse
+        end
+
+    end
+
+    %draw in right breast pixel by pixel
+    for a = 1:length(qr)                %a,b,n,m are just used as counters in the for loops - delete at end of section
+        e2 = qr{a};
+        for b = 1:length(e2.XData)
+            xe2(a,b) = e2.XData(b);
+            xe2(a,b) = round(xe2(a,b));
+            ye2(a,b) = e2.YData(b);
+            ye2(a,b) = round(ye2(a,b));   
+            if xe2(a,b)<0.5
+                xe2(a,b)=1;
+            end
+            if ye2(a,b)<0.5
+                ye2(a,b)=1;
+            end
+        end
+        for d = 1:length(xe2)
+            ellipses(ye2(a,d),xe2(a,d)) = 1;      %fill in 1's wherever there is a point in the ellipse
         end
     end
-    for d = 1:length(xe1)
-        ellipses(ye1(a,d),xe1(a,d)) = 1;      %fill in 1's wherever there is a point in the ellipse
-    end
-    
-end
 
-%draw in right breast pixel by pixel
-for a = 1:length(qr)                %a,b,n,m are just used as counters in the for loops - delete at end of section
-    e2 = qr{a};
-    for b = 1:length(e2.XData)
-        xe2(a,b) = e2.XData(b);
-        xe2(a,b) = round(xe2(a,b));
-        ye2(a,b) = e2.YData(b);
-        ye2(a,b) = round(ye2(a,b));   
-        if xe2(a,b)<0.5
-            xe2(a,b)=1;
+    [checky,checkx]=size(ellipses);
+    if checkx > imgc_x
+        ellipses=ellipses(1:imgc_y,1:imgc_x);
+    end
+    if checky > imgc_y
+        ellipses=ellipses(1:imgc_y,1:imgc_x);
+    end
+
+    sf = strel('disk',2); %Create a Morphological structuring element, you change the shape used and diameter
+    ellipses= imclose(ellipses,sf); 
+
+    ellipses=bwmorph(ellipses,'clean');
+
+    % ellipses(1:round(img_y/4),:)=0;
+    % 
+    % if in=='s'
+    %     ellipses(:,1:round(img_x/3))=0;
+    %     ellipses(:,round(2*(img_x/3)):end)=0;
+    % end
+
+    ellipses2 = zeros(size(I));
+    Xleft = int32(Xleft); 
+    Xright = int32(Xright); 
+    Ylo = int32(Ylo); 
+    Yup = int32(Yup); 
+
+    ii = 1;
+    for yy = Xleft:Xright
+        jj = 1;
+        for xx = 1:Ylo
+            ellipses2(xx,yy) = ellipses(jj,ii);
+            jj = jj+1;
         end
-        if ye2(a,b)<0.5
-            ye2(a,b)=1;
-        end
+        ii = ii+1;
     end
-    for d = 1:length(xe2)
-        ellipses(ye2(a,d),xe2(a,d)) = 1;      %fill in 1's wherever there is a point in the ellipse
+
+
+    figure, imshow(I,[]), title('Ellipses')
+    % red on top on figure
+    red = cat(3, ones(size(I)), zeros(size(I)), zeros(size(I))); %red has RGB value 1 0 0
+    hold on 
+    displ = imshow(red); 
+    hold off 
+    set(displ, 'AlphaData', ellipses2)
+
+end
+
+%% Fix Canny Edges
+
+edgecanny2 = zeros(size(I)); 
+if in == 's'
+    Xleft = int32(Xleft); 
+    Xright = int32(Xright); 
+    Ylo = int32(Ylo); 
+    Yup = int32(Yup); 
+end
+
+ii = 1;
+for yy = Xleft:Xright
+    jj = 1;
+    for xx = 1:Ylo
+        edgecanny2(xx,yy) = edgecanny(jj,ii);
+        jj = jj+1;
     end
-end
-
-[checky,checkx]=size(ellipses);
-if checkx > img_x
-    ellipses=ellipses(1:img_y,1:img_x);
-end
-if checky > img_y
-    ellipses=ellipses(1:img_y,1:img_x);
-end
-
-sf = strel('disk',2); %Create a Morphological structuring element, you change the shape used and diameter
-ellipses= imclose(ellipses,sf); 
-
-ellipses=bwmorph(ellipses,'clean');
-
-ellipses(1:round(img_y/4),:)=0;
-
-if in=='s'
-    ellipses(:,1:round(img_x/3))=0;
-    ellipses(:,round(2*(img_x/3)):end)=0;
-end
-
-
-figure, imshow(I,[]), title('Ellipses')
-% red on top on figure
-red = cat(3, ones(size(I)), zeros(size(I)), zeros(size(I))); %red has RGB value 1 0 0
-hold on 
-displ = imshow(red); 
-hold off 
-set(displ, 'AlphaData', ellipses)
-
+    ii = ii+1;
 end
 
 %% Part 3, Hot Pixel Finder

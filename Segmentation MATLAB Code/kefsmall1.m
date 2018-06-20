@@ -1,7 +1,7 @@
 %% Small Breasts Part 1, Circles
-rmin = 75;
-rmax = 125;
-[centers, radii] = imfindcircles(edgecanny,[rmin rmax],'Sensitivity',0.97); 
+rmin = 75;%75
+rmax = 250; %125
+[centers, radii] = imfindcircles(edgecanny3,[rmin rmax],'Sensitivity',0.97); 
 %A higher 'Sensitivity' value sets the detection threshold lower and leads 
 %to detecting more circles. 
 %% 

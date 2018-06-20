@@ -189,7 +189,7 @@ function bestFits = ellipseDetection(img, params, Xright, Xleft, Ylo)
         [score, idx] = max(accumulator);
 
         %keeping only the params.numBest best hypothesis (no non-maxima suppression)
-        if (bestFits(end,end) < score) && botpt(2)>=Ylo && checkpt==1
+        if (bestFits(end,end) < score) %&& botpt(2)>=Ylo && checkpt==1
             bestFits(end,:) = [x0 y0 sqrt(aSq) idx ang score];
             if params.numBest>1
                 [~,si]=sort(bestFits(:,end),'descend');

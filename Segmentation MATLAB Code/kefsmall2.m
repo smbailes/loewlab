@@ -3,7 +3,7 @@ smallpoints=zeros(img_y,img_x);
 
 for aa = 1:img_y
     for bb = 1:img_x
-        if edgecanny(aa,bb)==1
+        if edgecanny3(aa,bb)==1
             smallpoints(aa,bb)=smallpoints(aa,bb)+2;
         end
         if circ_matrix(aa,bb)==1
