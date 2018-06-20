@@ -18,6 +18,8 @@ title('Original Image')
 %     I=imcrop(I,[]); %cropping, if necessary
 % end
 
+%% 
+
 I=getMatrixOutliers(I);
 figure, imshow(I,[]) %to help decide if it should be cropped or not
 title('Outliers Removed')
@@ -25,6 +27,31 @@ title('Outliers Removed')
 close Figure 1
 %perc = input('What is your desired percentage? '); 
 perc = 5; %top 5% of pixels used
+
+%% Gets Rid of Background 
+
+%if in == 'l'
+    mini = min(min(I));
+    maxi = max(max(I));
+
+    %set background to black
+    [N, edges] = histcounts(I,2);
+
+    pts = I(I<edges(2));
+    pts = im2double(pts);
+    pts2 = isoutlier(pts); 
+    outlierz = I(pts2);
+%   [N2, edges2] = histcounts(outlierz, 2); 
+%   threshold = edges2(2);
+    pts(pts2==1)= [];
+    threshold = max(pts);
+    if threshold>1000
+        I(I<threshold*.95) = 0; 
+    else 
+        I(I<edges(2)*.95) = 0; 
+    end
+%end
+%% Canny Edges 
 
 edgecanny = edge(I,'canny');
 edgecanny=bwareaopen(edgecanny,10); %removes very small edge lines
