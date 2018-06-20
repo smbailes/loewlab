@@ -11,7 +11,6 @@
 
 clear all;
 close all;
-clc;
 %% Patient Selection
     [location, ptID] = pathfinder; 
 
@@ -41,7 +40,7 @@ prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
     'Enter MinPts:','Enter Desired %:','Enter desired scaling factor'};  
 dlg_title = 'DBSCAN Parameters';                                         % box title
 num_lines = 1;                                                          % lines per answer
-defaultans = {'5','10','5','1'};          % default inputs
+defaultans = {'5','10','50','sqrt(3)'};          % default inputs
 options.Resize = 'on';                                                  % allows for resizing of box
 answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
 epsilon = str2double(answer{1});                
@@ -121,9 +120,8 @@ fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,s);
 %     end
 
 %% Plot Image with Clusters using DBSCAN
-n = 7;
 %     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID);
-% for n = 1:14                    % Iterate through cell matrix for each minute
+for n = 1:14:15                    % Iterate through cell matrix for each minute
     I = I_mat{n};               % Get Image
     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID, s);
     
@@ -137,12 +135,11 @@ n = 7;
     ClusterInfo{n,2} = I;                   %Cell2 is Image
     ClusterInfo{n,3} = ClustData;         %Cell 3 is the ClusterData output from DBSCAN
     
-% end    
+end    
 
-
+fprintf('Finished Plotting Clusters\n');
 %% Check: Clusters on Bottom Border
-% for c = 1:14
-   c = 7;
+for c = 1:14:15
    thisImage = ClusterInfo{c,1};
    pic = ClusterInfo{c,2}; %pic = I
    
@@ -161,12 +158,13 @@ n = 7;
    end    
    
    ClusterInfo{c,1} = thisImage; %Save Info to ClusterInfo
-% end  
-
+end  
+fprintf('Finished Removing Bottom Borders\n');
 %% Remove small and large clusters
-   c = 7;
-   thisImage = ClusterInfo{c,1};
-   pic = ClusterInfo{c,2}; %pic = I
+for d = 1:14:15
+
+   thisImage = ClusterInfo{d,1};
+   pic = ClusterInfo{d,2}; %pic = I
    
    numClust = length(thisImage);
    sl = 0;
@@ -179,18 +177,14 @@ n = 7;
           end
       end
    end
-   
-ClusterInfo{c,1} = thisImage;
+   ClusterInfo{d,1} = thisImage;
+end 
+fprintf('Finished Removing Small and Large Clusters\n');
 
 %% Remove Cluster Data
-% for c = 1:14
-    thisImage = ClusterInfo{c,1}; %Get Current Image Info
-    
-    picture = ClusterInfo{c,2};
-    pic_adj = picture(find(picture>0));
-    
-    clustData = ClusterInfo{c,3}; %Copy Cluster Data 
-        
+for e = 1:14:15
+    thisImage = ClusterInfo{e,1}; %Get Current Image Info
+    clustData = ClusterInfo{e,3}; %Copy Cluster Data     
     numClusters = length(thisImage);
     
     for i = 1:numClusters %Sort through clusters for image
@@ -198,29 +192,37 @@ ClusterInfo{c,1} = thisImage;
             thisImage(i).ClusterMeanIntensity = 0;
         end     
     end    
-    
-     ClusterInfo{c,1} = thisImage;
-%% Keep certain %
-    
-    for a = 1:numClusters
-        CI(a) = thisImage(a).ClusterMeanIntensity;
-    end
-    
-    CI_nonzero = CI(find(CI>0));
-    CI_sorted = sort(CI_nonzero);
-    percent1 = percent/100;
-    percent_ind1 = round(percent1*numel(CI_sorted));
-    percent_val = CI_sorted(end-percent_ind1);
-    
-    for k = 1:numClusters
-        if thisImage(k).ClusterMeanIntensity < percent_val
-            thisImage(k).RemoveCluster = 1;
-        end
-    end
-   
- ClusterInfo{c,1} = thisImage;
+     ClusterInfo{e,1} = thisImage;
+end 
+fprintf('Finished Removing Cluster Mean Intensity Data\n');
+%% Keep certain % of clusters
+% for f = 1:14:15
+%     
+%     thisImage = ClusterInfo{f,1}; %Get Current Image Info
+%     numClusters = length(thisImage);
+%     for a = 1:numClusters
+%         CI(a) = thisImage(a).ClusterMeanIntensity;
+%     end
+%     
+%     CI_nonzero = CI(find(CI>0));
+%     CI_sorted = sort(CI_nonzero);
+%     percent1 = percent/100;
+%     percent_ind1 = round(percent1*numel(CI_sorted));
+%     percent_val = CI_sorted(end-percent_ind1);
+%     
+%     for k = 1:numClusters
+%         if thisImage(k).ClusterMeanIntensity < percent_val
+%             thisImage(k).RemoveCluster = 1;
+%         end
+%     end
+%  ClusterInfo{f,1} = thisImage;
+% end 
+% fprintf('Finished Removing Clusters Below Threshold\n');
 %% Plot left over clusters
+for g = 1:14:15    
     
+    thisImage = ClusterInfo{g,1}; %Get Current Image Info
+    numClusters = length(thisImage);
     for m = 1:numClusters %Sort through clusters for image
         if thisImage(m).RemoveCluster == 1 %Remove Indices from Marked Clusters from Cluster Data copy
             rows = find(clustData(:,3) == m);
@@ -230,6 +232,9 @@ ClusterInfo{c,1} = thisImage;
     
     hrEnd = clustData(:,(1:2)); %Cluster Indices of remaining Clusters
     clEnd = clustData(:,3); %Cluster Number for remaining clusters
+    
+    picture = ClusterInfo{g,2};
+    pic_adj = picture(find(picture>0));
     
     figure('Name','Remaining Clusters'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
     hold on
@@ -256,7 +261,9 @@ ClusterInfo{c,1} = thisImage;
 %     title(sprintf('%s - Mirror Midline Isolation',ptID));
 %     
     ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
-% end
+end
+
+
 
 
 

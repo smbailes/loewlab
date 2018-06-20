@@ -477,3 +477,16 @@ bardata = [aveRbreastchange,aveLbreastchange,avetumorchange,avecorrchange];
 bar(c,bardata)
 title('Average Rate of change')
 
+%% Find regions of low change
+% totsquarechange = cell2mat(totsquarechange)
+
+[maximum, maxidx] = maxk(totsquarechange(:),5);
+[lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);
+corrregionidentifier = I_mat{15}
+for i = 1:numel(lowcol)
+   corrregionidentifier(squareside*(lowrow(i)-1):1:squareside*(lowrow(i)),...
+       squareside*(lowcol(i)-1):1:squareside*lowcol(i)) = 0;% converts every warmest regions to black
+end
+figure, imtool(corrregionidentifier, [min(I_adj1) max(I_adj1)])
+
+
