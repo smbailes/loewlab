@@ -35,42 +35,7 @@ edgecanny=bwareaopen(edgecanny,10); %removes very small edge lines
 figure,imshow(edgecanny)
 title('Canny Edges for Ellipses');
 
-%% Gets Rid of Background 
-
-%if in == 'l'
-    mini = min(min(I));
-    maxi = max(max(I));
-
-    %set background to black
-    [N, edges] = histcounts(I,2);
-
-    pts = I(I<edges(2));
-    pts = im2double(pts);
-    pts2 = isoutlier(pts); 
-    outlierz = I(pts2);
-%   [N2, edges2] = histcounts(outlierz, 2); 
-%   threshold = edges2(2);
-    pts(pts2==1)= [];
-    threshold = max(pts);
-    if threshold>1000
-        I(I<threshold*.95) = 0; 
-    else 
-        I(I<edges(2)*.95) = 0; 
-    end
-%end
-%% Canny Edges 
-
-edgecanny2 = edge(I,'canny');
-edgecanny2=bwareaopen(edgecanny2,10); %removes very small edge lines
-
-figure,imshow(edgecanny2)
-title('Canny Edges');
-
 %% Part 2, Ellipse Detection
-
-figure;
-imshow(I,[]); %produce an image to overlay the ellipses onto
-title('Image with Ellipses')
 
 in = input('Is the breast small or large? Enter s/l: ','s');
 
@@ -87,7 +52,9 @@ if in == 'l'
     
     % note that the edge (or gradient) image is used
     fprintf('Pick lower bound for the right breast. \n');
-    bestFitsr = ellipseDetection(edgecanny, I, paramsr);
+    figure, imshow(I, []), title('Bound Detection')
+    [Xlo1,Ylo1] = ginput(1);
+    bestFitsr = ellipseDetection(edgecanny, Xlo1, Ylo1, paramsr);
     fprintf('Output %d best fits.\n', size(bestFitsr,1));
     
     
@@ -111,7 +78,9 @@ if in == 'l'
 
     %LEFT SIDE
     fprintf('Pick lower bound for the left breast. \n');
-    bestFitsl = ellipseDetection(edgecanny, I, paramsl);
+    figure, imshow(I, []), title('Bound Detection')
+    [Xlo2,Ylo2] = ginput(1);
+    bestFitsl = ellipseDetection(edgecanny, Xlo2, Ylo2, paramsl);
     fprintf('Output %d best fits.\n', size(bestFitsl,1));
 
     %ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
@@ -195,7 +164,43 @@ displ = imshow(red);
 hold off 
 set(displ, 'AlphaData', ellipses)
 
-end 
+end
+%% Gets Rid of Background 
+
+%if in == 'l'
+    mini = min(min(I));
+    maxi = max(max(I));
+
+    %set background to black
+    [N, edges] = histcounts(I,2);
+
+    pts = I(I<edges(2));
+    pts = im2double(pts);
+    pts2 = isoutlier(pts); 
+    outlierz = I(pts2);
+%   [N2, edges2] = histcounts(outlierz, 2); threshold = edges2(2);
+    pts(pts2==1)= [];
+    threshold = max(pts);
+    if threshold>1000
+        I(I<threshold*.95) = 0; 
+    else 
+        I(I<edges(2)*.95) = 0; 
+    end
+%% Canny Edges for the Point System
+
+edgecanny2 = edge(I,'canny');
+edgecanny2=bwareaopen(edgecanny2,10); %removes very small edge lines
+
+if(Ylo1 < Ylo2)
+    edgecanny2(Ylo2:end,:) = 0;
+end
+if(Ylo1 > Ylo2)
+    edgecanny2(Ylo1:end,:) = 0;
+end
+
+figure,imshow(edgecanny2)
+title('Canny Edges for Ellipses');
+
 %% Part 3, Hot Pixel Finder
 
 bins = 2^16; %insert image bits here

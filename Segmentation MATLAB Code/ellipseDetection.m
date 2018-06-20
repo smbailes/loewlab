@@ -1,4 +1,4 @@
-function bestFits = ellipseDetection(img, boundimg, params)
+function bestFits = ellipseDetection(img, Xlo, Ylo, params)
 % ellipseDetection: Ellipse detection
 %
 % Overview:
@@ -102,10 +102,6 @@ function bestFits = ellipseDetection(img, boundimg, params)
     params.rotationSpan = min(params.rotationSpan, 90);    
     H = fspecial('gaussian', [params.smoothStddev*6 1], params.smoothStddev);
 
-    %% Create lower bound to check
-    figure, imshow(boundimg,[]), title('Bound Detection')
-    [Xlo,Ylo] = ginput(1);
-    
     %% Creating the Ellipses
     
     [Y,X]=find(img);
