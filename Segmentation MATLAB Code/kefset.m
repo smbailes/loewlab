@@ -43,30 +43,6 @@ fprintf('Select Right Bound \n');
 %plot(:,Xright,'g')
 %hold off;
 
-%% 
-
-%if in == 'l'
-    mini = min(min(I));
-    maxi = max(max(I));
-
-    %set background to black
-    [N, edges] = histcounts(I,2);
-
-    pts = I(I<edges(2));
-    pts = im2double(pts);
-    pts2 = isoutlier(pts); 
-    outlierz = I(pts2);
-%   [N2, edges2] = histcounts(outlierz, 2); 
-%   threshold = edges2(2);
-    pts(pts2==1)= [];
-    threshold = max(pts);
-    if threshold>1000
-        I(I<threshold*.95) = 0; 
-    else 
-        I(I<edges(2)*.95) = 0; 
-    end
-%end
-
 %% Crop Image for Ellipse Detection
 
 I_crop = imcrop(I, [Xleft 1 (Xright-Xleft) Ylo]);
@@ -329,6 +305,37 @@ for m = 1:k
 end
 figure, imshow(newI)
 title('Hot Pixel');
+
+
+%% Adjustments of Canny Edges for Point System
+
+%if in == 'l'
+    mini = min(min(I));
+    maxi = max(max(I));
+
+    %set background to black
+    [N, edges] = histcounts(I,2);
+
+    pts = I(I<edges(2));
+    pts = im2double(pts);
+    pts2 = isoutlier(pts); 
+    outlierz = I(pts2);
+%   [N2, edges2] = histcounts(outlierz, 2); 
+%   threshold = edges2(2);
+    pts(pts2==1)= [];
+    threshold = max(pts);
+    if threshold>1000
+        I(I<threshold*.95) = 0; 
+    else 
+        I(I<edges(2)*.95) = 0; 
+    end
+%end
+
+edgecanny3 = edge(I,'canny');
+edgecanny3=bwareaopen(edgecanny3,10); %removes very small edge lines
+
+figure,imshow(edgecanny3)
+title('Canny edges for Point System');
 
 %% Small/Large
 

@@ -12,7 +12,7 @@ BW_long = bwmorph(BW_long,'thicken');
 %implementing combined point systems
 for aa = 1:img_y
     for bb = 1:img_x
-        if edgecanny2(aa,bb)==1%add point if canny edge
+        if edgecanny3(aa,bb)==1%add point if canny edge
             largepoints(aa,bb)=largepoints(aa,bb)+1; 
         end
         if ellipses2(aa,bb)==1 %add points if included in ellipse
@@ -137,49 +137,51 @@ total(:,round(2*(f*(1/5))):(round((4*(f*(1/5))))-1))=uppers(:,round(2*(f*(1/5)))
  total=bwmorph(total,'clean'); %removes individual 1's surrounded by 0's
  
  
- side=input('Are the breasts lower or higher? [h/l]: ','s');
- if side=='l'
-    total(1:round(2*(e/3)),1:(round((f*(3/7)))))=0;
-    total(1:round(2*(e/3)),round(((f*(4/7)))):end)=0;
- else
-    total(1:round((e/2)),1:(round((f*(3/7)))))=0;
-    total(1:round((e/2)),round(((f*(4/7)))):end)=0;
- end
-
-
-
-figure, imshow(I,[]), title('Mixed')
-% blue on top on figure
-blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
-hold on 
-displ = imshow(blue); 
-hold off 
-set(displ, 'AlphaData', total)
+%  side=input('Are the breasts lower or higher? [h/l]: ','s');
+%  if side=='l'
+%     total(1:round(2*(e/3)),1:(round((f*(3/7)))))=0;
+%     total(1:round(2*(e/3)),round(((f*(4/7)))):end)=0;
+%  else
+%     total(1:round((e/2)),1:(round((f*(3/7)))))=0;
+%     total(1:round((e/2)),round(((f*(4/7)))):end)=0;
+%  end
+% 
+% 
+% 
+% figure, imshow(I,[]), title('Mixed')
+% % blue on top on figure
+% blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+% hold on 
+% displ = imshow(blue); 
+% hold off 
+% set(displ, 'AlphaData', total)
 
 
 %% Part 2, Clean
 
-gettit=bwmorph(total,'close');
-
-gett=bwmorph(gettit,'bridge');
-
-sg = strel('disk',4); %Create a Morphological structuring element, you change the shape used and diameter
-gett= imclose(gett,sf);
-
-gett=bwmorph(gett,'clean');
-
-gett=bwmorph(gett,'bridge');
-
-
-figure, imshow(I,[]), title('Cleaned')
-% blue on top on figure
-blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
-hold on
-displ = imshow(blue);
-hold off
-set(displ, 'AlphaData', gett)
+% gettit=bwmorph(total,'close');
+% 
+% gett=bwmorph(gettit,'bridge');
+% 
+% sg = strel('disk',4); %Create a Morphological structuring element, you change the shape used and diameter
+% gett= imclose(gett,sf);
+% 
+% gett=bwmorph(gett,'clean');
+% 
+% gett=bwmorph(gett,'bridge');
+% 
+% 
+% figure, imshow(I,[]), title('Cleaned')
+% % blue on top on figure
+% blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+% hold on
+% displ = imshow(blue);
+% hold off
+% set(displ, 'AlphaData', gett)
 
 %% Part 2.5: Cleaning using average intensity comparison
+
+gett = total;
 
 % split image in half
 mid_col = zeros(img_y,img_x);
