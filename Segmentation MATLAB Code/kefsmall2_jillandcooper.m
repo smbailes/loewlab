@@ -516,7 +516,7 @@ hold on
 BW2 = bwmorph(connectedtop,'skel',inf);
 endPoints = bwmorph(BW2, 'endpoints');
 %imshow(BW2);hold on;
-imshowpair(I,BW2);hold on;
+imshowpair(I,BW2,'diff');hold on;    %imshowpair with 'diff' allows for the image to be unaltered
 [rows cols] = find(endPoints);
 [lowestX indexOfLowestX] = min(rows);
 [highestX indexOfHighestX] = max(cols);
@@ -545,17 +545,24 @@ disp(yvalintersect)
 plot(xvalintersect,yvalintersect,'go');
 hold off
 
- %{ while intersectpointx~=0    
-  %while intersectpointy~=0
-   %   ytest1=yval1[n+1];
-    %  ytest2=yval2[n+1];
-     % intersectpointy=ytest2-ytest1
-      
-    %end
-    %xtest1=xval[n+1];
-    %intersectpointx=0;
-    %n=n+1;
- %end
+n=0;
+nn=0;
+intersectpointx=1;
+intersectpointy=1;
+
+while intersectpointx~=0    
+  while intersectpointy~=0
+      ytest1=yval1(n+1);
+      ytest2=yval2(n+1);
+      intersectpointy=ytest2-ytest1;
+      n=n+1;
+  end
+    xtest1=xval1(nn+1);
+    xtest2=xval2(1);
+    intersectpointx=xtest1-xtest2;
+    nn=nn+1;
+end
+
 
 
 %ipoint=intersect(horiz,vert)
