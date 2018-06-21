@@ -11,11 +11,11 @@ connected2=bwmorph(connected1,'close');
 
 
 biggest = bwareafilt(connected2,1,'largest');
-[ro co] = size(I);
-biggest(1:Yup, :) = 0;
-biggest(Ylo:ro, :) = 0;
-biggest(:,1:Xleft) = 0;
-biggest(:,Xright:co) = 0;
+% [ro co] = size(I);
+% biggest(1:Yup, :) = 0;
+% biggest(Ylo:ro, :) = 0;
+% biggest(:,1:Xleft) = 0;
+% biggest(:,Xright:co) = 0;
 
 figure, imshow(I,[]), title('Thick Under Curve')
 %blue on top on figure

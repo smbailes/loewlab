@@ -33,14 +33,14 @@ title('Combined Point Systems')
 overlayedpoints = zeros(img_y,img_x); 
 for cc=1:img_y 
     for dd=1:img_x
-        if largepoints(cc,dd)>2 && cc<Ylo && cc>Yup && dd<Xright && dd>Xleft
+        if largepoints(cc,dd)>2 %&& cc<Ylo && cc>Yup && dd<Xright && dd>Xleft
             overlayedpoints(cc,dd)=1;
         end
     end
 end
 
  
-[e,f]=size(ellipses2);
+[e,f]=size(ellipses);
 bottoms=zeros(e,f);
 for fir=1:f
     y=find(overlayedpoints(:,fir)==1);
@@ -193,6 +193,9 @@ midlinez(:,1) = midx;
 midlinez(:,2) = midy;
 
 %find intersection between upper bound and midline
+fprintf('Select Upper Bound\n');
+figure, imshow(I, []), title('Bound Detection')
+[Xup,Yup] = ginput(1);
 ptofcompx = find(Yup==midlinez(:,1));
 ptofcompy = midlinez(ptofcompx,2);
 ptofcomp(:,1) = ptofcompx;

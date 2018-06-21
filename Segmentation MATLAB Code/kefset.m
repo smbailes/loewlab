@@ -153,7 +153,7 @@ if in == 'l'
 
 
     %LEFT SIDE
-     fprintf('Pick lower bound for the right breast. \n');
+    fprintf('Pick lower bound for the right breast. \n');
     figure, imshow(I, []), title('Bound Detection')
     [Xlo2,Ylo2] = ginput(1);
     bestFitsl = ellipseDetection(edgecanny, Xlo2, Ylo2, paramsl);
@@ -213,10 +213,10 @@ if in == 'l'
     end
 
     [checky,checkx]=size(ellipses);
-    if checkx > imgc_x
+    if checkx > img_x
         ellipses=ellipses(1:img_y,1:img_x);
     end
-    if checky > imgc_y
+    if checky > img_y
         ellipses=ellipses(1:img_y,1:img_x);
     end
 
@@ -225,7 +225,7 @@ if in == 'l'
 
     ellipses=bwmorph(ellipses,'clean');
 
-    % ellipses(1:round(img_y/4),:)=0;
+    ellipses(1:round(img_y/4),:)=0;
     % 
     % if in=='s'
     %     ellipses(:,1:round(img_x/3))=0;
@@ -261,23 +261,23 @@ end
 
 %% Fix Canny Edges
 
-edgecanny2 = zeros(size(I)); 
-if in == 's'
-    Xleft = int32(Xleft); 
-    Xright = int32(Xright); 
-    Ylo = int32(Ylo); 
-    Yup = int32(Yup); 
-end
-
-ii = 1;
-for yy = Xleft:Xright
-    jj = 1;
-    for xx = 1:Ylo
-        edgecanny2(xx,yy) = edgecanny(jj,ii);
-        jj = jj+1;
-    end
-    ii = ii+1;
-end
+% edgecanny2 = zeros(size(I)); 
+% if in == 's'
+%     Xleft = int32(Xleft); 
+%     Xright = int32(Xright); 
+%     Ylo = int32(Ylo); 
+%     Yup = int32(Yup); 
+% end
+% 
+% ii = 1;
+% for yy = Xleft:Xright
+%     jj = 1;
+%     for xx = 1:Ylo
+%         edgecanny2(xx,yy) = edgecanny(jj,ii);
+%         jj = jj+1;
+%     end
+%     ii = ii+1;
+% end
 
 %% Part 3, Hot Pixel Finder
 
