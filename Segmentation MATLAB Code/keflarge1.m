@@ -15,7 +15,7 @@ for aa = 1:img_y
         if edgecanny3(aa,bb)==1%add point if canny edge
             largepoints(aa,bb)=largepoints(aa,bb)+1; 
         end
-        if ellipses2(aa,bb)==1 %add points if included in ellipse
+        if ellipses(aa,bb)==1 %add points if included in ellipse
             largepoints(aa,bb)=largepoints(aa,bb)+2;
         end
         if newI(aa,bb)~=0 %add point for hot pixel

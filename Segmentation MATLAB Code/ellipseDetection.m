@@ -158,13 +158,13 @@ function bestFits = ellipseDetection(img, Xlo, Ylo, params)
         ang = atand((y1-y2)/(x1-x2));
         
         %user input constraints checkpoint
-        checkpt = 0;
-        if (y1>y2), toppt = [x1 y1]; botpt = [x2 y2]; else, toppt = [x2 y2]; botpt = [x1 y1]; end
-        if (ang>0) %right breast
-            if botpt(1)>=Xleft, checkpt = 1; end 
-        else %left breast
-            if botpt(1)<=Xright, checkpt = 1; end 
-        end
+%         checkpt = 0;
+%         if (y1>y2), toppt = [x1 y1]; botpt = [x2 y2]; else, toppt = [x2 y2]; botpt = [x1 y1]; end
+%         if (ang>0) %right breast
+%             if botpt(1)>=Xleft, checkpt = 1; end 
+%         else %left breast
+%             if botpt(1)<=Xright, checkpt = 1; end 
+%         end
 
         %get minor ax propositions for all other points
         fSq = (X(K)-x2).^2 + (Y(K)-y2).^2;

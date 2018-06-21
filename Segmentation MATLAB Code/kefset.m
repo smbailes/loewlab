@@ -24,28 +24,28 @@ title('Outliers Removed')
 
 in = input('Is the breast small or large? Enter s/l: ','s');
 %% Bound Detection
-figure, imshow(I,[]), title('Bound Detection')
-%hold on; 
-fprintf('Select Upper Bound \n');
-[Xup,Yup] = ginput(1);
-%plot(Yup, :)
-%hold on;
-fprintf('Select Lower Bound \n');
-[Xlo,Ylo] = ginput(1);
-%plot(Ylo,:,'g')
-%hold on; 
-fprintf('Select Left Bound \n');
-[Xleft,Yleft] = ginput(1);
-%plot(:,Xleft,'g')
-%hold on; 
-fprintf('Select Right Bound \n');
-[Xright,Yright] = ginput(1);
-%plot(:,Xright,'g')
-%hold off;
+% figure, imshow(I,[]), title('Bound Detection')
+% %hold on; 
+% fprintf('Select Upper Bound \n');
+% [Xup,Yup] = ginput(1);
+% %plot(Yup, :)
+% %hold on;
+% fprintf('Select Lower Bound \n');
+% [Xlo,Ylo] = ginput(1);
+% %plot(Ylo,:,'g')
+% %hold on; 
+% fprintf('Select Left Bound \n');
+% [Xleft,Yleft] = ginput(1);
+% %plot(:,Xleft,'g')
+% %hold on; 
+% fprintf('Select Right Bound \n');
+% [Xright,Yright] = ginput(1);
+% %plot(:,Xright,'g')
+% %hold off;
 
 %% Crop Image for Ellipse Detection
 
-I_crop = imcrop(I, [Xleft 1 (Xright-Xleft) Ylo]);
+% I_crop = imcrop(I, [Xleft 1 (Xright-Xleft) Ylo]);
 
 %% Canny Edges
 
@@ -53,7 +53,7 @@ close Figure 1
 %perc = input('What is your desired percentage? '); 
 perc = 5; %top 5% of pixels used
 
-edgecanny = edge(I_crop,'canny');
+edgecanny = edge(I,'canny');
 edgecanny=bwareaopen(edgecanny,10); %removes very small edge lines
 
 figure,imshow(edgecanny)
@@ -68,7 +68,7 @@ title('Canny edges');
 %% Part 2, Ellipse Detection
 
 figure;
-imshow(I_crop,[]); %produce an image to overlay the ellipses onto
+imshow(I,[]); %produce an image to overlay the ellipses onto
 title('Image with Ellipses')
 
 % if in == 's'
@@ -156,7 +156,7 @@ if in == 'l'
      fprintf('Pick lower bound for the right breast. \n');
     figure, imshow(I, []), title('Bound Detection')
     [Xlo2,Ylo2] = ginput(1);
-    bestFitsr = ellipseDetection(edgecanny, Xlo2, Ylo2, paramsl);
+    bestFitsl = ellipseDetection(edgecanny, Xlo2, Ylo2, paramsl);
     %bestFitsl = ellipseDetection(edgecanny, paramsl, Xright, Xleft, Ylo);
     fprintf('Output %d best fits.\n', size(bestFitsl,1));
 
@@ -169,8 +169,8 @@ if in == 'l'
 
     %ELLIPSES TO PIXELS
     [img_y, img_x] = size(I);
-    [imgc_y, imgc_x] = size(I_crop);
-    ellipses=zeros(imgc_y,imgc_x);
+%     [imgc_y, imgc_x] = size(I_crop);
+    ellipses=zeros(img_y,img_x);
 
     for a = 1:length(ql)                %a,b,n,m are just used as counters in the for loops - delete at end of section
         e1 = ql{a};
@@ -214,10 +214,10 @@ if in == 'l'
 
     [checky,checkx]=size(ellipses);
     if checkx > imgc_x
-        ellipses=ellipses(1:imgc_y,1:imgc_x);
+        ellipses=ellipses(1:img_y,1:img_x);
     end
     if checky > imgc_y
-        ellipses=ellipses(1:imgc_y,1:imgc_x);
+        ellipses=ellipses(1:img_y,1:img_x);
     end
 
     sf = strel('disk',2); %Create a Morphological structuring element, you change the shape used and diameter
@@ -232,21 +232,21 @@ if in == 'l'
     %     ellipses(:,round(2*(img_x/3)):end)=0;
     % end
 
-    ellipses2 = zeros(size(I));
-    Xleft = int32(Xleft); 
-    Xright = int32(Xright); 
-    Ylo = int32(Ylo); 
-    Yup = int32(Yup); 
-
-    ii = 1;
-    for yy = Xleft:Xright
-        jj = 1;
-        for xx = 1:Ylo
-            ellipses2(xx,yy) = ellipses(jj,ii);
-            jj = jj+1;
-        end
-        ii = ii+1;
-    end
+%     ellipses2 = zeros(size(I));
+%     Xleft = int32(Xleft); 
+%     Xright = int32(Xright); 
+%     Ylo = int32(Ylo); 
+%     Yup = int32(Yup); 
+% 
+%     ii = 1;
+%     for yy = Xleft:Xright
+%         jj = 1;
+%         for xx = 1:Ylo
+%             ellipses2(xx,yy) = ellipses(jj,ii);
+%             jj = jj+1;
+%         end
+%         ii = ii+1;
+%     end
 
 
     figure, imshow(I,[]), title('Ellipses')
@@ -255,7 +255,7 @@ if in == 'l'
     hold on 
     displ = imshow(red); 
     hold off 
-    set(displ, 'AlphaData', ellipses2)
+    set(displ, 'AlphaData', ellipses)
 
 end
 
