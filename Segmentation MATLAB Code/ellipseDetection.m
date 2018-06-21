@@ -1,4 +1,4 @@
-function bestFits = ellipseDetection(img, params, Xright, Xleft, Ylo)
+function bestFits = ellipseDetection(img, Xlo, Ylo, params)
 % ellipseDetection: Ellipse detection
 %
 % Overview:

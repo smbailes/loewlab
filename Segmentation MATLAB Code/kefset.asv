@@ -177,11 +177,7 @@ if in == 'l'
 
 
     %LEFT SIDE
-     fprintf('Pick lower bound for the right breast. \n');
-    figure, imshow(I, []), title('Bound Detection')
-    [Xlo2,Ylo2] = ginput(1);
-    bestFitsr = ellipseDetection(edgecanny, Xlo2, Ylo2, paramsl);
-    %bestFitsl = ellipseDetection(edgecanny, paramsl, Xright, Xleft, Ylo);
+    bestFitsl = ellipseDetection(edgecanny, paramsl, Xright, Xleft, Ylo);
     fprintf('Output %d best fits.\n', size(bestFitsl,1));
 
     %ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
