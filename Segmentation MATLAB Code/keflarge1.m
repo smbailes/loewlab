@@ -19,10 +19,10 @@ for aa = 1:img_y
             largepoints(aa,bb)=largepoints(aa,bb)+2;
         end
         if newI(aa,bb)~=0 %add point for hot pixel
-            largepoints(aa,bb)=largepoints(aa,bb)+1;
+            largepoints(aa,bb)=largepoints(aa,bb)+2;
         end
         if BW_long(aa,bb)~=0 %add points for LoG edge detection  
-            largepoints(aa,bb)=largepoints(aa,bb)+2;
+            largepoints(aa,bb)=largepoints(aa,bb)+1;
         end
     end
 end
@@ -130,13 +130,22 @@ set(displ, 'AlphaData', uppers2)
 
 
 total=zeros(e,f);
-total(:,1:round(2*(f*(1/5))))= bottoms3(:,1:round(2*(f*(1/5))));
-total(:,round((4*(f*(1/5)))):end)= bottoms3(:,round((4*(f*(1/5)))):end);
-total(:,round(2*(f*(1/5))):(round((4*(f*(1/5))))-1))=uppers(:,round(2*(f*(1/5))):(round((4*(f*(1/5))))-1));
+% total(:,1:round(2*(f*(1/5))))= bottoms3(:,1:round(2*(f*(1/5))));
+% total(:,round((4*(f*(1/5)))):end)= bottoms3(:,round((4*(f*(1/5)))):end);
+% total(:,round(2*(f*(1/5))):(round((4*(f*(1/5))))-1))=uppers(:,round(2*(f*(1/5))):(round((4*(f*(1/5))))-1));
+% 
+% total=bwmorph(total,'clean'); %removes individual 1's surrounded by 0's
+for i = 1:e
+    for j = 1:f
+        if bottoms3(i,j)
+            total(i,j) = 1; 
+        end
+        if uppers2(i,j)
+            total(i,j) = 1; 
+        end
+    end
+end
 
- total=bwmorph(total,'clean'); %removes individual 1's surrounded by 0's
- 
- 
 %  side=input('Are the breasts lower or higher? [h/l]: ','s');
 %  if side=='l'
 %     total(1:round(2*(e/3)),1:(round((f*(3/7)))))=0;
@@ -232,14 +241,22 @@ for i = 1:length(gettx)
     for j = 1:10
         xbel(j) = linepix1(i,j,1);
         ybel(j) = linepix1(i,j,2);
-        intensities1(i,j) = I(round(xbel(j)),round(ybel(j))); 
+        xbelint = round(xbel(j));
+        ybelint = round(ybel(j));
+        if xbelint <=0, xbelint = 1; end
+        if ybelint <=0, ybelint = 1; end
+        intensities1(i,j) = I(xbelint,ybelint); 
         xab(j) = linepix2(i,j,1);
         yab(j) = linepix2(i,j,2);
-        intensities2(i,j) = I(round(xab(j)),round(yab(j))); 
+        xabint = round(xab(j));
+        yabint = round(yab(j));
+        if xabint <=0, xabint = 1; end
+        if yabint <=0, yabint = 1; end
+        intensities2(i,j) = I(xabint,yabint); 
     end 
     mean1 = mean(intensities1(i,1:j));
     mean2 = mean(intensities2(i,1:j));
-    if abs(mean1-mean2)<50
+    if abs(mean1-mean2)<25
         xrem = gettx(i);
         yrem = getty(i);
         gett(xrem,yrem) = 0; %removes pixels 
