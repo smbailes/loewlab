@@ -1,6 +1,6 @@
 close all
-clc, clearvars -except normbreastmean normstdv tottumbreastmean tumstdv v
-v = v+1
+clc, clear
+%v = v+1
 answer = questdlg('ID Patient Type:','Patient Type','Patient','Volunteer','Patient');
 if (strcmp(answer, 'Patient'))
     ptID = patientselect;    % Dialog Box for patient selection
@@ -17,7 +17,7 @@ if (strcmp(answer, 'Volunteer'))
     vtID = volunteerselect;
     prompt = {'Enter User name:','Enter length of square in pixels:','Enter total number of pictures:'};
     dlgtitle = 'Input';
-    defaultans = {'Jacob','16','14'};
+    defaultans = {'Jacob','16','15'};
     numlines = 1;
     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     name = answers{1};
@@ -155,52 +155,52 @@ ymax = max(cell2mat(ylim_array));
 ymax = max(ymax);
 ymax = max(ymax);
 %% graph averages. flat out destroys computers with very small squares
-warning('off')
-t = 0:numpics-1; % pictures start at t = 0, first pictue is lower than second. Strange
-ypoints = cell(1,numpics); % preallocates y points. Might need to change
-colors = {[1,0,0],[0.9,0,0],[0.8,0,0],[0.7,0,0],[0.6,0,0],[0,1,0],[0,0.9,0],[0,0.8,0],[0,0.7,0],[0,0.6,0],[0,0,1],[0,0,0.9],[0,0,0.8],[0,0,0.7],[0,0,0.6],[1,0,1],[0.9,0,0.9],[0.8,0,0.8],[0.7,0,0.7],[0.6,0,0.6],[0,1,1],[0,0.9,0.9],[0,0.8,0.8],[0,0.7,0.7],[0,0.6,0.6],[1,1,0],[0.9,0.9,0],[0.8,0.8,0],[0.7,0.7,0],[0.6,0.6,0],[.85,0.325,0],[0.9,0.6,0.1],[0.4,0.2,0.6],[0.6,0.4,0.8],[0.3,0.74,0.9],[1,1,1],[0.8,0.8,0.8],[0.6,0.6,0.6]};
-
-for i = 1:numrows
-   figure(numpics+1); 
-    for j = 1:numcols
-    ypoints = {};
-        for k = 1:numpics % need to change
-        ypoints{k} = averages{i,j,k};      
-        end
-      if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
-        ypoints = cell2mat(ypoints); 
-        coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
-        newypoints = polyval(coefficients,t); % creates new y points that are smoooth
-        if sqrt(numrows+1) - floor(sqrt(numrows+1))  <0.5
-            p = 1;
-        else 
-            p = 0;
-        end
-        color = colors{j};
-        subplot(ceil(sqrt(numrows+p)),ceil(sqrt(numrows)),i) % creates subplot
-        plot(t,newypoints,'-','Color',color), hold on %can add real data points with t,y,'+'
-        g =  plot(t,ypoints,'o','Color',color); %Adds true data points to graph
-        gAnno = get(g, 'Annotation'); %following three lines make the true data points not appear in legend
-        gLegend = get(gAnno, 'LegendInformation');
-        set(gLegend,'IconDisplayStyle','off');
-        title(['row ' num2str(i)])
-        xlabel('time')
-        ylabel('pixel value')
-        ylim([ymin,ymax]); %specify y limits
-        xlim([0,numpics-1]);
-      end
-    end
-    if i == numrows
-        for e = 1:35
-            color = colors{e};
-        f = color;
-        g = color;
-        subplot(ceil(sqrt(numrows+p)),ceil(sqrt(numrows)),i+1)
-        h = plot(f,g,'Color',color);, hold on;
-        legend('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35');       
-        end
-    end
-end
+% warning('off')
+% t = 0:numpics-1; % pictures start at t = 0, first pictue is lower than second. Strange
+% ypoints = cell(1,numpics); % preallocates y points. Might need to change
+% colors = {[1,0,0],[0.9,0,0],[0.8,0,0],[0.7,0,0],[0.6,0,0],[0,1,0],[0,0.9,0],[0,0.8,0],[0,0.7,0],[0,0.6,0],[0,0,1],[0,0,0.9],[0,0,0.8],[0,0,0.7],[0,0,0.6],[1,0,1],[0.9,0,0.9],[0.8,0,0.8],[0.7,0,0.7],[0.6,0,0.6],[0,1,1],[0,0.9,0.9],[0,0.8,0.8],[0,0.7,0.7],[0,0.6,0.6],[1,1,0],[0.9,0.9,0],[0.8,0.8,0],[0.7,0.7,0],[0.6,0.6,0],[.85,0.325,0],[0.9,0.6,0.1],[0.4,0.2,0.6],[0.6,0.4,0.8],[0.3,0.74,0.9],[1,1,1],[0.8,0.8,0.8],[0.6,0.6,0.6]};
+% 
+% for i = 1:numrows
+%    figure(numpics+1); 
+%     for j = 1:numcols
+%     ypoints = {};
+%         for k = 1:numpics % need to change
+%         ypoints{k} = averages{i,j,k};      
+%         end
+%       if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
+%         ypoints = cell2mat(ypoints); 
+%         coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
+%         newypoints = polyval(coefficients,t); % creates new y points that are smoooth
+%         if sqrt(numrows+1) - floor(sqrt(numrows+1))  <0.5
+%             p = 1;
+%         else 
+%             p = 0;
+%         end
+%         color = colors{j};
+%         subplot(ceil(sqrt(numrows+p)),ceil(sqrt(numrows)),i) % creates subplot
+%         plot(t,newypoints,'-','Color',color), hold on %can add real data points with t,y,'+'
+%         g =  plot(t,ypoints,'o','Color',color); %Adds true data points to graph
+%         gAnno = get(g, 'Annotation'); %following three lines make the true data points not appear in legend
+%         gLegend = get(gAnno, 'LegendInformation');
+%         set(gLegend,'IconDisplayStyle','off');
+%         title(['row ' num2str(i)])
+%         xlabel('time')
+%         ylabel('pixel value')
+%         ylim([ymin,ymax]); %specify y limits
+%         xlim([0,numpics-1]);
+%       end
+%     end
+%     if i == numrows
+%         for e = 1:35
+%             color = colors{e};
+%         f = color;
+%         g = color;
+%         subplot(ceil(sqrt(numrows+p)),ceil(sqrt(numrows)),i+1)
+%         h = plot(f,g,'Color',color);, hold on;
+%         legend('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35');       
+%         end
+%     end
+% end
 %% Find the average slope of each square (ohgod)
 for i = 1:numrows
     for j = 1:numcols
@@ -276,7 +276,9 @@ zlabel('Average change in pixel value')
 title('Average Temperature Change of sectios of Breast')
 axis ij
  %% find the averages of each breast
-answer = questdlg('Which side is the tumor on?','Tumor Side','Left','Right','Left')
+% answer = questdlg('Which side is the tumor on?','Tumor
+% Side','Left','Right','Left') % used to get total data accross all
+% patients
 figure(numpics)
 prompt = ('Enter middle column');
 dlgtitle = ('Middle column');
@@ -339,17 +341,22 @@ totRbreastmean = cell2mat(totRbreastmean);
 totLbreastmean = cell2mat(totLbreastmean);
 Lbreaststdv = cell2mat(Lstdv);
 Rbreaststdv = cell2mat(Rstdv);
-if isequal(answer,'Left') == 1
-    tottumbreastmean(v,:) = totLbreastmean;
-    tumstdv(v,:) = Lbreaststdv;
-    normbreastmean(v,:) = totRbreastmean;
-    normstdv(v,:) = Rbreaststdv;
-elseif isequal(answer,'Right') == 1
-    tottumbreastmean(v,:) = totRbreastmean;
-    tumstdv(v,:) = Rbreaststdv;
-    normbreastmean(v,:) = totLbreastmean;
-    normstdv(v,:) = Lbreaststdv;
-end
+% allRbreastmean(v,:) = totRbreastmean;
+% allLbreastmean(v,:) = totLbreastmean;
+% allRbreaststdv(v,:) = Rbreaststdv;
+% allLbreaststdv(v,:) = Lbreaststdv;
+% if isequal(answer,'Left') == 1 % used to get the total average graph
+%     tottumbreastmean(v,:) = totLbreastmean;
+%     tumstdv(v,:) = Lbreaststdv;
+%     normbreastmean(v,:) = totRbreastmean;
+%     normstdv(v,:) = Rbreaststdv;
+% elseif isequal(answer,'Right') == 1
+%     tottumbreastmean(v,:) = totRbreastmean;
+%     tumstdv(v,:) = Rbreaststdv;
+%     normbreastmean(v,:) = totLbreastmean;
+%     normstdv(v,:) = Lbreaststdv;
+% end
+
 
 Rplot = errorbar(t,totRbreastmean,Rbreaststdv,'r');
 hold on % plot everything
@@ -637,23 +644,29 @@ title('Average Rate of change')
 else
     
 end
-
-%% graphing total change across all patients
-figure
-t = 0:14;
-alltumbreastmean = mean(tottumbreastmean);
-alltumbreaststdv = mean(tumstdv);
-allnormbreastmean = mean(normbreastmean);
-allnormbreaststdv = mean(normstdv);
-
-    tumplot = errorbar(t,alltumbreastmean,alltumbreaststdv,'r'); hold on
-    normplot = errorbar(t,allnormbreastmean,allnormbreaststdv,'b');
-
-title('Total tumor breast vs Normal breast')
-legend('Tumor Breast','Normal Breast')
-xlabel('Time (min)')
-ylabel('Pixel Value')
-a = tumplot.Color;
-tumplot.Color = 'r';
-b = normplot.Color;
-normplot.Color = 'b';
+%% determining relative change
+for i = 1:numrows
+    for j = 1:numcols
+        relativesquarechange(i,j) = totsquarechange(i,j)./cell2mat(averages(i,j,1))
+    end
+end
+figure, histogram(relativesquarechange)
+ %% graphing total change across all patients
+% figure
+% t = 0:14;
+% totLbreastmean = mean(allLbreastmean);
+% totLbreaststdv = mean(allLbreaststdv);
+% totRbreastmean = mean(allRbreastmean);
+% totRbreaststdv = mean(allRbreaststdv);
+% 
+%     Rplot = errorbar(t,totRbreastmean,totRbreaststdv,'r'); hold on
+%     Lplot = errorbar(t,totLbreastmean,totLbreaststdv,'b');
+% 
+% title('Right breast vs Left breast')
+% legend('Right Breast','Left Breast')
+% xlabel('Time (min)')
+% ylabel('Pixel Value')
+% a = Rplot.Color;
+% Rplot.Color = 'r';
+% b = Lplot.Color;
+% Lplot.Color = 'b';
