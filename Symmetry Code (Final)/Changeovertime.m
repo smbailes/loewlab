@@ -365,279 +365,279 @@ b = Lplot.Color;
 Lplot.Color = 'b';
 
 %% find average slope for each breast
-% for k = 1:numpics-1 % will have to make 1
-%     changeLbreast{k} =  totLbreastmean(k+1) - totLbreastmean(k);
-% end
-% aveLbreastchange = mean(cell2mat(changeLbreast));
-% for k = 1:numpics-1 % will have to make 1
-%     changeRbreast{k} =  totRbreastmean(k+1) - totRbreastmean(k);
-% end
-% aveRbreastchange = mean(cell2mat(changeRbreast));
-% %% Find total change for each breast
-% totLbreastchange = totLbreastmean(numpics) - totLbreastmean(1);
-% totRbreastchange = totRbreastmean(numpics) - totRbreastmean(1);
-% %% Graphs target area
-% 
-% % prompt = {'Top row','Bottom row','Left column','Right column'};
-% % dlgtitle = 'tumor region';
-% % answers = inputdlg(prompt,dlgtitle,1);
-% % warning('off')
-% % t = 0:numpics-1; % pictures start at t = 0, first pictue is lower than second. Strange
-% % ypoints = cell(1,numpics); % preallocates y points. Might need to change
-% % colors = {[1,0,0],[0.9,0,0],[0.8,0,0],[0.7,0,0],[0.6,0,0],[0,1,0],[0,0.9,0],[0,0.8,0],[0,0.7,0],[0,0.6,0],[0,0,1],[0,0,0.9],[0,0,0.8],[0,0,0.7],[0,0,0.6],[1,0,1],[0.9,0,0.9],[0.8,0,0.8],[0.7,0,0.7],[0.6,0,0.6],[0,1,1],[0,0.9,0.9],[0,0.8,0.8],[0,0.7,0.7],[0,0.6,0.6],[1,1,0],[0.9,0.9,0],[0.8,0.8,0],[0.7,0.7,0],[0.6,0.6,0],[.85,0.325,0],[0.9,0.6,0.1],[0.4,0.2,0.6],[0.6,0.4,0.8],[0.3,0.74,0.9]};
-% % toprow = str2double(answers{1}); 
-% % bottomrow = str2double(answers{2}); 
-% % leftcol = str2double(answers{3}); 
-% % rightcol = str2double(answers{4}); 
-% % for i = toprow:bottomrow
-% %    figure(numpics + 4); 
-% %     for j = leftcol:rightcol
-% %     ypoints = {};
-% %         for k = 1:numpics % need to change
-% %         ypoints{k} = averages{i,j,k};      
-% %         end
-% %       if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
-% %         ypoints = cell2mat(ypoints); legend('show')
-% %         coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
-% %         newypoints = polyval(coefficients,t); % creates new y points that are smoooth
-% %         if sqrt(numrows) - floor(sqrt(numrows))  <0.5
-% %             k = 1;
-% %         else 
-% %             k = 0;
-% %         end
-% %         color = colors{j};
-% %         subplot(ceil(sqrt(bottomrow-toprow)),ceil(sqrt(bottomrow-toprow)),i-toprow+1) % creates subplot
-% %         r = rand;, g = rand;, b = rand; %sets random rgb values to make lots of colots
-% %         plot(t,newypoints,'-','Color',color,'DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
-% %         g =  plot(t,ypoints,'o','Color',color); %Adds true data points to graph
-% %         gAnno = get(g, 'Annotation'); %following three lines make the true data points not appear in legend
-% %         gLegend = get(gAnno, 'LegendInformation');
-% %         set(gLegend,'IconDisplayStyle','off');
-% %         title(['row ' num2str(i)])
-% %         xlabel('time')
-% %         ylabel('pixel value')
-% %         ylim([ymin,ymax]); %specify y limits
-% %         xlim([0,numpics-1]);
-% %       end
-% %     end
-% % end
-% 
-% %% Finds data for tumor and corresponding region
-% if answer == "Patient"
-% totsquarechange = cell2mat(totsquarechange);
-% [maximum, maxidx] = maxk(totsquarechange(:),10);
-% [lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);
-% warmregionidentifier = I_mat;
-% for k = 1:numpics
-% for i = 1:numel(lowcol)
-%     if lowrow(i) == 1 % fix error if first row or col = 1
-%         p = 1;
-%     elseif lowcol(i) == 1
-%         p = 1;
-%     else
-%         p = 0;
-%     end
-%    warmregionidentifier{k}(squareside*(lowrow(i)-1)+p:squareside-p:squareside*(lowrow(i)),...
-%        squareside*(lowcol(i)-1)+p:1:squareside*lowcol(i),:) = 10000;% converts every warmest regions to black
-%    warmregionidentifier{k}(squareside*(lowrow(i)-1)+p:1:squareside*(lowrow(i))...
-%        ,squareside*(lowcol(i)-1)+p:squareside-p:squareside*lowcol(i),:) = 10000; 
-% end
-% end
-% figure('Name','Crop Tumor Region')
-% [tumorcrop,tumrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); %sets the rectangle to crop all images
-% figure('Name','Crop corresponging region')
-% [corrcrop,corrrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); % sets crop for corresponding area
-% Itumor = cell(1,numpics);
-% Icorr = cell(1,numpics);
-%  for k =1:numpics % creates the tumor and corresponding area images
-%      Itumor{k} =imcrop(I_mat{k},tumrect);
-%      Icorr{k} = imcrop(I_mat{k}, corrrect); 
-%  end
-%  [tumrow,tumcol] = size(Itumor{1});
-%  for k = 1:numpics % removes black pixels from grid
-%     J = Itumor{k};
-%    J = double(J);
-%      for i = 1:tumrow
-%         for j = 1:tumcol
-%             if J(i,j) == 0 || J(i,j) == 10000
-%                J(i,j) = NaN;
-%             end
+for k = 1:numpics-1 % will have to make 1
+    changeLbreast{k} =  totLbreastmean(k+1) - totLbreastmean(k);
+end
+aveLbreastchange = mean(cell2mat(changeLbreast));
+for k = 1:numpics-1 % will have to make 1
+    changeRbreast{k} =  totRbreastmean(k+1) - totRbreastmean(k);
+end
+aveRbreastchange = mean(cell2mat(changeRbreast));
+%% Find total change for each breast
+totLbreastchange = totLbreastmean(numpics) - totLbreastmean(1);
+totRbreastchange = totRbreastmean(numpics) - totRbreastmean(1);
+%% Graphs target area
+
+% prompt = {'Top row','Bottom row','Left column','Right column'};
+% dlgtitle = 'tumor region';
+% answers = inputdlg(prompt,dlgtitle,1);
+% warning('off')
+% t = 0:numpics-1; % pictures start at t = 0, first pictue is lower than second. Strange
+% ypoints = cell(1,numpics); % preallocates y points. Might need to change
+% colors = {[1,0,0],[0.9,0,0],[0.8,0,0],[0.7,0,0],[0.6,0,0],[0,1,0],[0,0.9,0],[0,0.8,0],[0,0.7,0],[0,0.6,0],[0,0,1],[0,0,0.9],[0,0,0.8],[0,0,0.7],[0,0,0.6],[1,0,1],[0.9,0,0.9],[0.8,0,0.8],[0.7,0,0.7],[0.6,0,0.6],[0,1,1],[0,0.9,0.9],[0,0.8,0.8],[0,0.7,0.7],[0,0.6,0.6],[1,1,0],[0.9,0.9,0],[0.8,0.8,0],[0.7,0.7,0],[0.6,0.6,0],[.85,0.325,0],[0.9,0.6,0.1],[0.4,0.2,0.6],[0.6,0.4,0.8],[0.3,0.74,0.9]};
+% toprow = str2double(answers{1}); 
+% bottomrow = str2double(answers{2}); 
+% leftcol = str2double(answers{3}); 
+% rightcol = str2double(answers{4}); 
+% for i = toprow:bottomrow
+%    figure(numpics + 4); 
+%     for j = leftcol:rightcol
+%     ypoints = {};
+%         for k = 1:numpics % need to change
+%         ypoints{k} = averages{i,j,k};      
 %         end
-%      end
-%      Itumor{k} = J;
-%      
-%  end
-%  [corrrow,corrcol] = size(Icorr{1});
-% for k = 1:numpics
-%    K = Icorr{k};
-%    K = double(K);
-%     for i = 1:corrrow
-%         for j =1:corrcol
-%             if K(i,j) == 0 || K(i,j) == 10000
-%                 K(i,j) = NaN;
-%             end
+%       if isnan(ypoints{k}) == 0 %determines if the data is good for graphing       
+%         ypoints = cell2mat(ypoints); legend('show')
+%         coefficients = polyfit(t,ypoints,3); % creates the coefficients of the fitted curve. degree changes
+%         newypoints = polyval(coefficients,t); % creates new y points that are smoooth
+%         if sqrt(numrows) - floor(sqrt(numrows))  <0.5
+%             k = 1;
+%         else 
+%             k = 0;
 %         end
+%         color = colors{j};
+%         subplot(ceil(sqrt(bottomrow-toprow)),ceil(sqrt(bottomrow-toprow)),i-toprow+1) % creates subplot
+%         r = rand;, g = rand;, b = rand; %sets random rgb values to make lots of colots
+%         plot(t,newypoints,'-','Color',color,'DisplayName',num2str(j)), hold on %can add real data points with t,y,'+'
+%         g =  plot(t,ypoints,'o','Color',color); %Adds true data points to graph
+%         gAnno = get(g, 'Annotation'); %following three lines make the true data points not appear in legend
+%         gLegend = get(gAnno, 'LegendInformation');
+%         set(gLegend,'IconDisplayStyle','off');
+%         title(['row ' num2str(i)])
+%         xlabel('time')
+%         ylabel('pixel value')
+%         ylim([ymin,ymax]); %specify y limits
+%         xlim([0,numpics-1]);
+%       end
 %     end
-%     Icorr{k} = K;
 % end
-% tumorregion = cell(1,numpics); %treats tumor and corresponding region as a single square
-% corrregion = cell(1,numpics);
-% for k = 1:numpics
-%     tumorregion{k} = nanmean(Itumor{k});
-%     corrregion{k} = nanmean(Icorr{k});
+
+%% Finds data for tumor and corresponding region
+if answer == "Patient"
+totsquarechange = cell2mat(totsquarechange);
+[maximum, maxidx] = maxk(totsquarechange(:),10);
+[lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);
+warmregionidentifier = I_mat;
+for k = 1:numpics
+for i = 1:numel(lowcol)
+    if lowrow(i) == 1 % fix error if first row or col = 1
+        p = 1;
+    elseif lowcol(i) == 1
+        p = 1;
+    else
+        p = 0;
+    end
+   warmregionidentifier{k}(squareside*(lowrow(i)-1)+p:squareside-p:squareside*(lowrow(i)),...
+       squareside*(lowcol(i)-1)+p:1:squareside*lowcol(i),:) = 10000;% converts every warmest regions to black
+   warmregionidentifier{k}(squareside*(lowrow(i)-1)+p:1:squareside*(lowrow(i))...
+       ,squareside*(lowcol(i)-1)+p:squareside-p:squareside*lowcol(i),:) = 10000; 
+end
+end
+figure('Name','Crop Tumor Region')
+[tumorcrop,tumrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); %sets the rectangle to crop all images
+figure('Name','Crop corresponging region')
+[corrcrop,corrrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); % sets crop for corresponding area
+Itumor = cell(1,numpics);
+Icorr = cell(1,numpics);
+ for k =1:numpics % creates the tumor and corresponding area images
+     Itumor{k} =imcrop(I_mat{k},tumrect);
+     Icorr{k} = imcrop(I_mat{k}, corrrect); 
+ end
+ [tumrow,tumcol] = size(Itumor{1});
+ for k = 1:numpics % removes black pixels from grid
+    J = Itumor{k};
+   J = double(J);
+     for i = 1:tumrow
+        for j = 1:tumcol
+            if J(i,j) == 0 || J(i,j) == 10000
+               J(i,j) = NaN;
+            end
+        end
+     end
+     Itumor{k} = J;
+     
+ end
+ [corrrow,corrcol] = size(Icorr{1});
+for k = 1:numpics
+   K = Icorr{k};
+   K = double(K);
+    for i = 1:corrrow
+        for j =1:corrcol
+            if K(i,j) == 0 || K(i,j) == 10000
+                K(i,j) = NaN;
+            end
+        end
+    end
+    Icorr{k} = K;
+end
+tumorregion = cell(1,numpics); %treats tumor and corresponding region as a single square
+corrregion = cell(1,numpics);
+for k = 1:numpics
+    tumorregion{k} = nanmean(Itumor{k});
+    corrregion{k} = nanmean(Icorr{k});
+    tumorregion{k} = nanmean(tumorregion{k});
+    corrregion{k} = nanmean(corrregion{k});
+    tumstdv{k} = nanstd(Itumor{k});
+    corrstdv{k} = nanstd(Icorr{k});
+    tumstdv{k} = nanstd(tumstdv{k});
+    corrstdv{k} = nanstd(corrstdv{k});
 %     tumorregion{k} = nanmean(tumorregion{k});
 %     corrregion{k} = nanmean(corrregion{k});
-%     tumstdv{k} = nanstd(Itumor{k});
-%     corrstdv{k} = nanstd(Icorr{k});
-%     tumstdv{k} = nanstd(tumstdv{k});
-%     corrstdv{k} = nanstd(corrstdv{k});
-% %     tumorregion{k} = nanmean(tumorregion{k});
-% %     corrregion{k} = nanmean(corrregion{k});
-% end
-% tumstdv = cell2mat(tumstdv);
-% corrstdv = cell2mat(corrstdv);
-% 
-% tottumorchange = tumorregion{numpics} - tumorregion{1}; %calculates the total change of the region
-% totcorrchange = corrregion{numpics} - corrregion{1};
-% figure
-% t = 0:numpics-1;
-% errorbar(t,totRbreastmean,Rbreaststdv,'r'), hold on
-% errorbar(t,totLbreastmean,Lbreaststdv,'b')
-% errorbar(t,cell2mat(tumorregion),tumstdv,'g')
-% errorbar(t,cell2mat(corrregion),corrstdv,'m')
-% legend('Right Breast','Left Breast','Tumor region','Corresponding region')
-% xlabel('Time (min)')
-% ylabel('Pixel Value')
-% title('Tumor region vs Corresponding Region Comapared to both Breasts')
-% changetumor = cell(1,numpics-1);
-% changecorr = cell(1,numpics-1);
-% for k = 1:numpics-1
-%     changetumor{k} = tumorregion{k+1} - tumorregion{k};
-%     changecorr{k} = corrregion{k+1} - corrregion{k};
-% end
-% avetumorchange = nanmean(cell2mat(changetumor));
-% avecorrchange = nanmean(cell2mat(changecorr));
-% figure
-% c = categorical({'Rbreast','Lbreast','Tumor region','Corresponding region'});
-% bardata = [totRbreastchange,totLbreastchange,tottumorchange,totcorrchange];
-% bar(c,bardata)
-% title('Total Change')
-% figure
-% bardata = [aveRbreastchange,aveLbreastchange,avetumorchange,avecorrchange];
-% bar(c,bardata)
-% title('Average Rate of change')
-% else
-% end
-% %% identiying regions of low change and highlighting them. Then comparing to ewach breast
-% if answer == "Volunteer"
-% totsquarechange = cell2mat(totsquarechange);
-% [maximum, maxidx] = maxk(totsquarechange(:),10);
-% [lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);
-% corrregionidentifier = I_mat;
-% for k = 1:numpics
-% for i = 1:numel(lowcol)
-%     if lowrow(i) == 1 % fix error if first row or col = 1
-%         p = 1;
-%     elseif lowcol(i) == 1
-%         p = 1;
-%     else
-%         p = 0;
-%     end
-%    corrregionidentifier{k}(squareside*(lowrow(i)-1)+p:squareside-p:squareside*(lowrow(i)),...
-%        squareside*(lowcol(i)-1)+p:1:squareside*lowcol(i),:) = 10000;% converts every warmest regions to black
-%    corrregionidentifier{k}(squareside*(lowrow(i)-1)+p:1:squareside*(lowrow(i))...
-%        ,squareside*(lowcol(i)-1)+p:squareside-p:squareside*lowcol(i),:) = 10000; 
-% end
-% end
-% figure('Name','Crop warm Region')
-% [warmcrop,warmrect] = imcrop(corrregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); %sets the rectangle to crop all images
-% figure('Name','Crop Corresponding warm Region')
-% [corrwarmcrop,corrwarmrect] = imcrop(corrregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); % sets crop for corresponding area
-% Iwarm = cell(1,numpics);
-% Icorrwarm = cell(1,numpics);
-%  for k =1:numpics % creates the tumor and corresponding area images
-%      Iwarm{k} =imcrop(corrregionidentifier{k},warmrect);
-%      Icorrwarm{k} = imcrop(corrregionidentifier{k}, corrwarmrect); 
-%  end
-%  [warmrow,warmcol] = size(Iwarm{1});
-%  for k = 1:numpics % removes white pixels from grid
-%     J = Iwarm{k};
-%    J = double(J);
-%      for i = 1:warmrow
-%         for j = 1:warmcol
-%             if J(i,j) == 10000 || J(i,j) == 0
-%                J(i,j) = NaN;
-%             end
-%         end
-%      end
-%      Iwarm{k} = J;
-%      
-%  end
-%  [corrwarmrow,corrwarmcol] = size(Icorrwarm{1});
-% for k = 1:numpics
-%    K = Icorrwarm{k};
-%    K = double(K);
-%     for i = 1:corrwarmrow
-%         for j =1:corrwarmcol
-%             if K(i,j) == 10000 || K(i,j) == 0
-%                 K(i,j) = NaN;
-%             end
-%         end
-%     end
-%     Icorrwarm{k} = K;
-% end
-% warmregion = cell(1,numpics); %treats tumor and corresponding region as a single square
-% corrwarmregion = cell(1,numpics);
-% warmstdv = cell(1,numpics);
-% corrwarmstdv = cell(1,numpics);
-% for k = 1:numpics
-%     warmregion{k} = nanmean(Iwarm{k});
-%     corrwarmregion{k} = nanmean(Icorrwarm{k});
-%     warmregion{k} = nanmean(warmregion{k});
-%     corrwarmregion{k} = nanmean(corrwarmregion{k});
-%     warmstdv{k} = nanstd(Iwarm{k});
-%     corrwarmstdv{k} = nanstd(Icorrwarm{k});
-%     warmstdv{k} = nanstd(warmstdv{k});
-%     corrwarmstdv{k} = nanstd(corrwarmstdv{k});
-% %     tumorregion{k} = nanmean(tumorregion{k});
-% %     corrregion{k} = nanmean(corrregion{k});
-% end
-% warmstdv = cell2mat(warmstdv);
-% corrwarmstdv = cell2mat(corrwarmstdv);
-% 
-% totwarmchange = warmregion{numpics} - warmregion{1}; %calculates the total change of the region
-% totcorrwarmchange = corrwarmregion{numpics} - corrwarmregion{1};
-% 
-% t = 0:numpics-1;
-% errorbar(t,totRbreastmean,Rbreaststdv,'r'), hold on
-% errorbar(t,totLbreastmean,Lbreaststdv,'b')
-% errorbar(t,cell2mat(warmregion),warmstdv,'g')
-% errorbar(t,cell2mat(corrwarmregion),corrwarmstdv,'m')
-% legend('Right Breast','Left Breast','Warm region','Corresponding Warm region')
-% xlabel('Time (min)')
-% ylabel('Pixel Value')
-% title('Warm region vs Corresponding Warm Region Comapared to both Breasts')
-% changewarm = cell(1,numpics-1);
-% changecorrwarm = cell(1,numpics-1);
-% for k = 1:numpics-1
-%     changewarm{k} = warmregion{k+1} - warmregion{k};
-%     changecorrwarm{k} = corrwarmregion{k+1} - corrwarmregion{k};
-% end
-% avewarmchange = nanmean(cell2mat(changewarm));
-% avecorrwarmchange = nanmean(cell2mat(changecorrwarm));
-% figure
-% c = categorical({'Rbreast','Lbreast','Warm region','Corresponding Warm region'});
-% bardata = [totRbreastchange,totLbreastchange,totwarmchange,totcorrwarmchange];
-% bar(c,bardata)
-% title('Total Change')
-% figure
-% bardata = [aveRbreastchange,aveLbreastchange,avewarmchange,avecorrwarmchange];
-% bar(c,bardata)
-% title('Average Rate of change')
-% else
-%     
-% end
-% 
+end
+tumstdv = cell2mat(tumstdv);
+corrstdv = cell2mat(corrstdv);
+
+tottumorchange = tumorregion{numpics} - tumorregion{1}; %calculates the total change of the region
+totcorrchange = corrregion{numpics} - corrregion{1};
+figure
+t = 0:numpics-1;
+errorbar(t,totRbreastmean,Rbreaststdv,'r'), hold on
+errorbar(t,totLbreastmean,Lbreaststdv,'b')
+errorbar(t,cell2mat(tumorregion),tumstdv,'g')
+errorbar(t,cell2mat(corrregion),corrstdv,'m')
+legend('Right Breast','Left Breast','Tumor region','Corresponding region')
+xlabel('Time (min)')
+ylabel('Pixel Value')
+title('Tumor region vs Corresponding Region Comapared to both Breasts')
+changetumor = cell(1,numpics-1);
+changecorr = cell(1,numpics-1);
+for k = 1:numpics-1
+    changetumor{k} = tumorregion{k+1} - tumorregion{k};
+    changecorr{k} = corrregion{k+1} - corrregion{k};
+end
+avetumorchange = nanmean(cell2mat(changetumor));
+avecorrchange = nanmean(cell2mat(changecorr));
+figure
+c = categorical({'Rbreast','Lbreast','Tumor region','Corresponding region'});
+bardata = [totRbreastchange,totLbreastchange,tottumorchange,totcorrchange];
+bar(c,bardata)
+title('Total Change')
+figure
+bardata = [aveRbreastchange,aveLbreastchange,avetumorchange,avecorrchange];
+bar(c,bardata)
+title('Average Rate of change')
+else
+end
+%% identiying regions of low change and highlighting them. Then comparing to ewach breast
+if answer == "Volunteer"
+totsquarechange = cell2mat(totsquarechange);
+[maximum, maxidx] = maxk(totsquarechange(:),10);
+[lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);
+corrregionidentifier = I_mat;
+for k = 1:numpics
+for i = 1:numel(lowcol)
+    if lowrow(i) == 1 % fix error if first row or col = 1
+        p = 1;
+    elseif lowcol(i) == 1
+        p = 1;
+    else
+        p = 0;
+    end
+   corrregionidentifier{k}(squareside*(lowrow(i)-1)+p:squareside-p:squareside*(lowrow(i)),...
+       squareside*(lowcol(i)-1)+p:1:squareside*lowcol(i),:) = 10000;% converts every warmest regions to black
+   corrregionidentifier{k}(squareside*(lowrow(i)-1)+p:1:squareside*(lowrow(i))...
+       ,squareside*(lowcol(i)-1)+p:squareside-p:squareside*lowcol(i),:) = 10000; 
+end
+end
+figure('Name','Crop warm Region')
+[warmcrop,warmrect] = imcrop(corrregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); %sets the rectangle to crop all images
+figure('Name','Crop Corresponding warm Region')
+[corrwarmcrop,corrwarmrect] = imcrop(corrregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); % sets crop for corresponding area
+Iwarm = cell(1,numpics);
+Icorrwarm = cell(1,numpics);
+ for k =1:numpics % creates the tumor and corresponding area images
+     Iwarm{k} =imcrop(corrregionidentifier{k},warmrect);
+     Icorrwarm{k} = imcrop(corrregionidentifier{k}, corrwarmrect); 
+ end
+ [warmrow,warmcol] = size(Iwarm{1});
+ for k = 1:numpics % removes white pixels from grid
+    J = Iwarm{k};
+   J = double(J);
+     for i = 1:warmrow
+        for j = 1:warmcol
+            if J(i,j) == 10000 || J(i,j) == 0
+               J(i,j) = NaN;
+            end
+        end
+     end
+     Iwarm{k} = J;
+     
+ end
+ [corrwarmrow,corrwarmcol] = size(Icorrwarm{1});
+for k = 1:numpics
+   K = Icorrwarm{k};
+   K = double(K);
+    for i = 1:corrwarmrow
+        for j =1:corrwarmcol
+            if K(i,j) == 10000 || K(i,j) == 0
+                K(i,j) = NaN;
+            end
+        end
+    end
+    Icorrwarm{k} = K;
+end
+warmregion = cell(1,numpics); %treats tumor and corresponding region as a single square
+corrwarmregion = cell(1,numpics);
+warmstdv = cell(1,numpics);
+corrwarmstdv = cell(1,numpics);
+for k = 1:numpics
+    warmregion{k} = nanmean(Iwarm{k});
+    corrwarmregion{k} = nanmean(Icorrwarm{k});
+    warmregion{k} = nanmean(warmregion{k});
+    corrwarmregion{k} = nanmean(corrwarmregion{k});
+    warmstdv{k} = nanstd(Iwarm{k});
+    corrwarmstdv{k} = nanstd(Icorrwarm{k});
+    warmstdv{k} = nanstd(warmstdv{k});
+    corrwarmstdv{k} = nanstd(corrwarmstdv{k});
+%     tumorregion{k} = nanmean(tumorregion{k});
+%     corrregion{k} = nanmean(corrregion{k});
+end
+warmstdv = cell2mat(warmstdv);
+corrwarmstdv = cell2mat(corrwarmstdv);
+
+totwarmchange = warmregion{numpics} - warmregion{1}; %calculates the total change of the region
+totcorrwarmchange = corrwarmregion{numpics} - corrwarmregion{1};
+
+t = 0:numpics-1;
+errorbar(t,totRbreastmean,Rbreaststdv,'r'), hold on
+errorbar(t,totLbreastmean,Lbreaststdv,'b')
+errorbar(t,cell2mat(warmregion),warmstdv,'g')
+errorbar(t,cell2mat(corrwarmregion),corrwarmstdv,'m')
+legend('Right Breast','Left Breast','Warm region','Corresponding Warm region')
+xlabel('Time (min)')
+ylabel('Pixel Value')
+title('Warm region vs Corresponding Warm Region Comapared to both Breasts')
+changewarm = cell(1,numpics-1);
+changecorrwarm = cell(1,numpics-1);
+for k = 1:numpics-1
+    changewarm{k} = warmregion{k+1} - warmregion{k};
+    changecorrwarm{k} = corrwarmregion{k+1} - corrwarmregion{k};
+end
+avewarmchange = nanmean(cell2mat(changewarm));
+avecorrwarmchange = nanmean(cell2mat(changecorrwarm));
+figure
+c = categorical({'Rbreast','Lbreast','Warm region','Corresponding Warm region'});
+bardata = [totRbreastchange,totLbreastchange,totwarmchange,totcorrwarmchange];
+bar(c,bardata)
+title('Total Change')
+figure
+bardata = [aveRbreastchange,aveLbreastchange,avewarmchange,avecorrwarmchange];
+bar(c,bardata)
+title('Average Rate of change')
+else
+    
+end
+
 %% graphing total change across all patients
 figure
 t = 0:14;
