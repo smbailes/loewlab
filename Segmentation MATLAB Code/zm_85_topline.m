@@ -9,9 +9,16 @@ connected=bwmorph(connected,'fill');
 connected1=bwmorph(connected,'bridge');
 connected2=bwmorph(connected1,'close');
 
+[ro co] = size(I);
 
 biggest = bwareafilt(connected2,1,'largest');
-% [ro co] = size(I);
+[bigarrayx bigarrayy] = find(biggest==1);
+maxbig = max(bigarrayy); minbig = min(bigarrayy); 
+if abs(maxbig-minbig) < ((2/3)*co)
+    biggest = bwareafilt(connected2,2,'largest');
+%     shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
+%     biggest = step(shapeInserter, biggest, uint16([yy1 xx1 yy2 xx2]));
+end
 % biggest(1:Yup, :) = 0;
 % biggest(Ylo:ro, :) = 0;
 % biggest(:,1:Xleft) = 0;

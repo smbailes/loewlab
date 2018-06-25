@@ -125,11 +125,12 @@ if in == 'l'
     paramsr.randomize = 7; %randomization component that may reduce changing of
     %ellipses
     
+    rlcheck = 1; 
     % note that the edge (or gradient) image is used
-     fprintf('Pick lower bound for the right breast. \n');
+     fprintf('Pick lower bound for the left breast. \n');
     figure, imshow(I, []), title('Bound Detection')
     [Xlo1,Ylo1] = ginput(1);
-    bestFitsr = ellipseDetection(edgecanny, Xlo1, Ylo1, paramsr);
+    bestFitsr = ellipseDetection(edgecanny, Xlo1, Ylo1, paramsr, rlcheck);
    % bestFitsr = ellipseDetection(edgecanny, paramsr, Xright, Xleft, Ylo);
     fprintf('Output %d best fits.\n', size(bestFitsr,1));
     
@@ -151,12 +152,12 @@ if in == 'l'
     paramsl.randomize = 7; %randomization component that may reduce changing of
     %ellipses
 
-
+    rlcheck = 2; 
     %LEFT SIDE
     fprintf('Pick lower bound for the right breast. \n');
     figure, imshow(I, []), title('Bound Detection')
     [Xlo2,Ylo2] = ginput(1);
-    bestFitsl = ellipseDetection(edgecanny, Xlo2, Ylo2, paramsl);
+    bestFitsl = ellipseDetection(edgecanny, Xlo2, Ylo2, paramsl, rlcheck);
     %bestFitsl = ellipseDetection(edgecanny, paramsl, Xright, Xleft, Ylo);
     fprintf('Output %d best fits.\n', size(bestFitsl,1));
 

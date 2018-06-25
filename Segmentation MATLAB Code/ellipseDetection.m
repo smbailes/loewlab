@@ -1,4 +1,4 @@
-function bestFits = ellipseDetection(img, Xlo, Ylo, params)
+function bestFits = ellipseDetection(img, Xlo, Ylo, params, rlcheck)
 % ellipseDetection: Ellipse detection
 %
 % Overview:
@@ -149,9 +149,7 @@ function bestFits = ellipseDetection(img, Xlo, Ylo, params)
     for p=pairSubset
         x1=X(I(p)); y1=Y(I(p));
         x2=X(J(p)); y2=Y(J(p));
-        
-        if (y1 < Ylo & y2 < Ylo) && (x1 > Xlo | x2 < Xlo)
-        
+    if (y1 < Ylo && y2 < Ylo) && (x1 > Xlo || x2 < Xlo)
             %compute center & major axis
             x0=(x1+x2)/2; y0=(y1+y2)/2;
             aSq = distsSq(I(p),J(p))/4;
@@ -198,6 +196,6 @@ function bestFits = ellipseDetection(img, Xlo, Ylo, params)
                     bestFits = bestFits(si,:);
                 end
             end
-        end
+        end  
     end
 end
