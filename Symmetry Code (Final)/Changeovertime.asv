@@ -645,10 +645,10 @@ alltumbreastmean = mean(tottumbreastmean);
 alltumbreaststdv = mean(tumstdv);
 allnormbreastmean = mean(normbreastmean);
 allnormbreaststdv = mean(normstdv);
-
-    tumplot = errorbar(t,alltumbreastmean,alltumbreaststdv,'r'); hold on
-    normplot = errorbar(t,allnormbreastmean,allnormbreaststdv,'b');
-
+for i = 1:12
+    tumplot = errorbar(t,alltumbre(i,:),tumstdv(i,:),'r');, hold on
+    normplot = errorbar(t,normbreastmean(i,:),normstdv(i,:),'b');
+end
 title('Total tumor breast vs Normal breast')
 legend('Tumor Breast','Normal Breast')
 xlabel('Time (min)')
