@@ -21,7 +21,7 @@ clc;
     xbox = num(index-1,3);                  % Get x-dim from num file
     ybox = num(index-1,4);                  % Get y-dim from num file
     sideString = txt(index,2);              % Get side from txt file
-    notes = txt(index,8);                   % Get any notes from txt file
+    notes = txt(index,7);                   % Get any notes from txt file
     celldisp(notes);   
     
 %% ROI Identification
@@ -83,33 +83,46 @@ clc;
     hold off  
 %     close    
 
-
-
-
 %% Crop Circilar area
-    imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
-    hold on;
-    plot(xunit, yunit);
-    e = imellipse();
-    xy = wait(e);
-    binaryImage = e.createMask();
-    BW = uint16(binaryImage);
+%     imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
+%     hold on;
+%     plot(xunit, yunit);
+%     e = imellipse();
+%     xy = wait(e);
+%     binaryImage = e.createMask();
+%     BW = uint16(binaryImage);
 %% Show circular area ROI
-figure('Name','Histograms (with ROI highlighted)');
-% subplot(4,4,1);
-for n = 1:1
-    I1 = I_mat{n};
-    I2 = I_mat{n}(find(I_mat{n}>0));
+again = 'Yes';
+imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
+hold on;
+plot(xunit, yunit);
+
+while strcmp(again, 'Yes') == 1
     
-    I3 = I1.*BW;
-    I4 = I3(find(I3>0));
-    
-%     subplot(4,4,n)
-    histogram(I2,1000,'FaceColor','r','EdgeColor','r');
-    hold on
-    histogram(I4,1000,'FaceColor','k','EdgeColor','k');
-end
-    
+        e = imellipse();
+        xy = wait(e);
+        binaryImage = e.createMask();
+        BW = uint16(binaryImage);
+        hold on;
+
+        figure('Name','Histograms (with ROI highlighted)');
+        % subplot(4,4,1);
+        for n = 1:1
+            I1 = I_mat{n};
+            I2 = I_mat{n}(find(I_mat{n}>0));
+
+            I3 = I1.*BW;
+            I4 = I3(find(I3>0));
+
+        %     subplot(4,4,n)
+            histogram(I2,1000,'FaceColor','r','EdgeColor','r');
+            hold on
+            histogram(I4,1000,'FaceColor','k','EdgeColor','k');
+        end
+       
+        again = questdlg('Try again?', 'Yes', 'No');
+        close
+end 
 %% Crop Rectangular area
 %     imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
 %     hold on;
