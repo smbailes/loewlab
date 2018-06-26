@@ -40,14 +40,15 @@ prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
     'Enter MinPts:','Enter Desired %:','Enter desired scaling factor'};  
 dlg_title = 'DBSCAN Parameters';                                         % box title
 num_lines = 1;                                                          % lines per answer
-defaultans = {'5','10','50','sqrt(3)'};          % default inputs
+defaultans = {'5','10','50','sqrt(2)'};          % default inputs
 options.Resize = 'on';                                                  % allows for resizing of box
 answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
 epsilon = str2double(answer{1});                
 minPts = str2double(answer{2});                 
 percent = str2num(answer{3});
 s = str2num(answer{4});
-fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,s);
+scaling = 1/(s^2);
+fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,scaling);
 
     % Convert Clock Hour to Angle (in rad) 
     if hr <= 9 && hr > 3            
@@ -88,10 +89,18 @@ fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,s);
     Ynew = Yorg - dy;    
     xbox = xbox * scale;                    % Convert X and Y dimensions of tumor from cm to pixels
     ybox = ybox * scale;                    % xbox and ybox are length of x and y sides in pixels
-    c1 = [round(Xnew - xbox/2), round(Ynew - ybox/2)];  % Top Left Corner
-    c2 = [round(Xnew - xbox/2), round(Ynew + ybox/2)];  % Bottom Left Corner
-    c3 = [round(Xnew + xbox/2), round(Ynew + ybox/2)];  % Bottum Right Corner
-    c4 = [round(Xnew + xbox/2), round(Ynew - ybox/2)];  % Top Right Corner      
+%     c1 = [round(Xnew - xbox/2), round(Ynew - ybox/2)];  % Top Left Corner
+%     c2 = [round(Xnew - xbox/2), round(Ynew + ybox/2)];  % Bottom Left Corner
+%     c3 = [round(Xnew + xbox/2), round(Ynew + ybox/2)];  % Bottum Right Corner
+%     c4 = [round(Xnew + xbox/2), round(Ynew - ybox/2)];  % Top Right Corner      
+    th = 0:pi/50:2*pi;
+    if xbox <= ybox
+        xunit = xbox * cos(th) + Xnew;
+        yunit = xbox * sin(th) + Ynew;
+    elseif ybox < xbox
+        xunit = ybox * cos(th) + Xnew;
+        yunit = ybox * sin(th) + Ynew;      
+    end 
     hold off  
     close    
 %}
@@ -121,14 +130,15 @@ fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,s);
 
 %% Plot Image with Clusters using DBSCAN
 %     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID);
-for n = 1:14:15                    % Iterate through cell matrix for each minute
+for n = 1:1                   % Iterate through cell matrix for each minute
     I = I_mat{n};               % Get Image
     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID, s);
-    
-    plot([c1(1) c2(1)],[c1(2) c2(2)],'k');                      % Create red box region on Image Display
-    plot([c2(1) c3(1)],[c2(2) c3(2)],'k');
-    plot([c3(1) c4(1)],[c3(2) c4(2)],'k');
-    plot([c4(1) c1(1)],[c4(2) c1(2)],'k');
+    plot(xunit, yunit);
+
+%     plot([c1(1) c2(1)],[c1(2) c2(2)],'k');                      % Create red box region on Image Display
+%     plot([c2(1) c3(1)],[c2(2) c3(2)],'k');
+%     plot([c3(1) c4(1)],[c3(2) c4(2)],'k');
+%     plot([c4(1) c1(1)],[c4(2) c1(2)],'k');
     hold off;
 %     ClusterInfo CELL ARRAY
     ClusterInfo{n,1} = ClustStruct;       %Cell 1 is ClusterStructure
@@ -139,7 +149,7 @@ end
 
 fprintf('Finished Plotting Clusters\n');
 %% Check: Clusters on Bottom Border
-for c = 1:14:15
+for c = 1:1
    thisImage = ClusterInfo{c,1};
    pic = ClusterInfo{c,2}; %pic = I
    
@@ -161,7 +171,7 @@ for c = 1:14:15
 end  
 fprintf('Finished Removing Bottom Borders\n');
 %% Remove small and large clusters
-for d = 1:14:15
+for d = 1:1
 
    thisImage = ClusterInfo{d,1};
    pic = ClusterInfo{d,2}; %pic = I
@@ -182,7 +192,7 @@ end
 fprintf('Finished Removing Small and Large Clusters\n');
 
 %% Remove Cluster Data
-for e = 1:14:15
+for e = 1:1
     thisImage = ClusterInfo{e,1}; %Get Current Image Info
     clustData = ClusterInfo{e,3}; %Copy Cluster Data     
     numClusters = length(thisImage);
@@ -219,10 +229,12 @@ fprintf('Finished Removing Cluster Mean Intensity Data\n');
 % end 
 % fprintf('Finished Removing Clusters Below Threshold\n');
 %% Plot left over clusters
-for g = 1:14:15    
+for g = 1:1  
     
     thisImage = ClusterInfo{g,1}; %Get Current Image Info
     numClusters = length(thisImage);
+    clustData = ClusterInfo{c,3}; %Copy Cluster Data 
+
     for m = 1:numClusters %Sort through clusters for image
         if thisImage(m).RemoveCluster == 1 %Remove Indices from Marked Clusters from Cluster Data copy
             rows = find(clustData(:,3) == m);
@@ -240,10 +252,11 @@ for g = 1:14:15
     hold on
     PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
     title(sprintf('%s - Post Symmetrical Cluster Analysis',ptID));
-    plot([c1(1) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
-    plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
-    plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
-    plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
+    plot(xunit, yunit);
+%     plot([c1(1) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
+%     plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
+%     plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
+%     plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
     hold off
     
     %%PLOT MIDLINE IMAGE
@@ -262,11 +275,4 @@ for g = 1:14:15
 %     
     ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
 end
-
-
-
-
-
-
-
-    
+   
