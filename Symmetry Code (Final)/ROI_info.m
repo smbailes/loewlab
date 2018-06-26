@@ -43,12 +43,12 @@ clc;
     [dx,dy] = pol2cart(theta, rho); % Convert tumor location as angle & dist to pixel location  
     
     
-    I1 = I_mat{8};              % Display first image
-    I = getMatrixOutliers(I1);  % Remove outliers
-    I_adj = I1(find(I1>0));    % Remove zero pixels
+    I_ref = I_mat{8};              % Display first image
+    I = getMatrixOutliers(I_ref);  % Remove outliers
+    I_adj = I_ref(find(I_ref>0));    % Remove zero pixels
     I_sort1 = sort(I_adj);
     
-    [r c] = size(I1);
+    [r c] = size(I_ref);
     figure('Name','Nipple Identification')
     imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
     
@@ -61,6 +61,7 @@ clc;
     fprintf('Select Reference Nipple \n');  % User input of nipple region
     [Xorg,Yorg] = ginput(1);
     plot(Xorg,Yorg, '*');                   % Plot center of nipple
+
     Xnew = Xorg + dx;                       % Coordinates of center of tumor
     Ynew = Yorg - dy;    
     xbox = xbox * scale;                    % Convert X and Y dimensions of tumor from cm to pixels
@@ -68,32 +69,71 @@ clc;
     c1 = [round(Xnew - xbox/2), round(Ynew - ybox/2)];  % Top Left Corner
     c2 = [round(Xnew - xbox/2), round(Ynew + ybox/2)];  % Bottom Left Corner
     c3 = [round(Xnew + xbox/2), round(Ynew + ybox/2)];  % Bottum Right Corner
-    c4 = [round(Xnew + xbox/2), round(Ynew - ybox/2)];  % Top Right Corner      
+    c4 = [round(Xnew + xbox/2), round(Ynew - ybox/2)];  % Top Right Corner
+    
+    th = 0:pi/50:2*pi;
+    if xbox < ybox
+        xunit = xbox * cos(th) + Xnew;
+        yunit = xbox * sin(th) + Ynew;
+    elseif ybox < xbox
+        xunit = ybox * cos(th) + Xnew;
+        yunit = ybox * sin(th) + Ynew;
+    end 
+    plot(xunit, yunit);
     hold off  
-    close    
-%% Crop area
+%     close    
+
+
+
+
+%% Crop Circilar area
     imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
     hold on;
-    plot([c1(1) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
-    plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
-    plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
-    plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
-    hold on;
-    hFH = imrect();
-    binaryImage = hFH.createMask();
-    xy = hFH.getPosition;
-    close
-    
-%% Show Image and ROI
+    plot(xunit, yunit);
+    e = imellipse();
+    xy = wait(e);
+    binaryImage = e.createMask();
+    BW = uint16(binaryImage);
+%% Show circular area ROI
 figure('Name','Histograms (with ROI highlighted)');
-subplot(4,4,1);
-for n = 1:14
+% subplot(4,4,1);
+for n = 1:1
+    I1 = I_mat{n};
     I2 = I_mat{n}(find(I_mat{n}>0));
-    newCrop = imcrop(I_mat{n}, xy);
-
-    subplot(4,4,n)
+    
+    I3 = I1.*BW;
+    I4 = I3(find(I3>0));
+    
+%     subplot(4,4,n)
     histogram(I2,1000,'FaceColor','r','EdgeColor','r');
     hold on
-    histogram(newCrop,1000,'FaceColor','k','EdgeColor','k');
+    histogram(I4,1000,'FaceColor','k','EdgeColor','k');
 end
+    
+%% Crop Rectangular area
+%     imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
+%     hold on;
+%     plot(xunit, yunit);
+% %     plot([c1(1) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
+% %     plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
+% %     plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
+% %     plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
+%     hold on;
+%     hFH = imellipse();
+%     xy = wait(hFH);
+%     binaryImage = hFH.createMask();
+%     xy = hFH.getPosition;
+%     close
+%% Show Rectangular Image and ROI
+% figure('Name','Histograms (with ROI highlighted)');
+% subplot(4,4,1);
+% for n = 1:14
+%     I2 = I_mat{n}(find(I_mat{n}>0));
+%     newCrop = imcrop(I_mat{n}, xy);
+% 
+%     subplot(4,4,n)
+%     histogram(I2,1000,'FaceColor','r','EdgeColor','r');
+%     hold on
+%     histogram(newCrop,1000,'FaceColor','k','EdgeColor','k');
+% end
 
