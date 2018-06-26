@@ -10,7 +10,7 @@ if (strcmp(answer, 'Patient'))
     numlines = 1;
     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     name = answers{1};
-    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Patient Images\' ptID '\Cropped\']);
+    location = (['C:\Users\' name '\OneDrive\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Patient Images\' ptID '\Cropped\']);
     
 end
 if (strcmp(answer, 'Volunteer'))
@@ -21,7 +21,7 @@ if (strcmp(answer, 'Volunteer'))
     numlines = 1;
     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     name = answers{1};
-    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Volunteer Images\' vtID '\Cropped\']);
+    location = (['C:\Users\' name '\OneDrive\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Volunteer Images\' vtID '\Cropped\']);
     
 end
     
@@ -225,6 +225,7 @@ for i = 1:numrows
 %         end
     end
 end
+totsquarechange = cell2mat(totsquarechange);
    
 %% graph Standard deviations
 
@@ -257,7 +258,7 @@ end
 % end
 
 [xpoints,ypoints] = meshgrid(1:numcols,1:numrows);
-zpoints = cell2mat(totsquarechange);
+zpoints = totsquarechange;
 figure
 surface(xpoints,ypoints,zpoints)
 view(-37,64);
@@ -428,12 +429,33 @@ totRbreastchange = totRbreastmean(numpics) - totRbreastmean(1);
 %       end
 %     end
 % end
+%% determining relative change
+for i = 1:numrows
+    for j = 1:numcols
+        relativesquarechange(i,j) = totsquarechange(i,j)./cell2mat(averages(i,j,1));
+    end
+end
+figure, histogram(relativesquarechange)
+title('relative change of each square')
+ylabel('number of squares')
+xlabel('normalized change')
 
 %% Finds data for tumor and corresponding region
 if answer == "Patient"
-totsquarechange = cell2mat(totsquarechange);
-[maximum, maxidx] = maxk(totsquarechange(:),10);
+[maximum, maxidx] = maxk(totsquarechange(:),5);
 [lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);
+for i = 1:numel(lowrow)
+        lowsquarechange(i) = totsquarechange(lowrow(i),lowcol(i));
+end
+T = table(lowrow,lowcol,transpose(lowsquarechange)); % shows which squares have the least change
+T.Properties.VariableNames = {'Row','Column','Change'}
+[normmaximum, normmaxidx] = maxk(relativesquarechange(:),5);
+[lownormrow, lownormcol] = ind2sub(size(relativesquarechange),maxidx);
+for i = 1:numel(lownormrow)
+        lownormsquarechange(i) = relativesquarechange(lownormrow(i),lownormcol(i));
+end
+T = table(lownormrow,lownormcol,transpose(lownormsquarechange)); % shows which squares have the least change
+T.Properties.VariableNames = {'Row','Column','NormalizedChange'}
 warmregionidentifier = I_mat;
 for k = 1:numpics
 for i = 1:numel(lowcol)
@@ -525,21 +547,28 @@ end
 avetumorchange = nanmean(cell2mat(changetumor));
 avecorrchange = nanmean(cell2mat(changecorr));
 figure
-c = categorical({'Rbreast','Lbreast','Tumor region','Corresponding region'});
+c = categorical({'Rbreast','Lbreast','Tumor region','Corresponding region'}); % graphs total change of both breasts, tumor region and corr region
 bardata = [totRbreastchange,totLbreastchange,tottumorchange,totcorrchange];
 bar(c,bardata)
 title('Total Change')
 figure
-bardata = [aveRbreastchange,aveLbreastchange,avetumorchange,avecorrchange];
+bardata = [aveRbreastchange,aveLbreastchange,avetumorchange,avecorrchange]; % graphs average rate of change
 bar(c,bardata)
 title('Average Rate of change')
+
 else
 end
 %% identiying regions of low change and highlighting them. Then comparing to ewach breast
 if answer == "Volunteer"
-totsquarechange = cell2mat(totsquarechange);
-[maximum, maxidx] = maxk(totsquarechange(:),10);
-[lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);
+ % finds the squares with the lowest total change
+[maximum, maxidx] = maxk(totsquarechange(:),5);
+[lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx)
+
+for i = 1:numel(lowrow)
+        lowsquarechange(i) = totsquarechange(lowrow(i),lowcol(i))
+end
+T = table(lowrow,lowcol,transpose(lowsquarechange));
+T.Properties.VariableNames = {'Row','Column','Change'}
 corrregionidentifier = I_mat;
 for k = 1:numpics
 for i = 1:numel(lowcol)
@@ -644,13 +673,16 @@ title('Average Rate of change')
 else
     
 end
-%% determining relative change
-for i = 1:numrows
-    for j = 1:numcols
-        relativesquarechange(i,j) = totsquarechange(i,j)./cell2mat(averages(i,j,1))
-    end
+
+%% determining percent changes
+answer = questdlg('Which side is the tumor on?','TumorSide','Left','Right','Left') % used to get total data accross all
+if isequal(answer,'Left') == 1
+    perchangebreast = ((totLbreastchange - tottumorchange)/totLbreastchange)*100
+elseif isequal(answer,'Right') ==1
+    perchangebreast = ((totRbreastchange - tottumorchange)/totRbreastchange)*100
 end
-figure, histogram(relativesquarechange)
+percorrchange = ((totcorrchange - tottumorchange)/totcorrchange)*100
+
  %% graphing total change across all patients
 % figure
 % t = 0:14;
