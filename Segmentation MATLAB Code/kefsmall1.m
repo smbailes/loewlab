@@ -195,6 +195,9 @@ else
     midlinez(:,2) = midy;
 
     %find intersection between upper bound and midline
+    fprintf('Select Upper Bound\n');
+    figure, imshow(I, []), title('Bound Detection')
+    [Xup,Yup] = ginput(1);
     ptofcompx = find(Yup==midlinez(:,1));
     ptofcompy = midlinez(ptofcompx,2);
     ptofcomp(:,1) = ptofcompx;
