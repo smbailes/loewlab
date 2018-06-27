@@ -478,7 +478,7 @@ bar(c,bardata)
 title('Average Rate of change')
 
 %% Find regions of low change
-% totsquarechange = cell2mat(totsquarechange)
+totsquarechange = cell2mat(totsquarechange)
 
 [maximum, maxidx] = maxk(totsquarechange(:),5);
 [lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);

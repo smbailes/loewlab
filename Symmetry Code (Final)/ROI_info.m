@@ -7,8 +7,8 @@ clc;
 %% Image Input
     
     % Read 14 images to cell matrix I_mat
-    a=120;
-    for i=1:14          
+    a=0;
+    for i=1:15          
         I_mat{i} = imread([location sprintf('%04d.tif',a)]);    % Read each image into I_mat
         a=a+120;            % Go to next image (for cropped)
     end
@@ -43,13 +43,13 @@ clc;
     [dx,dy] = pol2cart(theta, rho); % Convert tumor location as angle & dist to pixel location  
     
     
-    I_ref = I_mat{8};              % Display first image
+    I_ref = I_mat{7};              % Display first image
     I = getMatrixOutliers(I_ref);  % Remove outliers
     I_adj = I_ref(find(I_ref>0));    % Remove zero pixels
     I_sort1 = sort(I_adj);
     
     [r c] = size(I_ref);
-    figure('Name','Nipple Identification')
+    figure('Name','ROI Identification')
     imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
     
     if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
@@ -81,7 +81,7 @@ clc;
     end 
     plot(xunit, yunit);
     hold off  
-%     close    
+    close    
 
 %% Crop Circilar area
 %     imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
@@ -91,21 +91,29 @@ clc;
 %     xy = wait(e);
 %     binaryImage = e.createMask();
 %     BW = uint16(binaryImage);
+%% Show Histogram 
+figure('Name','Histograms over time');
+subplot(5,3,1);
+for n = 1:15
+    I2 = I_mat{n}(find(I_mat{n}>0));
+    subplot(5,3,n)
+    histogram(I2,500,'FaceColor','r','EdgeColor','r');
+end
 %% Show circular area ROI
 again = 'Yes';
+figure('Name', 'Select ROI'),
 imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
 hold on;
 plot(xunit, yunit);
+e = imellipse();
 
 while strcmp(again, 'Yes') == 1
-    
-        e = imellipse();
         xy = wait(e);
         binaryImage = e.createMask();
         BW = uint16(binaryImage);
         hold on;
 
-        figure('Name','Histograms (with ROI highlighted)');
+        figure('Name','Histogram (with ROI highlighted)');
         % subplot(4,4,1);
         for n = 1:1
             I1 = I_mat{n};
@@ -115,14 +123,15 @@ while strcmp(again, 'Yes') == 1
             I4 = I3(find(I3>0));
 
         %     subplot(4,4,n)
-            histogram(I2,1000,'FaceColor','r','EdgeColor','r');
+            histogram(I2,500,'FaceColor','r','EdgeColor','r');
             hold on
-            histogram(I4,1000,'FaceColor','k','EdgeColor','k');
+            histogram(I4,500,'FaceColor','k','EdgeColor','k');
         end
-       
+        
         again = questdlg('Try again?', 'Yes', 'No');
-        close
-end 
+
+end
+
 %% Crop Rectangular area
 %     imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
 %     hold on;

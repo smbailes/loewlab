@@ -31,7 +31,7 @@ close all;
     xbox = num(index-1,3);                  % Get x-dim from num file
     ybox = num(index-1,4);                  % Get y-dim from num file
     sideString = txt(index,2);              % Get side from txt file
-    notes = txt(index,8);                   % Get any notes from txt file
+    notes = txt(index,7);                   % Get any notes from txt file
     celldisp(notes);   
     
 %% DBSCAN Parameters
@@ -257,7 +257,7 @@ for g = 1:1
 %     plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
 %     plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
 %     plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
-    hold off
+    hold on 
     
     %%PLOT MIDLINE IMAGE
 
@@ -275,4 +275,23 @@ for g = 1:1
 %     
     ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
 end
-   
+
+%% 
+
+e = imfreehand();
+xy = wait(e);
+binaryImage = e.createMask();
+BW = uint16(binaryImage);
+figure('Name', 'Histogram with ROI');
+for n = 1:1
+    I1 = I_mat{n};
+    I2 = I_mat{n}(find(I_mat{n}>0));
+
+    I3 = I1.*BW;
+    I4 = I3(find(I3>0));
+
+%     subplot(4,4,n)
+    histogram(I2,500,'FaceColor','r','EdgeColor','r');
+    hold on
+    histogram(I4,500,'FaceColor','k','EdgeColor','k');
+end
