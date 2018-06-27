@@ -194,15 +194,21 @@ else
     midlinez(:,1) = midx;
     midlinez(:,2) = midy;
 
-    %find intersection between upper bound and midline
-    fprintf('Select Upper Bound\n');
-    figure, imshow(I, []), title('Bound Detection')
-    [Xup,Yup] = ginput(1);
-    ptofcompx = find(Yup==midlinez(:,1));
-    ptofcompy = midlinez(ptofcompx,2);
-    ptofcomp(:,1) = ptofcompx;
-    ptofcomp(:,2) = ptofcompy;
-
+%     %find intersection between upper bound and midline
+%     fprintf('Select Upper Bound\n');
+%     figure, imshow(I, []), title('Bound Detection')
+%     [Xup,Yup] = ginput(1);
+%     ptofcompx = find(Yup==midlinez(:,1));
+%     ptofcompy = midlinez(ptofcompx,2);
+%     ptofcomp(:,1) = ptofcompx;
+%     ptofcomp(:,2) = ptofcompy;
+    
+    %selects nipples 
+    figure, imshow(I, []), title('Nipple Detection - Left')
+    [Xleft,Yleft] = ginput(1);
+    figure, imshow(I, []), title('Nipple Detection - Right')
+    [Xright,Yright] = ginput(1);
+    
     intwind = [];
 
     %find x and y distances of each pixel from ptofcomp and save into first 2 columns
@@ -213,18 +219,34 @@ else
     linepix2 = []; %creates matrix for coordinates on line 2
     % len = 2; %length dimension for line - set at 2 FOR NOW (may need to change later) 
     for i = 1:length(gettx)
-        intwind(i,1) = abs(ptofcompx - gettx(i,1));
-        intwind(i,2) = abs(ptofcompy - getty(i,1));
-        intwind(i,3) = atan(intwind(i,2)/intwind(i,1));
-        for j = 1:10 %line dimension set as 3 pixels
-            xdiff(i,j) = j*cos(intwind(i,3));
-            ydiff(i,j) = j*sin(intwind(i,3));
-        end
-        for k = 1:10
-            linepix1(i,k,1) = intwind(i,1) - xdiff(i,k);
-            linepix1(i,k,2) = intwind(i,1) - xdiff(i,k);
-            linepix2(i,k,1) = intwind(i,1) + xdiff(i,k);
-            linepix2(i,k,2) = intwind(i,1) + xdiff(i,k);
+        if getty(i,1)>midy(1,1)
+            intwind(i,1) = abs(Xleft - gettx(i,1));
+            intwind(i,2) = abs(Yleft - getty(i,1));
+            intwind(i,3) = atan(intwind(i,2)/intwind(i,1));
+            for j = 1:10 %line dimension set as 3 pixels
+                xdiff(i,j) = j*cos(intwind(i,3));
+                ydiff(i,j) = j*sin(intwind(i,3));
+            end
+            for k = 1:10
+                linepix1(i,k,1) = intwind(i,1) - xdiff(i,k);
+                linepix1(i,k,2) = intwind(i,1) - xdiff(i,k);
+                linepix2(i,k,1) = intwind(i,1) + xdiff(i,k);
+                linepix2(i,k,2) = intwind(i,1) + xdiff(i,k);
+            end
+        else
+            intwind(i,1) = abs(Xright - gettx(i,1));
+            intwind(i,2) = abs(Yright - getty(i,1));
+            intwind(i,3) = atan(intwind(i,2)/intwind(i,1));
+            for j = 1:10 %line dimension set as 3 pixels
+                xdiff(i,j) = j*cos(intwind(i,3));
+                ydiff(i,j) = j*sin(intwind(i,3));
+            end
+            for k = 1:10
+                linepix1(i,k,1) = intwind(i,1) - xdiff(i,k);
+                linepix1(i,k,2) = intwind(i,1) - xdiff(i,k);
+                linepix2(i,k,1) = intwind(i,1) + xdiff(i,k);
+                linepix2(i,k,2) = intwind(i,1) + xdiff(i,k);
+            end
         end
     end 
 
@@ -241,7 +263,7 @@ else
         end
         mean1 = mean(intensities1(i,1:j));
         mean2 = mean(intensities2(i,1:j));
-        if abs(mean1-mean2)<100
+        if abs(mean1-mean2)<50
             xrem = gettx(i);
             yrem = getty(i);
             circ_matrix(xrem,yrem) = 0; %removes pixels 
