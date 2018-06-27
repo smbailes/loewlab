@@ -318,7 +318,7 @@ title('Hot Pixel');
 
 %% Adjustments of Canny Edges for Point System
 
-%if in == 'l'
+if in == 'l'
     mini = min(min(I));
     maxi = max(max(I));
 
@@ -338,13 +338,15 @@ title('Hot Pixel');
     else 
         I(I<edges(2)*.95) = 0; 
     end
-%end
+    
+    edgecanny3 = edge(I,'canny');
+    edgecanny3=bwareaopen(edgecanny3,10); %removes very small edge lines
 
-edgecanny3 = edge(I,'canny');
-edgecanny3=bwareaopen(edgecanny3,10); %removes very small edge lines
+    figure,imshow(edgecanny3)
+    title('Canny edges for Point System');
+end
 
-figure,imshow(edgecanny3)
-title('Canny edges for Point System');
+
 
 %% Small/Large
 

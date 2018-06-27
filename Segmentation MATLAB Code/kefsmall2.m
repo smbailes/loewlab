@@ -3,7 +3,7 @@ smallpoints=zeros(img_y,img_x);
 
 for aa = 1:img_y
     for bb = 1:img_x
-        if edgecanny3(aa,bb)==1
+        if edgecanny(aa,bb)==1
             smallpoints(aa,bb)=smallpoints(aa,bb)+2;
         end
         if circ_matrix(aa,bb)==1
@@ -276,8 +276,8 @@ displ = imshow(blue);
 hold off 
 set(displ, 'AlphaData', secc)
 
-
 skels=bwmorph(secc,'skel',Inf);
+skels = connectDots(skels,50);
 figure, imshow(I,[]), title('skels')
 % blue on top on figure
 blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
@@ -303,6 +303,7 @@ end
 vend(:,1:round((1/3)*cl))=0;
 vend(:,round((2/3)*cl):end)=0;
 
+vend = connectDots(vend,100);
 
 
 figure, imshow(I,[]), title('vend')
@@ -342,7 +343,7 @@ newboundaries = gett;
 % end
 % clear xx2 xx1 yy1 yy2 y1 y2 x1 x2;
 
-newboundaries = connectDots(newboundaries,100);
+newboundaries = connectDots(newboundaries,50);
 
 figure, imshow(I,[]), title('Middle Connections')
 %blue on top on figure
@@ -371,13 +372,14 @@ set(displ, 'AlphaData', newboundaries)
     %selectes the highest point of right and left sides
     xxnew = []; yynew = [];
     [xxnew yynew] = find(newboundaries(:,1:midy(1,1))==1);
-    xx1 = min(xxnew);
-    yy1 = yynew(max(find(xxnew == xx1))); 
+    yy1 = max(yynew);
+    xx1 = xxnew(max(find(yynew == yy1))); 
 
     xxnew = []; yynew = [];
     [xxnew yynew] = find(newboundaries(:,midy(1,1):end)==1);
-    xx2 = min(xxnew);
-    yy2 = yynew(max(find(xxnew == xx2)))++midy(1,1); 
+    yy2 = min(yynew);
+    xx2 = xxnew(max(find(yynew == yy2)));
+    yy2 = min(yynew)+midy(1,1);
 %     xx2 = min(xxnew);
     
     newboundaries = step(shapeInserter, newboundaries, uint16([yy1 xx1  yy2 xx2]));
@@ -389,6 +391,7 @@ set(displ, 'AlphaData', newboundaries)
     displ = imshow(blue);
     hold off
     set(displ, 'AlphaData', newboundaries)
+
 
 %% Part 5, Add again
 
@@ -405,6 +408,22 @@ for go=1:img_y
 end
 newboundaries=finalbeforelog;
 
+%% Adjust newboundaries
+
+if xx1>xx2, xxrem = xx2;else,xxrem = xx1;end
+
+newboundaries(1:xxrem,:) = 0; 
+newboundaries = connectDots(newboundaries,25);
+
+    figure, imshow(I,[]), title('CHECKPT')
+    %blue on top on figure
+    blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+    hold on
+    displ = imshow(blue);
+    hold off
+    set(displ, 'AlphaData', newboundaries)
+    
+    
 
 %% Part 6, zm_7_logedges_og
 
@@ -422,6 +441,23 @@ h3 = imshow(magenta);
 set(h3, 'AlphaData', BW_long);
 hold off
 
+
+[xbound ybound] = find(newboundaries==1);
+xbndry = max(xbound);
+ybndry = ybound(find(xbound==xbndry)); 
+
+BW_long(xbndry:end,:) = 0; 
+
+figure;
+imshow(I,[]);
+title('Log Edges CROPPED');
+magenta = cat(3, ones(size(I)), zeros(size(I)), ones(size(I))); %magenta has RGB value of 1 0 1
+hold on 
+h3 = imshow(magenta); 
+set(h3, 'AlphaData', BW_long);
+hold off
+
+
 %overlapping final and log edges images
 
 logfin = zeros(img_y,img_x);
@@ -435,6 +471,8 @@ for al = 1:img_y
         end
     end
 end
+
+logfin = connectDots(logfin,50);
 
 figure;
 imshow(I,[]);
@@ -451,6 +489,8 @@ connected = bwmorph(connected,'bridge');
 connected = bwmorph(connected,'thicken');
 connected = bwareaopen(connected,40);
 %connected = bwmorph(connected,'clean');
+
+connected = connectDots(connected,50);
 
 figure;
 imshow(I,[]);
@@ -473,7 +513,7 @@ biggest = bwareafilt(connected2,1,'largest');
 [bigarrayx bigarrayy] = find(biggest==1);
 maxbig = max(bigarrayy); minbig = min(bigarrayy); 
 count = 2;
-while abs(maxbig-minbig) < ((3/4)*co)
+while abs(maxbig-minbig) < ((4/5)*co)
     biggest = bwareafilt(connected2,count,'largest');
     [bigarrayx bigarrayy] = find(biggest==1);
     maxbig = max(bigarrayy); minbig = min(bigarrayy); 
