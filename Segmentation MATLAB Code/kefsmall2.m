@@ -321,26 +321,28 @@ gett=vend;
 CC = bwconncomp(gett);
 newboundaries = gett;
 
-for n = 1:CC.NumObjects - 1 %the number of lines in the middle region of the patient
-%     Store all row and col values of component n and the component after in
-%     x1,y1, x2, y2
-    [x1, y1] = ind2sub(size(newboundaries),CC.PixelIdxList{n});
-    [x2, y2] = ind2sub(size(newboundaries),CC.PixelIdxList{n+1});
-    
-    [yy1, ind] = min(x1); %find the max col in component n
-    xx1 = y1(ind); % The corrosponding row value for max col
-    
-    [yy2, ind] = min(x2); %find the min col in component n+1
-    xx2 = y2(ind); % The corrosponding row value for min col
-    
-    %Draw a line between the two points (xx1,yy1) and (xx2,yy2) and insert
-    %it in newboundaries4
-    shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
-    newboundaries = step(shapeInserter, newboundaries, uint16([xx1 yy1 xx2 yy2]));
-    %figure, imshow(newboundaries), title('After step shapeinserter');
-    
-end
-clear xx2 xx1 yy1 yy2 y1 y2 x1 x2;
+% for n = 1:CC.NumObjects - 1 %the number of lines in the middle region of the patient
+% %     Store all row and col values of component n and the component after in
+% %     x1,y1, x2, y2
+%     [x1, y1] = ind2sub(size(newboundaries),CC.PixelIdxList{n});
+%     [x2, y2] = ind2sub(size(newboundaries),CC.PixelIdxList{n+1});
+%     
+%     [yy1, ind] = min(x1); %find the max col in component n
+%     xx1 = y1(ind); % The corrosponding row value for max col
+%     
+%     [yy2, ind] = min(x2); %find the min col in component n+1
+%     xx2 = y2(ind); % The corrosponding row value for min col
+%     
+%     %Draw a line between the two points (xx1,yy1) and (xx2,yy2) and insert
+%     %it in newboundaries4
+%     shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
+%     newboundaries = step(shapeInserter, newboundaries, uint16([xx1 yy1 xx2 yy2]));
+%     %figure, imshow(newboundaries), title('After step shapeinserter');
+%     
+% end
+% clear xx2 xx1 yy1 yy2 y1 y2 x1 x2;
+
+newboundaries = connectDots(newboundaries,100);
 
 figure, imshow(I,[]), title('Middle Connections')
 %blue on top on figure
@@ -352,6 +354,41 @@ hold off
 set(displ, 'AlphaData', newboundaries)
 
 
+%% Add middle connecting line 
+    % split image in half
+    mid_col = zeros(img_y,img_x);
+    mid_col(:,img_x/2) = 1;
+
+    %find coordinates of midline
+    [midx midy] = find(mid_col==1); 
+    midlinez(:,1) = midx;
+    midlinez(:,2) = midy;
+    
+    %creates line to insert
+    shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
+    
+    %finds locations of points
+    %selectes the highest point of right and left sides
+    xxnew = []; yynew = [];
+    [xxnew yynew] = find(newboundaries(:,1:midy(1,1))==1);
+    xx1 = min(xxnew);
+    yy1 = yynew(max(find(xxnew == xx1))); 
+
+    xxnew = []; yynew = [];
+    [xxnew yynew] = find(newboundaries(:,midy(1,1):end)==1);
+    xx2 = min(xxnew);
+    yy2 = yynew(max(find(xxnew == xx2)))++midy(1,1); 
+%     xx2 = min(xxnew);
+    
+    newboundaries = step(shapeInserter, newboundaries, uint16([yy1 xx1  yy2 xx2]));
+    
+    figure, imshow(I,[]), title('Middle Connecting Line')
+    %blue on top on figure
+    blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+    hold on
+    displ = imshow(blue);
+    hold off
+    set(displ, 'AlphaData', newboundaries)
 
 %% Part 5, Add again
 
@@ -424,16 +461,42 @@ h5 = imshow(green);
 set(h5, 'AlphaData', connected);
 hold off
 
-%% Part 7
+%% Part 7 Largest Connected Components
 
 connected=bwmorph(connected,'fill');
 connected1=bwmorph(connected,'bridge');
 connected2=bwmorph(connected1,'close');
 
+[ro co] = size(I);
 
 biggest = bwareafilt(connected2,1,'largest');
+[bigarrayx bigarrayy] = find(biggest==1);
+maxbig = max(bigarrayy); minbig = min(bigarrayy); 
+count = 2;
+while abs(maxbig-minbig) < ((3/4)*co)
+    biggest = bwareafilt(connected2,count,'largest');
+    [bigarrayx bigarrayy] = find(biggest==1);
+    maxbig = max(bigarrayy); minbig = min(bigarrayy); 
+    count = count+1;
+end
+
+    shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
+    
+    xxnew = []; yynew = [];
+    [xxnew yynew] = find(biggest(:,1:(co/2)-1)==1); 
+    yy1 = max(yynew);
+    xx1 = xxnew(max(find(yynew == yy1))); 
+
+    xxnew = []; yynew = [];
+    [xxnew yynew] = find(biggest(:,(co/2):co)==1); 
+    yy2 = min(yynew);
+    xx2 = xxnew(max(find(yynew == yy2))); 
+    yy2 = min(yynew)+(co/2);
+
+    biggest = step(shapeInserter, biggest, uint16([yy1 xx1  yy2 xx2]));
 
 
+ %% 
 
 figure, imshow(I,[]), title('Thick Under Curve')
 %blue on top on figure

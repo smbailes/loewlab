@@ -14,8 +14,14 @@ connected2=bwmorph(connected1,'close');
 biggest = bwareafilt(connected2,1,'largest');
 [bigarrayx bigarrayy] = find(biggest==1);
 maxbig = max(bigarrayy); minbig = min(bigarrayy); 
-if abs(maxbig-minbig) < ((2/3)*co)
-    biggest = bwareafilt(connected2,2,'largest');
+count = 2;
+while abs(maxbig-minbig) < ((3/4)*co)
+    biggest = bwareafilt(connected2,count,'largest');
+    [bigarrayx bigarrayy] = find(biggest==1);
+    maxbig = max(bigarrayy); minbig = min(bigarrayy); 
+    count = count+1;
+end
+
     shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
     
     xxnew = []; yynew = [];
@@ -30,7 +36,7 @@ if abs(maxbig-minbig) < ((2/3)*co)
     yy2 = min(yynew)+(co/2);
 
     biggest = step(shapeInserter, biggest, uint16([yy1 xx1  yy2 xx2]));
-end
+    
 % biggest(1:Yup, :) = 0;
 % biggest(Ylo:ro, :) = 0;
 % biggest(:,1:Xleft) = 0;

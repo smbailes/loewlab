@@ -263,7 +263,7 @@ else
         end
         mean1 = mean(intensities1(i,1:j));
         mean2 = mean(intensities2(i,1:j));
-        if abs(mean1-mean2)<50
+        if abs(mean1-mean2)<30
             xrem = gettx(i);
             yrem = getty(i);
             circ_matrix(xrem,yrem) = 0; %removes pixels 
