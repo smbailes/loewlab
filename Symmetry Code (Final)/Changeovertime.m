@@ -1,6 +1,6 @@
 close all
 clc, clearvars -except perchangebreast perchangecorr v
-v = v+1
+%v = v+1
 answer = questdlg('ID Patient Type:','Patient Type','Patient','Volunteer','Patient');
 if (strcmp(answer, 'Patient'))
     ptID = patientselect;    % Dialog Box for patient selection
@@ -10,7 +10,7 @@ if (strcmp(answer, 'Patient'))
     numlines = 1;
     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     name = answers{1};
-    location = (['C:\Users\' name '\OneDrive\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Patient Images\' ptID '\Cropped\']);
+    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Patient Images\' ptID '\Cropped\']);
     
 end
 if (strcmp(answer, 'Volunteer'))
@@ -21,7 +21,7 @@ if (strcmp(answer, 'Volunteer'))
     numlines = 1;
     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     name = answers{1};
-    location = (['C:\Users\' name '\OneDrive\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Volunteer Images\' vtID '\Cropped\']);
+    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Volunteer Images\' vtID '\Cropped\']);
     
 end
     
@@ -476,14 +476,29 @@ figure('Name','Crop Tumor Region')
 [tumorcrop,tumrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); %sets the rectangle to crop all images
 figure('Name','Crop corresponging region')
 [corrcrop,corrrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); % sets crop for corresponding area
+surrtumrect(1) = tumrect(1) - tumrect(3)*0.5; % makes a crop for the surronding region
+surrtumrect(2) = tumrect(2) - tumrect(4)*0.5;
+surrtumrect(3) = tumrect(3)*2;
+surrtumrect(4) = tumrect(4)*2;
+if surrtumrect(1) < 1 % makes surronding area crop stop if they go past the limits
+    surrtumrect(1) = 1;
+elseif surrtumrect(1)+ surrtumrect(3) > c
+    surrtumrect(3) = c - surrtumrect(1);
+elseif surrtumrect(2) < 1
+    surrtumrect(2) = 1;
+elseif surrtumrect(2) + surrtumrect(4) > r
+    surrtumrect(4) = r - surrtumrect(2);
+end
 Itumor = cell(1,numpics);
 Icorr = cell(1,numpics);
+Isurrtum = cell(1,numpics);
  for k =1:numpics % creates the tumor and corresponding area images
      Itumor{k} =imcrop(I_mat{k},tumrect);
      Icorr{k} = imcrop(I_mat{k}, corrrect); 
+     Isurrtum{k} = imcrop(I_mat{k} , surrtumrect);
  end
  [tumrow,tumcol] = size(Itumor{1});
- for k = 1:numpics % removes black pixels from grid
+ for k = 1:numpics % removes black pixels from calculations
     J = Itumor{k};
    J = double(J);
      for i = 1:tumrow
@@ -508,6 +523,25 @@ for k = 1:numpics
         end
     end
     Icorr{k} = K;
+end
+[surrrow,surrcol] = size(Isurrtum{1});
+for k = 1:numpics
+    L = Isurrtum{k};
+    L = double(L);
+    for i = 1:surrrow
+        for j = 1:surrcol
+            if L(i,j) == 0 || L(i,j) == 10000
+                L(i,j) = NaN;
+            end
+        end
+    end
+    Isurrtum{k} = L;
+end
+[surrrow,surrcol] = size(Isurrtum{1});
+% for k = 1:numpics
+%     for i = ceil((surrrow - tumrow)/2):tumrow+(ceil(surrrow-tumrow)/2)
+for k = 1:numpics
+    surrregion{k} = (nansum(nansum(Isurrtum{k})) - nansum(nansum(Itumor{k})))/(numel(Isurrtum{k})-numel(Itumor{k}))
 end
 tumorregion = cell(1,numpics); %treats tumor and corresponding region as a single square
 corrregion = cell(1,numpics);
