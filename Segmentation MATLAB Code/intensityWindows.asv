@@ -30,10 +30,10 @@
     [gettx getty] = find(circ_matrix==1);
     linepix1 = []; %creates matrix for coordinates on line 1
     linepix2 = []; %creates matrix for coordinates on line 2
-    len = 5; %length dimension for line - set at 2 FOR NOW (may need to change later) 
+    len = 3; %length dimension for line - set at 2 FOR NOW (may need to change later) 
     for i = 1:length(gettx)
         if getty(i,1)>midy(1,1)
-            if (getty(i,1)>Xleft && gettx(i,1)>Yleft) || (getty(i,1)<Xleft && gettx(i,1)<Yleft)
+            if (getty(i,1)>Xleft && gettx(i,1)) || (getty(i,1)<Xleft && gettx(i,1)<Yleft)
                 intwind(i,1) = abs(Xleft - gettx(i,1));
                 intwind(i,2) = abs(Yleft - getty(i,1));
                 intwind(i,3) = atan(intwind(i,2)/intwind(i,1));
@@ -43,54 +43,25 @@
                 end
                 for k = 1:len
                     linepix1(i,k,1) = intwind(i,1) - xdiff(i,k);
-                    linepix1(i,k,2) = intwind(i,2) - ydiff(i,k);
+                    linepix1(i,k,2) = intwind(i,1) - xdiff(i,k);
                     linepix2(i,k,1) = intwind(i,1) + xdiff(i,k);
-                    linepix2(i,k,2) = intwind(i,2) + ydiff(i,k);
+                    linepix2(i,k,2) = intwind(i,1) + xdiff(i,k);
                 end
-            else
-                intwind(i,1) = abs(Xleft - gettx(i,1));
-                intwind(i,2) = abs(Yleft - getty(i,1));
-                intwind(i,3) = atan(intwind(i,2)/intwind(i,1));
-                for j = 1:len %line dimension set as 3 pixels
-                    xdiff(i,j) = j*cos(intwind(i,3));
-                    ydiff(i,j) = j*sin(intwind(i,3));
-                end
-                for k = 1:len
-                    linepix1(i,k,1) = intwind(i,1) + xdiff(i,k);
-                    linepix1(i,k,2) = intwind(i,2) - ydiff(i,k);
-                    linepix2(i,k,1) = intwind(i,1) - xdiff(i,k);
-                    linepix2(i,k,2) = intwind(i,2) + ydiff(i,k);
-                end
+             
             end
         else
-            if (getty(i,1)>Xright && gettx(i,1)>Yright) || (getty(i,1)<Xright && gettx(i,1)<Yright)
-                intwind(i,1) = abs(Xright - gettx(i,1));
-                intwind(i,2) = abs(Yright - getty(i,1));
-                intwind(i,3) = atan(intwind(i,2)/intwind(i,1));
-                for j = 1:len %line dimension set as 3 pixels
-                    xdiff(i,j) = j*cos(intwind(i,3));
-                    ydiff(i,j) = j*sin(intwind(i,3));
-                end
-                for k = 1:len
-                    linepix1(i,k,1) = intwind(i,1) - xdiff(i,k);
-                    linepix1(i,k,2) = intwind(i,2) - ydiff(i,k);
-                    linepix2(i,k,1) = intwind(i,1) + xdiff(i,k);
-                    linepix2(i,k,2) = intwind(i,2) + ydiff(i,k);
-                end
-            else
-                intwind(i,1) = abs(Xright - gettx(i,1));
-                intwind(i,2) = abs(Yright - getty(i,1));
-                intwind(i,3) = atan(intwind(i,2)/intwind(i,1));
-                for j = 1:len %line dimension set as 3 pixels
-                    xdiff(i,j) = j*cos(intwind(i,3));
-                    ydiff(i,j) = j*sin(intwind(i,3));
-                end
-                for k = 1:len
-                    linepix1(i,k,1) = intwind(i,2) + xdiff(i,k);
-                    linepix1(i,k,2) = intwind(i,1) - ydiff(i,k);
-                    linepix2(i,k,1) = intwind(i,2) - xdiff(i,k);
-                    linepix2(i,k,2) = intwind(i,1) + ydiff(i,k);
-                end
+            intwind(i,1) = abs(Xright - gettx(i,1));
+            intwind(i,2) = abs(Yright - getty(i,1));
+            intwind(i,3) = atan(intwind(i,2)/intwind(i,1));
+            for j = 1:len %line dimension set as 3 pixels
+                xdiff(i,j) = j*cos(intwind(i,3));
+                ydiff(i,j) = j*sin(intwind(i,3));
+            end
+            for k = 1:len
+                linepix1(i,k,1) = intwind(i,1) - xdiff(i,k);
+                linepix1(i,k,2) = intwind(i,1) - xdiff(i,k);
+                linepix2(i,k,1) = intwind(i,1) + xdiff(i,k);
+                linepix2(i,k,2) = intwind(i,1) + xdiff(i,k);
             end
         end
     end 
