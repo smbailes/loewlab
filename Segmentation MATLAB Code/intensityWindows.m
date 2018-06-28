@@ -6,6 +6,7 @@
     [midx midy] = find(mid_col==1); 
     midlinez(:,1) = midx;
     midlinez(:,2) = midy;
+    
 
 %     %find intersection between upper bound and midline
 %     fprintf('Select Upper Bound\n');
@@ -33,7 +34,7 @@
     len = 5; %length dimension for line - set at 2 FOR NOW (may need to change later) 
     for i = 1:length(gettx)
         if getty(i,1)>midy(1,1)
-            if (getty(i,1)>Xleft && gettx(i,1)>Yleft) || (getty(i,1)<Xleft && gettx(i,1)<Yleft)
+            if (gettx(i,1)>Xleft && getty(i,1)>Yleft) || (gettx(i,1)<Xleft && getty(i,1)<Yleft)
                 intwind(i,1) = abs(Xleft - gettx(i,1));
                 intwind(i,2) = abs(Yleft - getty(i,1));
                 intwind(i,3) = atan(intwind(i,2)/intwind(i,1));
@@ -63,7 +64,7 @@
                 end
             end
         else
-            if (getty(i,1)>Xright && gettx(i,1)>Yright) || (getty(i,1)<Xright && gettx(i,1)<Yright)
+            if (gettx(i,1)>Xright && getty(i,1)>Yright) || (gettx(i,1)<Xright && getty(i,1)<Yright)
                 intwind(i,1) = abs(Xright - gettx(i,1));
                 intwind(i,2) = abs(Yright - getty(i,1));
                 intwind(i,3) = atan(intwind(i,2)/intwind(i,1));
@@ -115,7 +116,7 @@
         end
         mean1 = mean(intensities1(i,1:j));
         mean2 = mean(intensities2(i,1:j));
-        if abs(mean1-mean2)<25
+        if abs(mean1-mean2)<3
             xrem = gettx(i);
             yrem = getty(i);
             circ_matrix(xrem,yrem) = 0; %removes pixels 

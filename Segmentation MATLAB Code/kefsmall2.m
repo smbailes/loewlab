@@ -1,6 +1,7 @@
 %%Small Points
 smallpoints=zeros(img_y,img_x);
 
+%% 
 for aa = 1:img_y
     for bb = 1:img_x
         if edgecanny(aa,bb)==1
@@ -277,7 +278,7 @@ hold off
 set(displ, 'AlphaData', secc)
 
 skels=bwmorph(secc,'skel',Inf);
-skels = connectDots(skels,50);
+skels = connectDots(skels,25);
 figure, imshow(I,[]), title('skels')
 % blue on top on figure
 blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
@@ -303,7 +304,7 @@ end
 vend(:,1:round((1/3)*cl))=0;
 vend(:,round((2/3)*cl):end)=0;
 
-vend = connectDots(vend,100);
+vend = connectDots(vend,25);
 
 
 figure, imshow(I,[]), title('vend')
@@ -343,7 +344,7 @@ newboundaries = gett;
 % end
 % clear xx2 xx1 yy1 yy2 y1 y2 x1 x2;
 
-newboundaries = connectDots(newboundaries,50);
+newboundaries = connectDots(newboundaries,25);
 
 figure, imshow(I,[]), title('Middle Connections')
 %blue on top on figure
@@ -472,7 +473,7 @@ for al = 1:img_y
     end
 end
 
-logfin = connectDots(logfin,50);
+logfin = connectDots(logfin,25);
 
 figure;
 imshow(I,[]);
