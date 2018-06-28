@@ -1,6 +1,6 @@
 close all
-clc, clear
-%v = v+1
+clc, clearvars -except perchangebreast perchangecorr v
+v = v+1
 answer = questdlg('ID Patient Type:','Patient Type','Patient','Volunteer','Patient');
 if (strcmp(answer, 'Patient'))
     ptID = patientselect;    % Dialog Box for patient selection
@@ -358,7 +358,7 @@ Rbreaststdv = cell2mat(Rstdv);
 %     normstdv(v,:) = Lbreaststdv;
 % end
 
-
+figure
 Rplot = errorbar(t,totRbreastmean,Rbreaststdv,'r');
 hold on % plot everything
 Lplot = errorbar(t,totLbreastmean,Lbreaststdv,'b');
@@ -442,7 +442,7 @@ xlabel('normalized change')
 
 %% Finds data for tumor and corresponding region
 if answer == "Patient"
-[maximum, maxidx] = maxk(totsquarechange(:),5);
+[maximum, maxidx] = maxk(totsquarechange(:),10);
 [lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);
 for i = 1:numel(lowrow)
         lowsquarechange(i) = totsquarechange(lowrow(i),lowcol(i));
@@ -555,15 +555,23 @@ figure
 bardata = [aveRbreastchange,aveLbreastchange,avetumorchange,avecorrchange]; % graphs average rate of change
 bar(c,bardata)
 title('Average Rate of change')
-
+%% determining percent changes
+answer = questdlg('Which side is the tumor on?','TumorSide','Left','Right','Left') % used to get total data accross all
+if isequal(answer,'Left') == 1
+    perchangebreast = ((totLbreastchange - tottumorchange)/totLbreastchange)*100
+elseif isequal(answer,'Right') ==1
+    perchangebreast = ((totRbreastchange - tottumorchange)/totRbreastchange)*100
+end
+percorrchange = ((totcorrchange - tottumorchange)/totcorrchange)*100
 else
 end
 %% identiying regions of low change and highlighting them. Then comparing to ewach breast
 if answer == "Volunteer"
  % finds the squares with the lowest total change
-[maximum, maxidx] = maxk(totsquarechange(:),5);
+[maximum, maxidx] = maxk(totsquarechange(:),10);
 [lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx)
-
+alllowrow(v) = lowrow;
+alllowcol(v) = lowcol;
 for i = 1:numel(lowrow)
         lowsquarechange(i) = totsquarechange(lowrow(i),lowcol(i))
 end
@@ -670,18 +678,19 @@ figure
 bardata = [aveRbreastchange,aveLbreastchange,avewarmchange,avecorrwarmchange];
 bar(c,bardata)
 title('Average Rate of change')
+%% Calculate percent change of warm regions
+answer = questdlg('Which side is the warmest region on?','WarmregionSide','Left','Right','Left') % used to get total data accross all
+if isequal(answer,'Left') == 1
+    perchangebreast{v} = ((totLbreastchange - totwarmchange)/totLbreastchange)*100
+elseif isequal(answer,'Right') ==1
+    perchangebreast{v} = ((totRbreastchange - totwarmchange)/totRbreastchange)*100
+end
+perchangecorr{v} = ((totcorrwarmchange - totwarmchange)/totcorrwarmchange)*100
 else
     
 end
 
-%% determining percent changes
-answer = questdlg('Which side is the tumor on?','TumorSide','Left','Right','Left') % used to get total data accross all
-if isequal(answer,'Left') == 1
-    perchangebreast = ((totLbreastchange - tottumorchange)/totLbreastchange)*100
-elseif isequal(answer,'Right') ==1
-    perchangebreast = ((totRbreastchange - tottumorchange)/totRbreastchange)*100
-end
-percorrchange = ((totcorrchange - tottumorchange)/totcorrchange)*100
+
 
  %% graphing total change across all patients
 % figure
