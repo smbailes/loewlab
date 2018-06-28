@@ -22,7 +22,10 @@ clc;
     ybox = num(index-1,4);                  % Get y-dim from num file
     sideString = txt(index,2);              % Get side from txt file
     notes = txt(index,7);                   % Get any notes from txt file
-    celldisp(notes);   
+    celldisp(notes); 
+    
+    
+    n = 2;
     
 %% ROI Identification
 % Convert Clock Hour to Angle (in rad) 
@@ -43,7 +46,7 @@ clc;
     [dx,dy] = pol2cart(theta, rho); % Convert tumor location as angle & dist to pixel location  
     
     
-    I_ref = I_mat{7};              % Display first image
+    I_ref = I_mat{n};              % Display first image
     I = getMatrixOutliers(I_ref);  % Remove outliers
     I_adj = I_ref(find(I_ref>0));    % Remove zero pixels
     I_sort1 = sort(I_adj);
@@ -115,7 +118,8 @@ while strcmp(again, 'Yes') == 1
 
         figure('Name','Histogram (with ROI highlighted)');
         % subplot(4,4,1);
-        for n = 1:1
+%         for n = 1:1
+
             I1 = I_mat{n};
             I2 = I_mat{n}(find(I_mat{n}>0));
 
@@ -126,7 +130,7 @@ while strcmp(again, 'Yes') == 1
             histogram(I2,500,'FaceColor','r','EdgeColor','r');
             hold on
             histogram(I4,500,'FaceColor','k','EdgeColor','k');
-        end
+%         end
         
         again = questdlg('Try again?', 'Yes', 'No');
 
