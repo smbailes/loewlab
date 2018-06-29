@@ -22,14 +22,16 @@
 
 
 %%
-function [IDX, isnoise]=DBSCAN(X,epsilon,MinPts)
+function [IDX, isnoise]=DBSCAN(X,epsilon,MinPts,s)
 
     C=0;
     
     n=size(X,1);
     IDX=zeros(n,1);
     
-    D=pdist2(X,X);
+%     D=pdist2(X,X);
+
+    D=pdist2(X,X,'seuclidean',[1,1,s]);
     
     visited=false(n,1);
     isnoise=false(n,1);
