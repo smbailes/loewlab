@@ -105,28 +105,6 @@ fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,scali
     close    
 %}
 
-%% Show Histogram for whole image and Truth Region
-%     imshow(I_mat{7},[min(I_adj1) max(I_adj1)]);               % Display with contrast
-%     hold on;
-%     plot([c1(1) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
-%     plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
-%     plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
-%     plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
-%     hold on;
-%     ROI = imrect();
-%     xy = wait(ROI);
-%     close
-%     
-%     figure('Name','Histograms'), subplot(4,4,1);
-%     for n = 1:14
-%         I2 = I_mat{n}(find(I_mat{n}>0));
-%         newCrop = imcrop(I_mat{n}, xy);
-% 
-%         subplot(4,4,n)
-%         histogram(I2,1000,'FaceColor','r','EdgeColor','r');
-%         hold on
-%         histogram(newCrop,1000,'FaceColor','k','EdgeColor','k');
-%     end
 
 %% Plot Image with Clusters using DBSCAN
 %     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID);
@@ -135,10 +113,6 @@ for n = 7:7                  % Iterate through cell matrix for each minute
     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID, s, percent);
     plot(xunit, yunit);
 
-%     plot([c1(1) c2(1)],[c1(2) c2(2)],'k');                      % Create red box region on Image Display
-%     plot([c2(1) c3(1)],[c2(2) c3(2)],'k');
-%     plot([c3(1) c4(1)],[c3(2) c4(2)],'k');
-%     plot([c4(1) c1(1)],[c4(2) c1(2)],'k');
     hold off;
 %     ClusterInfo CELL ARRAY
     ClusterInfo{n,1} = ClustStruct;       %Cell 1 is ClusterStructure
@@ -265,21 +239,16 @@ for g = 7:7
 %     hold on
 %     y1=get(gca,'ylim');
 %     plot([xcent xcent],y1);
-%     
-%     plot([c1(1 ) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
-%     plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
-%     plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
-%     plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
 %         
 %     title(sprintf('%s - Mirror Midline Isolation',ptID));
 %     
     ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
 end
 
-%% 
+%% Select cluster to plot on histogram
 
-e = imfreehand();
-xy = wait(e);
+e = imfreehand(); 
+xy = wait(e); %Double click to select freehand region
 binaryImage = e.createMask();
 BW = uint16(binaryImage);
 figure('Name', 'Histogram with ROI');
@@ -287,7 +256,7 @@ for n = 1:1
     I1 = I_mat{n};
     I2 = I_mat{n}(find(I_mat{n}>0));
 
-    I3 = I1.*BW;
+    I3 = I1.*BW; %sets all pixels outside of ROI to 0 
     I4 = I3(find(I3>0));
 
 %     subplot(4,4,n)
