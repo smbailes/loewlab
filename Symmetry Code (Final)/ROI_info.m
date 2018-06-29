@@ -127,8 +127,10 @@ while strcmp(again, 'Yes') == 1
             I4 = I3(find(I3>0));
 
         %     subplot(4,4,n)
+
             histogram(I2,500,'FaceColor','r','EdgeColor','r');
             hold on
+            yyaxis right
             histogram(I4,500,'FaceColor','k','EdgeColor','k');
 %         end
         

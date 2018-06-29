@@ -69,7 +69,7 @@ fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,scali
       
 %% ROI Identification on First Image (Remove later)
 
-    I1 = I_mat{7};              % Display first image
+    I1 = I_mat{1};              % Display first image
     I = getMatrixOutliers(I1);  % Remove outliers
     I_adj1 = I1(find(I1>0));    % Remove zero pixels
     I_sort1 = sort(I_adj1);
@@ -130,7 +130,7 @@ fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,scali
 
 %% Plot Image with Clusters using DBSCAN
 %     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID);
-for n = 15:15                   % Iterate through cell matrix for each minute
+for n = 7:7                  % Iterate through cell matrix for each minute
     I = I_mat{n};               % Get Image
     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID, s, percent);
     plot(xunit, yunit);
@@ -149,7 +149,7 @@ end
 
 fprintf('Finished Plotting Clusters\n');
 %% Check: Clusters on Bottom Border
-for c = 15:15
+for c = 1:1
    thisImage = ClusterInfo{c,1};
    pic = ClusterInfo{c,2}; %pic = I
    
@@ -171,7 +171,7 @@ for c = 15:15
 end  
 fprintf('Finished Removing Bottom Borders\n');
 %% Remove small and large clusters
-for d = 15:15
+for d = 1:1
 
    thisImage = ClusterInfo{d,1};
    pic = ClusterInfo{d,2}; %pic = I
@@ -192,7 +192,7 @@ end
 fprintf('Finished Removing Small and Large Clusters\n');
 
 %% Remove Cluster Data
-for e = 15:15
+for e = 1:1
     thisImage = ClusterInfo{e,1}; %Get Current Image Info
     clustData = ClusterInfo{e,3}; %Copy Cluster Data     
     numClusters = length(thisImage);
@@ -229,7 +229,7 @@ fprintf('Finished Removing Cluster Mean Intensity Data\n');
 % end 
 % fprintf('Finished Removing Clusters Below Threshold\n');
 %% Plot left over clusters
-for g = 15:15  
+for g = 7:7 
     
     thisImage = ClusterInfo{g,1}; %Get Current Image Info
     numClusters = length(thisImage);
@@ -283,7 +283,7 @@ xy = wait(e);
 binaryImage = e.createMask();
 BW = uint16(binaryImage);
 figure('Name', 'Histogram with ROI');
-for n = 15:15
+for n = 1:1
     I1 = I_mat{n};
     I2 = I_mat{n}(find(I_mat{n}>0));
 
