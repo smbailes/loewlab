@@ -1,4 +1,4 @@
-function [location, ptID] = choosedialog
+function [location, ptID,answer] = choosedialog
 %% Patient or Volunteer
     answer = questdlg('ID Patient Type:','Patient Type','Patient','Volunteer','Patient');
     if (strcmp(answer, 'Patient'))
@@ -9,10 +9,7 @@ function [location, ptID] = choosedialog
     
 %% File Explorer 
     dir = uigetdir; %file exploerer to find image directory
-    c = questdlg('Use Cropped Images?', 'Yes', 'No'); %check to see if you want to use cropped images
-    if(strcmp(c, 'Yes'))
-        location = strcat(dir, '\', ptID, '\Cropped Image\');
-    else
-        location = strcat(dir, '\', ptID);
-    end
+
+    location = strcat(dir, '\');
+
 end

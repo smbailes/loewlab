@@ -1,32 +1,17 @@
 close all
 clc, clearvars -except perchangebreast perchangecorr v
 %v = v+1
-answer = questdlg('ID Patient Type:','Patient Type','Patient','Volunteer','Patient');
-if (strcmp(answer, 'Patient'))
-    ptID = patientselect;    % Dialog Box for patient selection
-    prompt = {'Enter User name:','Enter length of square in pixels:','Enter total number of pictures:'};
+
+[location, ptID,answer] = pathfinder; 
+
+    prompt = {'Enter length of square in pixels:','Enter total number of pictures:'};
     dlgtitle = 'Input';
-    defaultans = {'Jacob','16','15'};
+    defaultans = {'16','15'};
     numlines = 1;
     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
-    name = answers{1};
-    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Patient Images\' ptID '\Cropped\']);
-    
-end
-if (strcmp(answer, 'Volunteer'))
-    vtID = volunteerselect;
-    prompt = {'Enter User name:','Enter length of square in pixels:','Enter total number of pictures:'};
-    dlgtitle = 'Input';
-    defaultans = {'Jacob','16','15'};
-    numlines = 1;
-    answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
-    name = answers{1};
-    location = (['C:\Users\' name '\Documents\GitHub\loewlab\Symmetry Code (Final)\Images\Volunteer Images\' vtID '\Cropped\']);
-    
-end
     
     %% Image Input
-    numpics = str2double(answers{3}); % allocates number of pictures
+    numpics = str2double(answers{2}); % allocates number of pictures
     % Read images to cell matrix I_mat
     a=0000; % set equal to the number of the first picture
     I_mat = cell(1,numpics);
@@ -48,7 +33,7 @@ prompt = ('Enter size of one box on grid in pixels'); % make dialog box
 dlgtitle = ('input');
 num_lines = 1;
 defaultans = {'50'};
-squareside = str2double(answers{2}); %converts ans to a number
+squareside = str2double(answers{1}); %converts ans to a number
 for k = 1:numpics
 I_mat{k}(squareside:squareside:end,:,:) = 0;% converts every nth row to black
 I_mat{k}(:,squareside:squareside:end,:) = 0;% converts every nth column to black
@@ -793,7 +778,7 @@ end
 
 
 
-
+%{
  %% graphing total change across all patients
 tumbreastave = xlsread('Patient and volunteer data.xlsx',1)
 tumbreaststdv = xlsread('Patient and volunteer data.xlsx',2)
@@ -810,7 +795,7 @@ normbreastave = mean(normbreastave)
 normbreaststdv = mean(normbreaststdv)
 Lbreastave = mean(Lbreastave)
 Rbreastave = mean(Rbreastave)
-Lbreaststdv = mean(Lbreaststdv)changewarm
+Lbreaststdv = mean(Lbreaststdv)
 Rbreaststdv = mean(Rbreaststdv)
 figure
 t = 0:14;
@@ -832,3 +817,4 @@ c = Lplot.Color;
 Lplot.Color = 'g';
 d = Rplot.Color;
 Rplot.Color = 'm'
+%}
