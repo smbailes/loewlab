@@ -11,6 +11,10 @@
 
 clear all;
 close all;
+
+%% Call to ChangeOverTime
+Changeovertime;
+
 %% Patient Selection
     [location, ptID] = pathfinder; 
 
@@ -120,7 +124,7 @@ end
 
 fprintf('Finished Plotting Clusters\n');
 %% Check: Clusters on Bottom Border
-for c = 1:1
+for c = 7:7
    thisImage = ClusterInfo{c,1};
    pic = ClusterInfo{c,2}; %pic = I
    
@@ -142,7 +146,7 @@ for c = 1:1
 end  
 fprintf('Finished Removing Bottom Borders\n');
 %% Remove small and large clusters
-for d = 1:1
+for d = 7:7
 
    thisImage = ClusterInfo{d,1};
    pic = ClusterInfo{d,2}; %pic = I
@@ -163,7 +167,7 @@ end
 fprintf('Finished Removing Small and Large Clusters\n');
 
 %% Remove Cluster Data
-for e = 1:1
+for e = 7:7
     thisImage = ClusterInfo{e,1}; %Get Current Image Info
     clustData = ClusterInfo{e,3}; %Copy Cluster Data     
     numClusters = length(thisImage);
@@ -206,7 +210,7 @@ for g = 7:7
     
     thisImage = ClusterInfo{g,1}; %Get Current Image Info
     numClusters = length(thisImage);
-    clustData = ClusterInfo{c,3}; %Copy Cluster Data 
+    clustData = ClusterInfo{g,3}; %Copy Cluster Data 
 
     for m = 1:numClusters %Sort through clusters for image
         if thisImage(m).RemoveCluster == 1 %Remove Indices from Marked Clusters from Cluster Data copy
@@ -247,7 +251,7 @@ xy = wait(e); %Double click to select freehand region
 binaryImage = e.createMask(); 
 BW = uint16(binaryImage);
 figure('Name', 'Histogram with ROI');
-for n = 1:1
+for n = 7:7
     I1 = I_mat{n};
     I2 = I_mat{n}(find(I_mat{n}>0));
 
@@ -259,3 +263,113 @@ for n = 1:1
     hold on
     histogram(I4,500,'FaceColor','k','EdgeColor','k');
 end
+
+%% Idenfity left or right from Changeovertime data
+
+if abs(totLbreastchange) < abs(totRbreastchange) &&  abs(aveLbreastchange) < abs(aveRbreastchange)
+    fprintf('%s Tumor on Left\n',ptID);
+    tumorSide = 'Left';
+elseif abs(totLbreastchange) > abs(totRbreastchange) &&  abs(aveLbreastchange) > abs(aveRbreastchange)
+    fprintf('%s Tumor on Right\n',ptID);
+    tumorSide = 'Right';
+else
+    fprintf('Unsure\n');
+end
+fprintf('Tumor Truth Data: %s\n', sideString{1});
+
+%% Look at clusters over time
+
+for o = 7:7
+    thisImage = ClusterInfo{o,1}; %Get Current Image Info
+    
+    numClusters = length(thisImage);
+    
+    for p = 1:numClusters
+        clusterIndices = thisImage(p).ClusterIndices;
+        for q = 1:15
+            I1 = I_mat{q};
+            %averages of same cluster over time
+            avgs(q,p) = mean2(I1(clusterIndices(:,2),clusterIndices(:,1)));
+        end 
+       totalChange(:,p) = avgs(1,p) - avgs(15,p);
+
+        for m = 1:14
+            stepChange(m,p) = avgs(m+1,p) - avgs(m,p);
+        end 
+        avgStepChange(:,p) = mean2(stepChange(:,p));
+
+    end
+    
+    if strcmp(tumorSide, 'Left') == 1
+        for l = 1:numClusters
+            if(abs(totalChange(:,l)) > abs(totLbreastchange) || abs(avgStepChange(:,l)) > abs(aveLbreastchange))
+                thisImage(l).RemoveCluster = 1;
+            end 
+        end 
+    else
+        for l = 1:numClusters
+            if(abs(totalChange(:,l)) > abs(totRbreastchange) || abs(avgStepChange(:,l)) > abs(aveRbreastchange))
+                thisImage(l).RemoveCluster = 1;
+            end 
+        end
+    end 
+    
+    ClusterInfo{o,1} = thisImage;
+end 
+
+%{
+%         ImBinMask = zeros(size(I_mat{o}));
+%         for b = 1:length(clusterIndices)
+%             ImBinMask(clusterIndices(b,2),clusterIndices(b,1)) == 1;
+%         end
+%         BW1 = uint16(ImBinMask);
+        
+%         for q = 1:15
+%             I1 = I_mat{q};
+%             I2 = I_mat{q}(find(I_mat{q}>0));
+% 
+%             I3 = I1.*BW1; %sets all pixels outside of ROI to 0 
+%             I4 = I3(find(I3>0));
+%         end 
+%}
+
+%% Plot left over clusters (again)  
+for g = 7:7 
+    
+    thisImage = ClusterInfo{g,1}; %Get Current Image Info
+    numClusters = length(thisImage);
+    clustData = ClusterInfo{g,3}; %Copy Cluster Data 
+
+    for m = 1:numClusters %Sort through clusters for image
+        if thisImage(m).RemoveCluster == 1 %Remove Indices from Marked Clusters from Cluster Data copy
+            rows = find(clustData(:,3) == m);
+            clustData(rows,:) = [];
+        end     
+    end 
+    
+    hrEnd = clustData(:,(1:2)); %Cluster Indices of remaining Clusters
+    clEnd = clustData(:,3); %Cluster Number for remaining clusters
+    
+    picture = ClusterInfo{g,2};
+    pic_adj = picture(find(picture>0));
+    
+    figure('Name','Remaining Clusters 2.0'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
+    hold on
+    PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
+    title(sprintf('%s - Post Cluster Intensity Analysis',ptID));
+    plot(xunit, yunit);
+    hold on 
+    
+    %%PLOT MIDLINE IMAGE
+
+%     figure, imshow(picture, [min(pic_adj), max(pic_adj)]);
+%     hold on
+%     y1=get(gca,'ylim');
+%     plot([xcent xcent],y1);
+%         
+%     title(sprintf('%s - Mirror Midline Isolation',ptID));
+%     
+    ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
+end
+
+
