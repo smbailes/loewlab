@@ -7,15 +7,15 @@ for aa = 1:img_y
         if edgecanny(aa,bb)==1
             smallpoints(aa,bb)=smallpoints(aa,bb)+2;
         end
-        if circ_matrix(aa,bb)==1
-            smallpoints(aa,bb)=smallpoints(aa,bb)+3;
-        end
+%         if circ_matrix(aa,bb)==1
+%             smallpoints(aa,bb)=smallpoints(aa,bb)+3;
+%         end
         if newI(aa,bb)~=0
             smallpoints(aa,bb)=smallpoints(aa,bb)+1;
         end
-%         if ellipses(aa,bb)==1
-%             smallpoints(aa,bb)=smallpoints(aa,bb)+1;
-%         end
+        if ellipses(aa,bb)==1
+            smallpoints(aa,bb)=smallpoints(aa,bb)+1;
+        end
     end
 end
 
@@ -226,10 +226,16 @@ secondpoints=zeros(img_y,img_x);
 
 for aa = 1:img_y
     for bb = 1:img_x
-        if circ_matrix(aa,bb)==1
-            secondpoints(aa,bb)=secondpoints(aa,bb)+3;
+%         if circ_matrix(aa,bb)==1
+%             secondpoints(aa,bb)=secondpoints(aa,bb)+3;
+%         end
+        if ellipses(aa,bb)~=0
+            secondpoints(aa,bb)=secondpoints(aa,bb)+1; 
         end
         if newI(aa,bb)~=0
+            secondpoints(aa,bb)=secondpoints(aa,bb)+1;
+        end 
+        if beforeconnect(aa,bb)~=0
             secondpoints(aa,bb)=secondpoints(aa,bb)+1;
         end 
 %         if laterellipses(aa,bb)==1
@@ -244,7 +250,7 @@ title('Second Points')
 secondoverlap = zeros(img_y,img_x);
 for cc=1:img_y
     for dd=1:img_x
-        if secondpoints(cc,dd)>1
+        if secondpoints(cc,dd)>2
             secondoverlap(cc,dd)=1;
         end
     end

@@ -114,7 +114,7 @@ title('Image with Ellipses')
 %         ql{n} = ellipse(bestFitsl(n,3),bestFitsl(n,4),bestFitsl(n,5)*pi/180,bestFitsl(n,1),bestFitsl(n,2),'k');
 %     end
 % end   
-if in == 'l'
+% if in == 'l'
     %RIGHT SIDE
     % override some default parameters
     paramsr.minMajorAxis = 350;
@@ -258,7 +258,7 @@ if in == 'l'
     hold off 
     set(displ, 'AlphaData', ellipses)
 
-end
+% end
 
 %% Fix Canny Edges
 
@@ -286,8 +286,8 @@ bins = 2^16; %insert image bits here
 [N,binlocation] = imhist(I,bins); %each count will has its own bin
 
 
-lowerBound = .009*perc*numel(I); % numel(I): the number of pixels in the image
-upperBound = .011*perc*numel(I);
+lowerBound = .02*perc*numel(I); % numel(I): the number of pixels in the image
+upperBound = .02*perc*numel(I);
 
 total = 0; 
 for j = 1:numel(N)  
