@@ -5,8 +5,8 @@ largepoints=zeros(img_y,img_x);
 
 BW = edge(I,'log');
 
-%removes all connected components that have fewer than P=20 pixels 
-BW_long = bwareaopen(BW,20); 
+%removes all connected components that have fewer than P=30 pixels 
+BW_long = bwareaopen(BW,30); 
 %thickens objects by adding pixels to the exterior of objects
 BW_long = bwmorph(BW_long,'thicken');
 
@@ -59,23 +59,23 @@ for cnt = 1:img_y                     % change 1's to a large number that's easi
     end
 end
 
-% make boundary one pixel thick
-% bottoms3 = zeros(img_y, img_x);
-% temp = zeros(1, img_x);
-% for count = 1:img_x                     % for all columns
-%     temp(count) = sum(bottoms2(:,count));    % get sum of each column
-%     if temp(count)~=0                               % if sum isn't zero
-%         loc = find(bottoms2(:,count));       % find indices of which rows aren't zero
-%         if loc(end)-loc(1)>1                        % if pixels aren't next to each other, keep first and last
-%             bottoms3(loc(1),count) = 2^16;
-%             bottoms3(loc(end),count) = 2^16;
-%         else                                        % otherwise only keep bottom pixel
-%             bottoms3(loc(end),count) = 2^16;
-%         end
-%     else
-%         continue;
-%     end
-% end
+%make boundary one pixel thick
+bottoms3 = zeros(img_y, img_x);
+temp = zeros(1, img_x);
+for count = 1:img_x                     % for all columns
+    temp(count) = sum(bottoms2(:,count));    % get sum of each column
+    if temp(count)~=0                               % if sum isn't zero
+        loc = find(bottoms2(:,count));       % find indices of which rows aren't zero
+        if loc(end)-loc(1)>1                        % if pixels aren't next to each other, keep first and last
+            bottoms3(loc(1),count) = 2^16;
+            bottoms3(loc(end),count) = 2^16;
+        else                                        % otherwise only keep bottom pixel
+            bottoms3(loc(end),count) = 2^16;
+        end
+    else
+        continue;
+    end
+end
 
 findthin = find(bottoms2>0);
 [thiny, thinx] = ind2sub(size(I),findthin);
@@ -129,32 +129,32 @@ hold off
 set(displ, 'AlphaData', uppers2)
 
 
-% total=zeros(e,f);
-% total(:,1:round(2*(f*(1/5))))= bottoms3(:,1:round(2*(f*(1/5))));
-% total(:,round((4*(f*(1/5)))):end)= bottoms3(:,round((4*(f*(1/5)))):end);
-% total(:,round(2*(f*(1/5))):(round((4*(f*(1/5))))-1))=uppers(:,round(2*(f*(1/5))):(round((4*(f*(1/5))))-1));
+total=zeros(e,f);
+total(:,1:round(2*(f*(1/5))))= bottoms3(:,1:round(2*(f*(1/5))));
+total(:,round((4*(f*(1/5)))):end)= bottoms3(:,round((4*(f*(1/5)))):end);
+total(:,round(2*(f*(1/5))):(round((4*(f*(1/5))))-1))=uppers(:,round(2*(f*(1/5))):(round((4*(f*(1/5))))-1));
 % 
-% total=bwmorph(total,'clean'); %removes individual 1's surrounded by 0's
+total=bwmorph(total,'clean'); %removes individual 1's surrounded by 0's
 %  
 %  
-%  side=input('Are the breasts lower or higher? [h/l]: ','s');
-%  if side=='l'
-%     total(1:round(2*(e/3)),1:(round((f*(3/7)))))=0;
-%     total(1:round(2*(e/3)),round(((f*(4/7)))):end)=0;
-%  else
-%     total(1:round((e/2)),1:(round((f*(3/7)))))=0;
-%     total(1:round((e/2)),round(((f*(4/7)))):end)=0;
-%  end
+side=input('Are the breasts lower or higher? [h/l]: ','s');
+  if side=='l'
+    total(1:round(2*(e/3)),1:(round((f*(3/7)))))=0;
+    total(1:round(2*(e/3)),round(((f*(4/7)))):end)=0;
+  else
+    total(1:round((e/2)),1:(round((f*(3/7)))))=0;
+    total(1:round((e/2)),round(((f*(4/7)))):end)=0;
+  end
 % 
 % 
 % 
-% figure, imshow(I,[]), title('Mixed')
-% % blue on top on figure
-% blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
-% hold on 
-% displ = imshow(blue); 
-% hold off 
-% set(displ, 'AlphaData', total)
+figure, imshow(I,[]), title('Mixed')
+% blue on top on figure
+blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+hold on 
+displ = imshow(blue); 
+hold off 
+set(displ, 'AlphaData', total)
 
 
 %% Part 2, Clean
