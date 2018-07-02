@@ -427,8 +427,10 @@ xlabel('normalized change')
 
 %% Finds data for tumor and corresponding region
 if answer == "Patient"
-[maximum, maxidx] = maxk(totsquarechange(:),10);
+top50 = round(.3*(numel(totsquarechange)));
+[maximum, maxidx] = maxk(totsquarechange(:),top50);
 [lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);
+
 for i = 1:numel(lowrow)
         lowsquarechange(i) = totsquarechange(lowrow(i),lowcol(i));
 end
@@ -637,7 +639,7 @@ end
 figure('Name','Crop Warm Region')
 [~,warmrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); %sets the rectangle to crop all images
 figure('Name','Crop corresponging region')
-[corrcrop,corrrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); % sets crop for corresponding area
+[~,corrrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); % sets crop for corresponding area
 surrwarmrect(1) = warmrect(1) - warmrect(3)*0.5; % makes a crop for the surronding region
 surrwarmrect(2) = warmrect(2) - warmrect(4)*0.5;
 surrwarmrect(3) = warmrect(3)*2;
