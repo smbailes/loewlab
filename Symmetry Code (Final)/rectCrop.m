@@ -8,7 +8,7 @@ for i=1:15
     strt=strt+120;            % Go to next image (for cropped), HAS TO BE CHANGED TO INCREMENT BY 1
 end
 
-newLocation = strcat(location, '\', 'Side with Tumor');
+newLocation = strcat(location, '\', 'Side without Tumor');
 mkdir(newLocation);
 
 %% Apply Crop to All Registered Images based on User Drawn Input
