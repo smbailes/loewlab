@@ -172,7 +172,33 @@ set(displ, 'AlphaData', gett)
 
 %% Part 3, Connect
 
-newboundaries = connectDots(total,100);
+newboundaries1 = connectDots(total,100);
+
+% CC = bwconncomp(newboundaries1);
+% newboundaries = newboundaries1;
+%  
+% for n = 1:CC.NumObjects - 1 %the number of lines in the middle region of the patient
+% %     Store all row and col values of component n and the component after in
+% %     x1,y1, x2, y2
+%     [x1, y1] = ind2sub(size(newboundaries),CC.PixelIdxList{n});
+%     [x2, y2] = ind2sub(size(newboundaries),CC.PixelIdxList{n+1});
+%     
+%     [yy1, ind] = max(y1); %find the max col in component n
+%     xx1 = x1(ind); % The corrosponding row value for max col
+%     
+%     [yy2, ind] = min(y2); %find the min col in component n+1
+%     xx2 = x2(ind); % The corrosponding row value for min col
+%     
+% %     Draw a line between the two points (xx1,yy1) and (xx2,yy2) and insert
+% %     it in newboundaries4
+%     if abs(yy1-yy2) < 50 
+%         shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
+%         newboundaries = step(shapeInserter, newboundaries, uint16([yy1 xx1 yy2 xx2]));
+%     end
+% %     figure, imshow(newboundaries4), title('After step shapeinserter');
+%     
+% end
+% clear xx2 xx1 yy1 yy2 y1 y2 x1 x2;
 
 figure, imshow(I,[]), title('Middle Connections')
 %blue on top on figure
@@ -181,7 +207,7 @@ hold on
 displ = imshow(blue); 
 hold off 
 %Use our diff1 as the AlphaData for the solid red image. 
-set(displ, 'AlphaData', newboundaries)
+set(displ, 'AlphaData', newboundaries1)
 
 
 %% Part 4, Logedges
