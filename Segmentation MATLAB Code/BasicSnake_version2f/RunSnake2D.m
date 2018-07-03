@@ -1,11 +1,24 @@
 % clear; 
 % close all;
 
-I = imread('1799 - V10.tif');
-I = im2double(I); 
-figure, imshow(I,[]); [y,x] = getpts;
+% I = imread('1799 - V10.tif');
+% I = im2double(I); 
+%figure, imshow(I,[]); [y,x] = getpts;
+[y x] = find(connectedtop==1);
 
-P = [x(:) y(:)];
+k = 0;
+for i = length(x):-1:1
+    k = k + 1;
+    xx(k,1) = x(i,1);
+    yy(k,1) = y(i,1);
+end
+
+P = [yy(:) xx(:)];
+
+figure;
+imshow(I,[])
+hold on
+plot(P);
 Options = struct;
 
 %% Basic

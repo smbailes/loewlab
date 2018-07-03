@@ -90,7 +90,7 @@ function bestFits = ellipseDetection(img, Xlo, Ylo, params, rlcheck)
     if ~isfield(params,'maxMajorAxis');     params.maxMajorAxis = 200; end
     if ~isfield(params,'rotation');            params.rotation = 0; end
     if ~isfield(params,'rotationSpan');        params.rotationSpan = 0; end
-    if ~isfield(params,'minAspectRatio');    params.minAspectRatio = 0.3; end
+    if ~isfield(params,'minAspectRatio');    params.minAspectRatio = 0.5; end %was 0.3
     if ~isfield(params,'randomize');        params.randomize = 2; end
     % - others
     if ~isfield(params,'numBest');            params.numBest = 2; end

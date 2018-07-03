@@ -4,7 +4,7 @@ smallpoints=zeros(img_y,img_x);
 %% 
 for aa = 1:img_y
     for bb = 1:img_x
-        if edgecanny(aa,bb)==1
+        if edgecanny3(aa,bb)==1
             smallpoints(aa,bb)=smallpoints(aa,bb)+2;
         end
 %         if circ_matrix(aa,bb)==1
@@ -47,6 +47,7 @@ hold off
 set(displ, 'AlphaData', smalloverlayedpoints)
 
 %% Part 2, Small Clean
+
 sm=bwmorph(smalloverlayedpoints,'close');
 sk=bwareaopen(sm,75);
 sb=bwmorph(sk,'endpoints');
@@ -92,8 +93,44 @@ displ = imshow(blue);
 hold off
 set(displ, 'AlphaData', beforeconnect)
 
-[rowsbc,colsbc]=size(beforeconnect);
+%% Add middle connecting line 
+    % split image in half
+    mid_col = zeros(img_y,img_x);
+    mid_col(:,img_x/2) = 1;
 
+    %find coordinates of midline
+    [midx midy] = find(mid_col==1); 
+    midlinez(:,1) = midx;
+    midlinez(:,2) = midy;
+    
+    %creates line to insert
+    shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
+    
+    %finds locations of points
+    %selectes the highest point of right and left sides
+    xxnew = []; yynew = [];
+    [xxnew yynew] = find(beforeconnect(:,1:midy(1,1))==1);
+    yy1 = max(yynew);
+    xx1 = xxnew(max(find(yynew == yy1))); 
+
+    xxnew = []; yynew = [];
+    [xxnew yynew] = find(beforeconnect(:,midy(1,1):end)==1);
+    yy2 = min(yynew);
+    xx2 = xxnew(max(find(yynew == yy2)));
+    yy2 = min(yynew)+midy(1,1);
+%     xx2 = min(xxnew);
+    if ~isempty(yy1) && ~isempty(xx1) && ~isempty(yy2) && ~isempty(xx2)
+        beforeconnect = step(shapeInserter, beforeconnect, uint16([yy1 xx1  yy2 xx2]));
+    end
+    figure, imshow(I,[]), title('Middle Connecting Line')
+    %blue on top on figure
+    blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+    hold on
+    displ = imshow(blue);
+    hold off
+    set(displ, 'AlphaData', beforeconnect)
+    %% 
+[rowsbc,colsbc]=size(beforeconnect);
 
 % 
 %     %RIGHT SIDE
@@ -230,7 +267,7 @@ for aa = 1:img_y
 %             secondpoints(aa,bb)=secondpoints(aa,bb)+3;
 %         end
         if ellipses(aa,bb)~=0
-            secondpoints(aa,bb)=secondpoints(aa,bb)+1; 
+            secondpoints(aa,bb)=secondpoints(aa,bb)+2; 
         end
         if newI(aa,bb)~=0
             secondpoints(aa,bb)=secondpoints(aa,bb)+1;
@@ -284,7 +321,7 @@ hold off
 set(displ, 'AlphaData', secc)
 
 skels=bwmorph(secc,'skel',Inf);
-skels = connectDots(skels,25);
+%skels = connectDots(skels,25);
 figure, imshow(I,[]), title('skels')
 % blue on top on figure
 blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
@@ -310,7 +347,7 @@ end
 vend(:,1:round((1/3)*cl))=0;
 vend(:,round((2/3)*cl):end)=0;
 
-vend = connectDots(vend,25);
+%vend = connectDots(vend,25);
 
 
 figure, imshow(I,[]), title('vend')
@@ -350,7 +387,7 @@ newboundaries = gett;
 % end
 % clear xx2 xx1 yy1 yy2 y1 y2 x1 x2;
 
-newboundaries = connectDots(newboundaries,25);
+%newboundaries = connectDots(newboundaries,25);
 
 figure, imshow(I,[]), title('Middle Connections')
 %blue on top on figure
@@ -388,9 +425,9 @@ set(displ, 'AlphaData', newboundaries)
     xx2 = xxnew(max(find(yynew == yy2)));
     yy2 = min(yynew)+midy(1,1);
 %     xx2 = min(xxnew);
-    
-    newboundaries = step(shapeInserter, newboundaries, uint16([yy1 xx1  yy2 xx2]));
-    
+    if ~isempty(yy1) && ~isempty(xx1) && ~isempty(yy2) && ~isempty(xx2)
+        newboundaries = step(shapeInserter, newboundaries, uint16([yy1 xx1  yy2 xx2]));
+    end
     figure, imshow(I,[]), title('Middle Connecting Line')
     %blue on top on figure
     blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
@@ -417,19 +454,19 @@ newboundaries=finalbeforelog;
 
 %% Adjust newboundaries
 
-if xx1>xx2, xxrem = xx2;else,xxrem = xx1;end
-
-newboundaries(1:xxrem,:) = 0; 
-newboundaries = connectDots(newboundaries,25);
-
-    figure, imshow(I,[]), title('CHECKPT')
-    %blue on top on figure
-    blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
-    hold on
-    displ = imshow(blue);
-    hold off
-    set(displ, 'AlphaData', newboundaries)
-    
+% if xx1>xx2, xxrem = xx2;else,xxrem = xx1;end
+% 
+% newboundaries(1:xxrem,:) = 0; 
+% newboundaries = connectDots(newboundaries,25);
+% 
+%     figure, imshow(I,[]), title('CHECKPT')
+%     %blue on top on figure
+%     blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+%     hold on
+%     displ = imshow(blue);
+%     hold off
+%     set(displ, 'AlphaData', newboundaries)
+%     
     
 
 %% Part 6, zm_7_logedges_og
@@ -479,7 +516,7 @@ for al = 1:img_y
     end
 end
 
-logfin = connectDots(logfin,25);
+%logfin = connectDots(logfin,25);
 
 figure;
 imshow(I,[]);
@@ -497,7 +534,7 @@ connected = bwmorph(connected,'thicken');
 connected = bwareaopen(connected,40);
 %connected = bwmorph(connected,'clean');
 
-connected = connectDots(connected,50);
+%connected = connectDots(connected,50);
 
 figure;
 imshow(I,[]);
@@ -509,42 +546,62 @@ set(h5, 'AlphaData', connected);
 hold off
 
 %% Part 7 Largest Connected Components
+% 
+% connected=bwmorph(connected,'fill');
+% connected1=bwmorph(connected,'bridge');
+% connected2=bwmorph(connected1,'close');
+% 
+% [ro co] = size(I);
+% 
+% biggest = bwareafilt(connected2,1,'largest');
+% [bigarrayx bigarrayy] = find(biggest==1);
+% maxbig = max(bigarrayy); minbig = min(bigarrayy); 
+% count = 2;
+% while abs(maxbig-minbig) < ((4/5)*co)
+%     biggest = bwareafilt(connected2,count,'largest');
+%     [bigarrayx bigarrayy] = find(biggest==1);
+%     maxbig = max(bigarrayy); minbig = min(bigarrayy); 
+%     count = count+1;
+% end
+% 
+%     shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
+%     
+%     xxnew = []; yynew = [];
+%     [xxnew yynew] = find(biggest(:,1:(co/2)-1)==1); 
+%     yy1 = max(yynew);
+%     xx1 = xxnew(max(find(yynew == yy1))); 
+% 
+%     xxnew = []; yynew = [];
+%     [xxnew yynew] = find(biggest(:,(co/2):co)==1); 
+%     yy2 = min(yynew);
+%     xx2 = xxnew(max(find(yynew == yy2))); 
+%     yy2 = min(yynew)+(co/2);
+% 
+%     biggest = step(shapeInserter, biggest, uint16([yy1 xx1  yy2 xx2]));
 
-connected=bwmorph(connected,'fill');
-connected1=bwmorph(connected,'bridge');
-connected2=bwmorph(connected1,'close');
 
-[ro co] = size(I);
-
-biggest = bwareafilt(connected2,1,'largest');
-[bigarrayx bigarrayy] = find(biggest==1);
-maxbig = max(bigarrayy); minbig = min(bigarrayy); 
-count = 2;
-while abs(maxbig-minbig) < ((4/5)*co)
-    biggest = bwareafilt(connected2,count,'largest');
-    [bigarrayx bigarrayy] = find(biggest==1);
-    maxbig = max(bigarrayy); minbig = min(bigarrayy); 
-    count = count+1;
+ %% Point System Part 3 
+for al = 1:img_y
+    for bl = 1:img_x
+        fincount = 0;
+        if beforeconnect(al,bl)==1
+            fincount = fincount + 1;
+        end
+        if connected(al,bl)==1
+            fincount = fincount + 1;
+        end
+        if fincount>1
+            biggest(al,bl)=1;
+        else
+            biggest(al,bl)=0;
+        end
+    end
 end
 
-    shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
-    
-    xxnew = []; yynew = [];
-    [xxnew yynew] = find(biggest(:,1:(co/2)-1)==1); 
-    yy1 = max(yynew);
-    xx1 = xxnew(max(find(yynew == yy1))); 
-
-    xxnew = []; yynew = [];
-    [xxnew yynew] = find(biggest(:,(co/2):co)==1); 
-    yy2 = min(yynew);
-    xx2 = xxnew(max(find(yynew == yy2))); 
-    yy2 = min(yynew)+(co/2);
-
-    biggest = step(shapeInserter, biggest, uint16([yy1 xx1  yy2 xx2]));
-
-
+biggest = connectDots(biggest,25);
+ 
  %% 
-
+ 
 figure, imshow(I,[]), title('Thick Under Curve')
 %blue on top on figure
 blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
@@ -601,6 +658,7 @@ displ = imshow(blue);
 hold off 
 %Use our diff1 as the AlphaData for the solid red image. 
 set(displ, 'AlphaData', connectedtop)
+
 
 
 % BW2= imfill(connectedtop,'holes');

@@ -71,6 +71,9 @@ figure;
 imshow(I,[]); %produce an image to overlay the ellipses onto
 title('Image with Ellipses')
 
+[img_y img_x] = size(I);
+image_squared
+
 % if in == 's'
 %         %RIGHT SIDE
 %     % override some default parameters
@@ -117,8 +120,8 @@ title('Image with Ellipses')
 % if in == 'l'
     %RIGHT SIDE
     % override some default parameters
-    paramsr.minMajorAxis = 350;
-    paramsr.maxMajorAxis = 700;
+    paramsr.minMajorAxis = img_y/2;
+    paramsr.maxMajorAxis = img_y;
     paramsr.numBest = 12; %draws 12 ellipses
     paramsr.rotation = 45; %If rotationSpan is in (0,90), only angles within [rotation-rotationSpan,rotation+rotationSpan] are accepted.
     paramsr.rotationSpan = 35;
@@ -130,7 +133,7 @@ title('Image with Ellipses')
      fprintf('Pick lower bound for the left breast. \n');
     figure, imshow(I, []), title('Bound Detection')
     [Xlo1,Ylo1] = ginput(1);
-    bestFitsr = ellipseDetection(edgecanny, Xlo1, Ylo1, paramsr, rlcheck);
+    bestFitsr = ellipseDetection(edgecanny2, Xlo1, Ylo1, paramsr, rlcheck);
    % bestFitsr = ellipseDetection(edgecanny, paramsr, Xright, Xleft, Ylo);
     fprintf('Output %d best fits.\n', size(bestFitsr,1));
     
@@ -144,8 +147,8 @@ title('Image with Ellipses')
         qr{n} = ellipse(bestFitsr(n,3),bestFitsr(n,4),bestFitsr(n,5)*pi/180,bestFitsr(n,1),bestFitsr(n,2),'k');
     end
     %overriding parameters:
-    paramsl.minMajorAxis = 350;
-    paramsl.maxMajorAxis = 700;
+    paramsl.minMajorAxis = img_y/2; %350
+    paramsl.maxMajorAxis = img_y; %700
     paramsl.numBest = 12; %draws 12 ellipses
     paramsl.rotation = 135; %If rotationSpan is in (0,90), only angles within [rotation-rotationSpan,rotation+rotationSpan] are accepted.
     paramsl.rotationSpan = 35;
@@ -157,7 +160,7 @@ title('Image with Ellipses')
     fprintf('Pick lower bound for the right breast. \n');
     figure, imshow(I, []), title('Bound Detection')
     [Xlo2,Ylo2] = ginput(1);
-    bestFitsl = ellipseDetection(edgecanny, Xlo2, Ylo2, paramsl, rlcheck);
+    bestFitsl = ellipseDetection(edgecanny2, Xlo2, Ylo2, paramsl, rlcheck);
     %bestFitsl = ellipseDetection(edgecanny, paramsl, Xright, Xleft, Ylo);
     fprintf('Output %d best fits.\n', size(bestFitsl,1));
 
@@ -286,8 +289,8 @@ bins = 2^16; %insert image bits here
 [N,binlocation] = imhist(I,bins); %each count will has its own bin
 
 
-lowerBound = .02*perc*numel(I); % numel(I): the number of pixels in the image
-upperBound = .02*perc*numel(I);
+lowerBound = .009*perc*numel(I); %.009 % numel(I): the number of pixels in the image
+upperBound = .011*perc*numel(I); %.011
 
 total = 0; 
 for j = 1:numel(N)  
@@ -318,7 +321,7 @@ title('Hot Pixel');
 
 %% Adjustments of Canny Edges for Point System
 
-if in == 'l'
+%if in == 'l'
     mini = min(min(I));
     maxi = max(max(I));
 
@@ -344,7 +347,7 @@ if in == 'l'
 
     figure,imshow(edgecanny3)
     title('Canny edges for Point System');
-end
+%end
 
 
 
