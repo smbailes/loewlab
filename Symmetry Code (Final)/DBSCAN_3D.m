@@ -44,7 +44,7 @@ prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
     'Enter MinPts:','Enter Desired %:','Enter desired scaling factor'};  
 dlg_title = 'DBSCAN Parameters';                                         % box title
 num_lines = 1;                                                          % lines per answer
-defaultans = {'5.2','10','80','sqrt(5/3)'};          % default inputs
+defaultans = {'5.2','12','90','sqrt(5/3)'};          % default inputs
 options.Resize = 'on';                                                  % allows for resizing of box
 answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
 epsilon = str2double(answer{1});                
@@ -122,15 +122,16 @@ for n = 7:7                  % Iterate through cell matrix for each minute
     
 end    
 
-fprintf('Finished Plotting Clusters\n');
-%% Check: Clusters on Bottom Border
+fprintf('Finished Clustering\n');
+%% Cluster Checks
 for c = 7:7
    thisImage = ClusterInfo{c,1};
    pic = ClusterInfo{c,2}; %pic = I
    
    numClust = length(thisImage);
-   bb = 0;
    
+   %Remove bottom border
+   bb = 0;
    for i = 1:numClust %Iterate through Clusters
        clustPoints = thisImage(i).ClusterIndices; %Get cluster indices
        for a = 1:length(clustPoints(:,1)) %Search through cluster indices
@@ -140,17 +141,9 @@ for c = 7:7
            end
        end       
    end    
+   fprintf('Removed %d clusters from bottom border\n', bb);
    
-   ClusterInfo{c,1} = thisImage; %Save Info to ClusterInfo
-end  
-fprintf('Finished Removing Bottom Borders\n');
-%% Remove small and large clusters
-for d = 7:7
-
-   thisImage = ClusterInfo{d,1};
-   pic = ClusterInfo{d,2}; %pic = I
-   
-   numClust = length(thisImage);
+   %Remove small and large clusters
    sl = 0;
    for p = 1:numClust
       clustPoints = thisImage(p).ClusterIndices;
@@ -161,17 +154,11 @@ for d = 7:7
           end
       end
    end
-   ClusterInfo{d,1} = thisImage;
-end 
-fprintf('Finished Removing Small and Large Clusters\n');
-
-%% Check for vessels
-for s = 7:7
-
-    thisImage = ClusterInfo{s,1};
-    numClusters = length(thisImage);
-    vess = 0;
-    for t = 1:numClusters
+   fprintf('Removed %d small/large clusters\n', sl);
+   
+   %Check for vessels
+   vess = 0;
+    for t = 1:numClust
         indices = thisImage(t).ClusterIndices;
         xind = indices(:,2);
         yind = indices(:,1);
@@ -191,10 +178,11 @@ for s = 7:7
             vess = vess+1;
         end
     end
+    fprintf('Removed %d vessels\n', vess);
     
-    ClusterInfo{s,1} = thisImage;
-end
-fprintf('Finished Removing Vessels (by length)\n');
+    ClusterInfo{c,1} = thisImage; %Save Info to ClusterInfo
+end  
+
 %% Remove Cluster Data
 %{
 for e = 7:7
@@ -274,27 +262,6 @@ for g = 7:7
     ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
 end
 
-%% Select cluster to plot on histogram
-
-% e = imfreehand(); 
-% xy = wait(e); %Double click to select freehand region
-% binaryImage = e.createMask(); 
-% BW = uint16(binaryImage);
-% figure('Name', 'Histogram with ROI');
-% for n = 7:7
-%     I1 = I_mat{n};
-%     I2 = I_mat{n}(find(I_mat{n}>0));
-% 
-%     I3 = I1.*BW; %sets all pixels outside of ROI to 0 
-%     I4 = I3(find(I3>0));
-% 
-% %     subplot(4,4,n)
-%     histogram(I2,500,'FaceColor','r','EdgeColor','r');
-%     hold on
-%     histogram(I4,500,'FaceColor','k','EdgeColor','k');
-% end
-
-
 %% Idenfity left or right from Changeovertime data
 
 if abs(totLbreastchange) < abs(totRbreastchange) &&  abs(aveLbreastchange) < abs(aveRbreastchange)
@@ -336,7 +303,7 @@ for o = 7:7
     end
     
     for l = 1:numClusters
-        if abs(totalChange(:,l)) > abs(lowchange)
+        if abs(totalChange(:,l)) > abs(lowchange) 
             thisImage(l).RemoveCluster = 1;
         end
     end
@@ -415,3 +382,24 @@ for g = 7:7
 end
 
 %}
+
+%% Select cluster to plot on histogram
+e = imfreehand(); 
+xy = wait(e); %Double click to select freehand region
+binaryImage = e.createMask(); 
+BW = uint16(binaryImage);
+figure('Name', 'Histogram with ROI');
+for n = 7:7
+    I1 = I_mat{n};
+    I2 = I_mat{n}(find(I_mat{n}>0));
+
+    I3 = I1.*BW; %sets all pixels outside of ROI to 0 
+    I4 = I3(find(I3>0));
+
+%     subplot(4,4,n)
+    histogram(I2,500,'FaceColor','r','EdgeColor','r');
+    hold on
+    yyaxis right
+    ylim([0 50])
+    histogram(I4,500,'FaceColor','k','EdgeColor','k');
+end
