@@ -139,7 +139,7 @@ side=input('Are the breasts lower or higher? [h/l]: ','s');
 % 
 % 
 % 
-figure, imshow(I,[]), title('Best Fit')
+figure, imshow(I,[]), title('Mixed')
 % blue on top on figure
 blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
 hold on 
@@ -147,10 +147,13 @@ displ = imshow(blue);
 hold off 
 set(displ, 'AlphaData', total)
 
+%% Part 2, LogEdges
 
-%% Part 2, Clean
+zm_7_logedges;
 
-gettit=bwmorph(total,'close');
+%% Part 3, Clean
+
+gettit=bwmorph(logfin,'close');
 
 gett=bwmorph(gettit,'bridge');
 
@@ -170,12 +173,12 @@ displ = imshow(blue);
 hold off
 set(displ, 'AlphaData', gett)
 
-%% Part 3, Connect
+%% Part 4, Connect
 
 newboundaries = connectDots(gett,50);
 
-% CC = bwconncomp(newboundaries);
-% newboundaries = newboundaries;
+% CC = bwconncomp(newboundaries1);
+% newboundaries = newboundaries1;
 %  
 % for n = 1:CC.NumObjects - 1 %the number of lines in the middle region of the patient
 % %     Store all row and col values of component n and the component after in
@@ -185,7 +188,7 @@ newboundaries = connectDots(gett,50);
 %     
 %     [yy1, ind] = max(y1); %find the max col in component n
 %     xx1 = x1(ind); % The corrosponding row value for max col
-%    
+%     
 %     [yy2, ind] = min(y2); %find the min col in component n+1
 %     xx2 = x2(ind); % The corrosponding row value for min col
 %     
@@ -212,7 +215,7 @@ set(displ, 'AlphaData', newboundaries)
 
 %% Part 4, Logedges
 
-zm_7_logedges;
+%zm_7_logedges;
 
 % % clear 
 % % close all

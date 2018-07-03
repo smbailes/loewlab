@@ -47,7 +47,7 @@ hold off
 logfin = zeros(img_y,img_x);
 for al = 1:img_y
     for bl = 1:img_x
-        if newboundaries(al,bl)==1
+        if total(al,bl)==1
             logfin(al,bl)=1;
         end
         if BW_long(al,bl)==1
