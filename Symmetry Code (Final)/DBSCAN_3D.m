@@ -44,7 +44,7 @@ prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
     'Enter MinPts:','Enter Desired %:','Enter desired scaling factor'};  
 dlg_title = 'DBSCAN Parameters';                                         % box title
 num_lines = 1;                                                          % lines per answer
-defaultans = {'5.2','12','90','sqrt(5/3)'};          % default inputs
+defaultans = {'5.2','12','80','sqrt(5/3)'};          % default inputs
 options.Resize = 'on';                                                  % allows for resizing of box
 answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
 epsilon = str2double(answer{1});                
@@ -131,33 +131,28 @@ for c = 7:7
    numClust = length(thisImage);
    
    %Remove bottom border
-   bb = 0;
    for i = 1:numClust %Iterate through Clusters
        clustPoints = thisImage(i).ClusterIndices; %Get cluster indices
        for a = 1:length(clustPoints(:,1)) %Search through cluster indices
            if (pic((clustPoints(a,2)+1), clustPoints(a,1)) == 0) %If pixel below any cluster has intensity 0, mark cluster for removal
                thisImage(i).RemoveCluster = 1;
-               bb = bb+1;
            end
        end       
    end    
-   fprintf('Removed %d clusters from bottom border\n', bb);
+   fprintf('Removed clusters from bottom border\n');
    
    %Remove small and large clusters
-   sl = 0;
    for p = 1:numClust
       clustPoints = thisImage(p).ClusterIndices;
       for b = 1:length(clustPoints(:,1))
-          if length(clustPoints(:,1)) < 10 || length(clustPoints(:,1)) > 150
+          if length(clustPoints(:,1)) < 10 || length(clustPoints(:,1)) > 200
               thisImage(p).RemoveCluster = 1;
-              sl = sl+1;
           end
       end
    end
-   fprintf('Removed %d small/large clusters\n', sl);
+   fprintf('Removed small/large clusters\n');
    
    %Check for vessels
-   vess = 0;
     for t = 1:numClust
         indices = thisImage(t).ClusterIndices;
         xind = indices(:,2);
@@ -175,10 +170,9 @@ for c = 7:7
         ylengths(t,1) = t;
         if ylength > 45
             thisImage(t).RemoveCluster = 1;
-            vess = vess+1;
         end
     end
-    fprintf('Removed %d vessels\n', vess);
+    fprintf('Removed vessels\n');
     
     ClusterInfo{c,1} = thisImage; %Save Info to ClusterInfo
 end  
@@ -223,6 +217,8 @@ fprintf('Finished Removing Cluster Mean Intensity Data\n');
 % end 
 % fprintf('Finished Removing Clusters Below Threshold\n');
 %}
+
+
 %% Plot left over clusters
 for g = 7:7 
     
@@ -264,10 +260,10 @@ end
 
 %% Idenfity left or right from Changeovertime data
 
-if abs(totLbreastchange) < abs(totRbreastchange) &&  abs(aveLbreastchange) < abs(aveRbreastchange)
+if(abs(totLbreastchange) < abs(totRbreastchange) &&  abs(aveLbreastchange) < abs(aveRbreastchange))
     fprintf('%s Tumor on Left\n',ptID);
     tumorSide = 'Left';
-elseif abs(totLbreastchange) > abs(totRbreastchange) &&  abs(aveLbreastchange) > abs(aveRbreastchange)
+elseif(abs(totLbreastchange) > abs(totRbreastchange) &&  abs(aveLbreastchange) > abs(aveRbreastchange))
     fprintf('%s Tumor on Right\n',ptID);
     tumorSide = 'Right';
 else
@@ -276,7 +272,7 @@ end
 fprintf('Tumor Truth Data: %s\n', sideString{1});
 
 lowchange = mean2(lowsquarechange);
-
+lowsquarechange = lowavesquarechange(topx);
 
 %% Look at clusters over time
 
@@ -301,46 +297,27 @@ for o = 7:7
         avgStepChange(:,p) = mean2(stepChange(:,p));
         
     end
-    
+    a = 0; b=0;c=0;
     for l = 1:numClusters
-        if abs(totalChange(:,l)) > abs(lowchange) 
+        if(abs(totalChange(l)) > abs(lowchange)) %If the total change of a cluster is too high
             thisImage(l).RemoveCluster = 1;
+            a = a+1;
+        end
+        if(abs(avgStepChange(l)) > abs(lowsquarechange)) %If the average change is too high
+            thisImage(l).RemoveCluster = 1;
+            b = b+1;
+        end
+        for n = 1:14 %If any of the differences between 2 times is too high
+            if(abs(stepChange(n,l)) > abs(lowchange))
+                thisImage(l).RemoveCluster = 1;
+                c = c+1
+            end
         end
     end
     
-    
-%     if strcmp(tumorSide, 'Left') == 1
-%         for l = 1:numClusters
-%             if(abs(totalChange(:,l)) > abs(totLbreastchange) || abs(avgStepChange(:,l)) > abs(aveLbreastchange))
-%                 thisImage(l).RemoveCluster = 1;
-%             end 
-%         end 
-%     else
-%         for l = 1:numClusters
-%             if(abs(totalChange(:,l)) > abs(totRbreastchange) || abs(avgStepChange(:,l)) > abs(aveRbreastchange))
-%                 thisImage(l).RemoveCluster = 1;
-%             end 
-%         end
-%     end 
-    
     ClusterInfo{o,1} = thisImage;
 end 
-
-%{
-%         ImBinMask = zeros(size(I_mat{o}));
-%         for b = 1:length(clusterIndices)
-%             ImBinMask(clusterIndices(b,2),clusterIndices(b,1)) == 1;
-%         end
-%         BW1 = uint16(ImBinMask);
-        
-%         for q = 1:15
-%             I1 = I_mat{q};
-%             I2 = I_mat{q}(find(I_mat{q}>0));
-% 
-%             I3 = I1.*BW1; %sets all pixels outside of ROI to 0 
-%             I4 = I3(find(I3>0));
-%         end 
-%}
+fprintf('Removed clusters based on change over time\n');
 
 %% Plot left over clusters (again)  
 for g = 7:7 
@@ -378,9 +355,8 @@ for g = 7:7
 %         
 %     title(sprintf('%s - Mirror Midline Isolation',ptID));
 %     
-    ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
+    ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
-
 %}
 
 %% Select cluster to plot on histogram
