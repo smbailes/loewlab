@@ -128,22 +128,13 @@ displ = imshow(blue);
 hold off
 set(displ, 'AlphaData', uppers2)
 
+%total=bwmorph(total,'clean'); %removes individual 1's surrounded by 0's
 
-total=zeros(e,f);
-total(:,1:round(2*(f*(1/5))))= bottoms3(:,1:round(2*(f*(1/5))));
-total(:,round((4*(f*(1/5)))):end)= bottoms3(:,round((4*(f*(1/5)))):end);
-total(:,round(2*(f*(1/5))):(round((4*(f*(1/5))))-1))=uppers(:,round(2*(f*(1/5))):(round((4*(f*(1/5))))-1));
-% 
-total=bwmorph(total,'clean'); %removes individual 1's surrounded by 0's
-%  
-%  
 side=input('Are the breasts lower or higher? [h/l]: ','s');
   if side=='l'
-    total(1:round(2*(e/3)),1:(round((f*(3/7)))))=0;
-    total(1:round(2*(e/3)),round(((f*(4/7)))):end)=0;
+    total = bottoms3;
   else
-    total(1:round((e/2)),1:(round((f*(3/7)))))=0;
-    total(1:round((e/2)),round(((f*(4/7)))):end)=0;
+    total = uppers2;
   end
 % 
 % 
@@ -181,29 +172,7 @@ set(displ, 'AlphaData', gett)
 
 %% Part 3, Connect
 
-CC = bwconncomp(gett);
-newboundaries = gett;
-
-for n = 1:CC.NumObjects - 1 %the number of lines in the middle region of the patient
-%     Store all row and col values of component n and the component after in
-%     x1,y1, x2, y2
-    [x1, y1] = ind2sub(size(newboundaries),CC.PixelIdxList{n});
-    [x2, y2] = ind2sub(size(newboundaries),CC.PixelIdxList{n+1});
-    
-    [yy1, ind] = max(y1); %find the max col in component n
-    xx1 = x1(ind); % The corresponding row value for max col
-    
-    [yy2, ind] = max(y2); %find the min col in component n+1 %%FINDS MAX NOW 
-    xx2 = x2(ind); % The corrosponding row value for min col
-    
-%     Draw a line between the two points (xx1,yy1) and (xx2,yy2) and insert
-%     it in newboundaries4
-    shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
-        newboundaries = step(shapeInserter, newboundaries, uint16([yy1 xx1 yy2 xx2]));
-%      figure, imshow(newboundaries4), title('After step shapeinserter');
-    
-end
-clear xx2 xx1 yy1 yy2 y1 y2 x1 x2;
+newboundaries = connectDots(total,100);
 
 figure, imshow(I,[]), title('Middle Connections')
 %blue on top on figure
