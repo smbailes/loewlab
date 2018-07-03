@@ -44,7 +44,7 @@ prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
     'Enter MinPts:','Enter Desired %:','Enter desired scaling factor'};  
 dlg_title = 'DBSCAN Parameters';                                         % box title
 num_lines = 1;                                                          % lines per answer
-defaultans = {'5','10','50','sqrt(2)'};          % default inputs
+defaultans = {'5','10','50','sqrt(5/3)'};          % default inputs
 options.Resize = 'on';                                                  % allows for resizing of box
 answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
 epsilon = str2double(answer{1});                
@@ -267,16 +267,16 @@ end
 
 %% Idenfity left or right from Changeovertime data
 
-if abs(totLbreastchange) < abs(totRbreastchange) &&  abs(aveLbreastchange) < abs(aveRbreastchange)
-    fprintf('%s Tumor on Left\n',ptID);
-    tumorSide = 'Left';
-elseif abs(totLbreastchange) > abs(totRbreastchange) &&  abs(aveLbreastchange) > abs(aveRbreastchange)
-    fprintf('%s Tumor on Right\n',ptID);
-    tumorSide = 'Right';
-else
-    fprintf('Unsure\n');
-end
-fprintf('Tumor Truth Data: %s\n', sideString{1});
+% if abs(totLbreastchange) < abs(totRbreastchange) &&  abs(aveLbreastchange) < abs(aveRbreastchange)
+%     fprintf('%s Tumor on Left\n',ptID);
+%     tumorSide = 'Left';
+% elseif abs(totLbreastchange) > abs(totRbreastchange) &&  abs(aveLbreastchange) > abs(aveRbreastchange)
+%     fprintf('%s Tumor on Right\n',ptID);
+%     tumorSide = 'Right';
+% else
+%     fprintf('Unsure\n');
+% end
+% fprintf('Tumor Truth Data: %s\n', sideString{1});
 
 %% Look at clusters over time
 
@@ -372,7 +372,55 @@ for g = 7:7
 %     
     ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
 end
+%% Get coordinates of nipples
+[location, ptID] = pathfinder; %select breast without tumor
+ a=0;
+    for i=1:15          
+        I_corr{i} = imread([location sprintf('%04d.tif',a)]);    % Read each image into I_mat
+        a=a+120;            % Go to next image (for cropped)
+    end
+for i = 1:15
+    figure('Name','Select nipple'), imshow(I_corr{i}, [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
+    [X_corr{i},Y_corr{i}] = ginput(1)
+end
+for i =1:15
+    figure('Name','Select Nipple'), imshow(I_mat{i} , [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
+    [X_tum{i},Y_tum{i}] = ginput(1)
+end
+%% Track clusters over time
+numClust = length(ClustStruct);
+
+for i = 1:numClust
+XClusterIndices{i} = ClustStruct(i).ClusterIndices(:,1)
+YClusterIndices{i} = ClustStruct(i).ClusterIndices(:,2)
+end
+for i = 1:15
+Xtumchange{i} = X_tum{i} - Xorg 
+Ytumchange{i} = Y_tum{i} - Yorg
+Xcorrchange{i} = X_corr{i} - X_corr{1}
+Ycorrchange{i} = Y_corr{i} - Y_corr{1}
+end
+q = cell(1,numClust);
+for i =1:numClust
+q{i} = i;
+end
+AdjustedClustStruct = struct('ClusterNumber',q,'TumorBreastClustorXPoints',XClusterIndices,'TumorBreastClustorYPoints',YClusterIndices)
+NewXPoints = cell(15,numClust)
+NewYPoints = cell(15,numClust)
+for i = 1:numClust
+    for j = 1:15
+        NewXPoints{j,i} = AdjustedClustStruct(i).TumorBreastClustorXPoints + cell2mat(Xtumchange(j))
+        NewYPoints{j,i} = AdjustedClustStruct(i).TumorBreastClustorYPoints + cell2mat(Ytumchange(j))
+    end % New Xpoints. i = number cluster and j = points at time
+end
+[r,c] = size(NewXpoints)
+% for k = 1:15
+%     for i = 1:r
+%         for j = 1:c
+%             Clusters = I_mat{k}(NewXPoints(r,c),NewYpoints(r,c))
+
 %% Comparing clusters to other breast
+
 
 
 
