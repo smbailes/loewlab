@@ -321,7 +321,7 @@ hold off
 set(displ, 'AlphaData', secc)
 
 skels=bwmorph(secc,'skel',Inf);
-%skels = connectDots(skels,25);
+skels = connectDots(skels,25);
 figure, imshow(I,[]), title('skels')
 % blue on top on figure
 blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
@@ -387,7 +387,7 @@ newboundaries = gett;
 % end
 % clear xx2 xx1 yy1 yy2 y1 y2 x1 x2;
 
-%newboundaries = connectDots(newboundaries,25);
+newboundaries = connectDots(newboundaries,25);
 
 figure, imshow(I,[]), title('Middle Connections')
 %blue on top on figure
@@ -516,7 +516,7 @@ for al = 1:img_y
     end
 end
 
-%logfin = connectDots(logfin,25);
+logfin = connectDots(logfin,25);
 
 figure;
 imshow(I,[]);
@@ -581,24 +581,26 @@ hold off
 
 
  %% Point System Part 3 
-for al = 1:img_y
-    for bl = 1:img_x
-        fincount = 0;
-        if beforeconnect(al,bl)==1
-            fincount = fincount + 1;
-        end
-        if connected(al,bl)==1
-            fincount = fincount + 1;
-        end
-        if fincount>1
-            biggest(al,bl)=1;
-        else
-            biggest(al,bl)=0;
-        end
-    end
-end
+% for al = 1:img_y
+%     for bl = 1:img_x
+%         fincount = 0;
+%         if beforeconnect(al,bl)==1
+%             fincount = fincount + 1;
+%         end
+%         if connected(al,bl)==1
+%             fincount = fincount + 1;
+%         end
+%         if fincount>1
+%             biggest(al,bl)=1;
+%         else
+%             biggest(al,bl)=0;
+%         end
+%     end
+% end
 
+biggest = connected;
 biggest = connectDots(biggest,25);
+
  
  %% 
  
@@ -612,6 +614,7 @@ set(displ, 'AlphaData', biggest)
 
 
 bibi=bwmorph(biggest,'skel',Inf);
+bibi = connectDots(bibi,25);
 figure, imshow(I,[]), title('Thin Under Curve')
 %blue on top on figure
 blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
