@@ -4,16 +4,18 @@
 % I = imread('1799 - V10.tif');
 % I = im2double(I); 
 %figure, imshow(I,[]); [y,x] = getpts;
-[y,x] = find(connectedtop==1);
+[y,x] = find(uppers2 == 1);
 
-k = 0;
-for i = length(x):-1:1
-    k = k + 1;
-    xx(k,1) = x(i,1);
-    yy(k,1) = y(i,1);
+k = 0; m = 0;
+for i = 1:1:length(x)
+    for j = 1:1:length(y)
+        k = k + 1;
+        xx(k,m) = x(i,j);
+        yy(k,m) = y(i,j);
+    end
 end
 
-P = [yy(:) xx(:)];
+P = [yy(:),xx(:)];
 
 figure;
 imshow(I,[])
