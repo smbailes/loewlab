@@ -301,19 +301,19 @@ for o = 7:7
 
     end
     
-    if strcmp(tumorSide, 'Left') == 1
-        for l = 1:numClusters
-            if(abs(totalChange(:,l)) > abs(totLbreastchange) || abs(avgStepChange(:,l)) > abs(aveLbreastchange))
-                thisImage(l).RemoveCluster = 1;
-            end 
-        end 
-    else
-        for l = 1:numClusters
-            if(abs(totalChange(:,l)) > abs(totRbreastchange) || abs(avgStepChange(:,l)) > abs(aveRbreastchange))
-                thisImage(l).RemoveCluster = 1;
-            end 
-        end
-    end 
+%     if strcmp(tumorSide, 'Left') == 1
+%         for l = 1:numClusters
+%             if(abs(totalChange(:,l)) > abs(totLbreastchange) || abs(avgStepChange(:,l)) > abs(aveLbreastchange))
+%                 thisImage(l).RemoveCluster = 1;
+%             end 
+%         end 
+%     else
+%         for l = 1:numClusters
+%             if(abs(totalChange(:,l)) > abs(totRbreastchange) || abs(avgStepChange(:,l)) > abs(aveRbreastchange))
+%                 thisImage(l).RemoveCluster = 1;
+%             end 
+%         end
+%     end 
     
     ClusterInfo{o,1} = thisImage;
 end 
@@ -388,36 +388,69 @@ for i =1:15
     [X_tum{i},Y_tum{i}] = ginput(1)
 end
 %% Track clusters over time
-numClust = length(ClustStruct);
-
-for i = 1:numClust
-XClusterIndices{i} = ClustStruct(i).ClusterIndices(:,1)
-YClusterIndices{i} = ClustStruct(i).ClusterIndices(:,2)
-end
-for i = 1:15
-Xtumchange{i} = X_tum{i} - Xorg 
-Ytumchange{i} = Y_tum{i} - Yorg
-Xcorrchange{i} = X_corr{i} - X_corr{1}
-Ycorrchange{i} = Y_corr{i} - Y_corr{1}
-end
-q = cell(1,numClust);
-for i =1:numClust
+% numClust = length(ClustStruct);
+ClustInfoCell = struct2cell(ClusterInfo{7,1}); %converts data into cell array
+RemoveCluster = cell2mat(ClustInfoCell(7,:,:)); %separates the data indicating to remove clusters
+counter = 0;
+NumClust = numel(find(RemoveCluster)); %finds number of clusters
+   for i = 1:length(ClustInfoCell)
+    if RemoveCluster(i) == 1
+        counter = counter+1;
+        JustClust{counter} = ClustInfoCell(:,:,i);
+    end
+   end
+for i =1:length(JustClust)
 q{i} = i;
 end
+for i = 1:length(JustClust)
+    Indices{i} = JustClust{i}(2,1)
+end
+for i = 1:length(JustClust)
+XClusterIndices{i} = Indices{1,i}{1,1}(:,1);
+YClusterIndices{i} = Indices{1,i}{1,1}(:,2);
+end
+for i = 1:15
+Xtumchange{i} = X_tum{i} - Xorg;
+Ytumchange{i} = Y_tum{i} - Yorg;
+Xcorrchange{i} = X_corr{i} - X_corr{1};
+Ycorrchange{i} = Y_corr{i} - Y_corr{1};
+end
+
 AdjustedClustStruct = struct('ClusterNumber',q,'TumorBreastClustorXPoints',XClusterIndices,'TumorBreastClustorYPoints',YClusterIndices)
-NewXPoints = cell(15,numClust)
-NewYPoints = cell(15,numClust)
-for i = 1:numClust
+NewXPoints = cell(15,NumClust)
+NewYPoints = cell(15,NumClust)
+[rtum,ctum] = size(I_mat{1});
+for i = 1:NumClust
     for j = 1:15
-        NewXPoints{j,i} = AdjustedClustStruct(i).TumorBreastClustorXPoints + cell2mat(Xtumchange(j))
-        NewYPoints{j,i} = AdjustedClustStruct(i).TumorBreastClustorYPoints + cell2mat(Ytumchange(j))
+        NewXPoints{j,i} = AdjustedClustStruct(i).TumorBreastClustorXPoints + cell2mat(Xtumchange(j));
+        NewYPoints{j,i} = AdjustedClustStruct(i).TumorBreastClustorYPoints + cell2mat(Ytumchange(j));
     end % New Xpoints. i = number cluster and j = points at time
 end
-[r,c] = size(NewXpoints)
-% for k = 1:15
-%     for i = 1:r
-%         for j = 1:c
-%             Clusters = I_mat{k}(NewXPoints(r,c),NewYpoints(r,c))
+[r,c] = size(NewXPoints)
+for j = 1:c % cluster
+    for i = 1:r % time
+    Xindice = cell2mat(NewXPoints(i,j)) %Creates the points for the cluster at this time
+    Yindice = cell2mat(NewYPoints(i,j))
+    L = length(Xindice)
+      for k = 1:L % pixel
+          if Xindice(k) <1 % adjusts indices if exceed image
+              Xindice(k) = 1              
+          elseif Xindice(k) > ctum
+              Xindice(k) = ctum            
+          end
+          if Yindice(k) <1
+              Yindice(k) = 1
+          elseif Yindice(k) > rtum
+              Yindice(k) = rtum
+          end
+              
+      Values{k} = I_mat{i}(Xindice(k),Yindice(k)) %Records the value at each time
+      end
+      ClusterData{i,j} = mean(cell2mat(Values)) % Records the average cluster value at each time
+      clear Values
+    end
+end
+      
 
 %% Comparing clusters to other breast
 
