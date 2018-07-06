@@ -379,3 +379,122 @@ for n = 7:7
     ylim([0 50])
     histogram(I4,500,'FaceColor','k','EdgeColor','k');
 end
+%% Corresponding Nipple check: Get coordinates of nipples
+[location, ptID] = pathfinder; %select breast without tumor
+ a=0;
+    for i=1:15          
+        I_corr{i} = imread([location sprintf('%04d.tif',a)]);    % Read each image into I_mat
+        a=a+120;            % Go to next image (for cropped)
+    end
+for i = 1:15
+    figure('Name','Select nipple'), imshow(I_corr{i}, [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
+    [X_corrNip{i},Y_corrNip{i}] = ginput(1), close
+end
+for i =1:15
+    figure('Name','Select Nipple'), imshow(I_mat{i} , [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
+    [X_tumNip{i},Y_tumNip{i}] = ginput(1), close
+end
+%% Track clusters over time
+% numClust = length(ClustStruct);
+clear ClustInfoCell RemoveCluster NumClust JustClust Indices XClusterIndices YClusterIndices...
+    Xtumchange Ytumchange Xcorrchange Ycorrchange AdjustedClustStruct Values Xnip2tum Ynip2tum...
+    XCorrIndices YCorrIndices
+ClustInfoCell = struct2cell(ClusterInfo{7,1}); %converts data into cell array
+RemoveCluster = cell2mat(ClustInfoCell(7,:,:)); %separates the data indicating to remove clusters
+counter = 0;
+   for i = 1:length(ClustInfoCell)
+    if RemoveCluster(i) == 0
+        counter = counter+1;
+        JustClust{counter} = ClustInfoCell(:,:,i);
+    end
+   end
+   NumClust = numel(JustClust); %finds number of clusters
+   clear d
+for i =1:length(JustClust)
+d{i} = i;
+end
+for i = 1:length(JustClust)
+    Indices{i} = JustClust{i}(2,1)
+end
+for i = 1:length(JustClust)
+XClusterIndices{i} = Indices{1,i}{1,1}(:,1);
+YClusterIndices{i} = Indices{1,i}{1,1}(:,2);
+end
+
+for i = 1:15
+Xtumchange{i} = X_tumNip{i} - X_tumNip{7};
+Ytumchange{i} = Y_tumNip{i} - Y_tumNip{7};
+Xcorrchange{i} = X_corrNip{i} - X_corrNip{7};
+Ycorrchange{i} = Y_corrNip{i} - Y_corrNip{7};
+end
+
+AdjustedClustStruct = struct('ClusterNumber',d,'TumorBreastClustorXPoints',XClusterIndices,'TumorBreastClustorYPoints',YClusterIndices)
+NewTumXPoints = cell(15,NumClust)
+NewTumYPoints = cell(15,NumClust)
+[rtum,ctum] = size(I_mat{7});
+[rcorr,ccorr] = size(I_corr{7});
+for i = 1:NumClust
+    for j = 1:15
+        NewTumXPoints{j,i} = XClusterIndices{i} + cell2mat(Xtumchange(j)); % adjusts indices by the change in the nipple relative to time 7
+        NewTumYPoints{j,i} = YClusterIndices{i} + cell2mat(Ytumchange(j));
+    end % New Xpoints. i = number cluster and j = points at time
+end
+[r,c] = size(NewTumXPoints)
+for i = 1:c %cluster  
+Xnip2tum{i} = X_tumNip{7} - XClusterIndices{i}
+Ynip2tum{i} = Y_tumNip{7} - YClusterIndices{i}
+end
+for i = 1:NumClust
+    for j = 1:15
+       XCorrIndices{j,i} = X_corrNip{j} + Xnip2tum{i}
+       YCorrIndices{j,i} = Y_corrNip{j} + Ynip2tum{i}
+    end
+end
+for j = 1:c % cluster
+    for i = 1:r % time
+    XTumIndice = cell2mat(NewTumXPoints(i,j)) %Creates the points for the cluster at this time
+    YTumIndice = cell2mat(NewTumYPoints(i,j))
+    XCorrIndice = cell2mat(XCorrIndices(i,j))
+    YCorrIndice = cell2mat(YCorrIndices(i,j))
+    L = length(XTumIndice)
+      for k = 1:L % pixel
+          if XTumIndice(k) <1 % adjusts indices if exceed image
+              XTumIndice(k) = 1              
+          elseif XTumIndice(k) > ctum
+              XTumIndice(k) = ctum   
+          elseif XCorrIndice(k) <1
+              XCorrIndice(k) = 1
+          elseif XCorrIndice(k) > ccorr
+              XCorrIndice(k) = ccorr
+          end
+          if YTumIndice(k) <1
+              YTumIndice(k) = 1
+          elseif YTumIndice(k) > rtum
+              YTumIndice(k) = rtum
+          elseif YCorrIndice(k) <1
+              YCorrIndice(k) = 1
+          elseif YCorrIndice(k) > rcorr
+              YCorrIndice(k) = rcorr
+          end
+      TumValues{k} = I_mat{i}(floor(YTumIndice(k)),floor(XTumIndice(k))) %Records the value at each time
+      CorrValues{k} = I_corr{i}(floor(YCorrIndice(k)),floor(XCorrIndice(k)))
+      end
+      ClusterData{i,j} = mean(cell2mat(TumValues)) % Records the average cluster value at each time
+      CorrData{i,j} = mean(cell2mat(CorrValues))
+      clear TumValues CorrValues
+    end
+end
+      
+
+%% PLOT THAT SHIT
+t = 0:14
+figure
+colors = {[1,0,0],[0.9,0,0],[0.8,0,0],[0.7,0,0],[0.6,0,0],[0,1,0],[0,0.9,0],[0,0.8,0],[0,0.7,0],[0,0.6,0],[0,0,1],[0,0,0.9],[0,0,0.8],[0,0,0.7],[0,0,0.6],[1,0,1],[0.9,0,0.9],[0.8,0,0.8],[0.7,0,0.7],[0.6,0,0.6],[0,1,1],[0,0.9,0.9],[0,0.8,0.8],[0,0.7,0.7],[0,0.6,0.6],[1,1,0],[0.9,0.9,0],[0.8,0.8,0],[0.7,0.7,0],[0.6,0.6,0],[.85,0.325,0],[0.9,0.6,0.1],[0.4,0.2,0.6],[0.6,0.4,0.8],[0.3,0.74,0.9],[1,1,1],[0.8,0.8,0.8],[0.6,0.6,0.6]};
+
+for i = 1:NumClust
+    color = colors{i}
+    plot(t,transpose(cell2mat(ClusterData(:,i))),'Color',color), hold on
+    plot(t,transpose(cell2mat(CorrData(:,i))),'--','Color',color)
+    ylim([8000,10000])
+end
+legend
