@@ -381,11 +381,11 @@ end
     end
 for i = 1:15
     figure('Name','Select nipple'), imshow(I_corr{i}, [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
-    [X_corrNip{i},Y_corrNip{i}] = ginput(1)
+    [X_corrNip{i},Y_corrNip{i}] = ginput(1), close
 end
 for i =1:15
     figure('Name','Select Nipple'), imshow(I_mat{i} , [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
-    [X_tumNip{i},Y_tumNip{i}] = ginput(1)
+    [X_tumNip{i},Y_tumNip{i}] = ginput(1), close
 end
 %% Track clusters over time
 % numClust = length(ClustStruct);
@@ -439,8 +439,8 @@ Ynip2tum{i} = Y_tumNip{7} - YClusterIndices{i}
 end
 for i = 1:NumClust
     for j = 1:15
-       XCorrIndices{j,i} = X_CorrNip{j} + Xnip2tum{i}
-       YCorrIndices{j,i} = Y_CorrNip{j} + Ynip2tum{i}
+       XCorrIndices{j,i} = X_corrNip{j} + Xnip2tum{i}
+       YCorrIndices{j,i} = Y_corrNip{j} + Ynip2tum{i}
     end
 end
 for j = 1:c % cluster
@@ -482,7 +482,8 @@ end
 %% PLOT THAT SHIT
 t = 0:14
 figure
-colors = {[1,0,0],[0,1,0],[0,0,1],[.5,0.5,0],[0.5,0,0.5],[0,1,.5],[0,0.9,.2],[0,0.8,0],[0,0.7,0]}
+colors = {[1,0,0],[0.9,0,0],[0.8,0,0],[0.7,0,0],[0.6,0,0],[0,1,0],[0,0.9,0],[0,0.8,0],[0,0.7,0],[0,0.6,0],[0,0,1],[0,0,0.9],[0,0,0.8],[0,0,0.7],[0,0,0.6],[1,0,1],[0.9,0,0.9],[0.8,0,0.8],[0.7,0,0.7],[0.6,0,0.6],[0,1,1],[0,0.9,0.9],[0,0.8,0.8],[0,0.7,0.7],[0,0.6,0.6],[1,1,0],[0.9,0.9,0],[0.8,0.8,0],[0.7,0.7,0],[0.6,0.6,0],[.85,0.325,0],[0.9,0.6,0.1],[0.4,0.2,0.6],[0.6,0.4,0.8],[0.3,0.74,0.9],[1,1,1],[0.8,0.8,0.8],[0.6,0.6,0.6]};
+
 for i = 1:NumClust
     color = colors{i}
     plot(t,transpose(cell2mat(ClusterData(:,i))),'Color',color), hold on
