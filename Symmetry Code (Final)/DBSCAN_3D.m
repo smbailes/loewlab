@@ -166,7 +166,7 @@ for c = 7:7
         xmin = min(xind);
         xlength = xmax-xmin;
 
-        if(ylength > 20 || xlength > 20)
+        if(ylength > 30 || xlength > 30)
             thisImage(t).RemoveCluster = 1;
         end
     end
@@ -360,22 +360,22 @@ end
 %}
 
 %% Select cluster to plot on histogram
-% e = imfreehand(); 
-% xy = wait(e); %Double click to select freehand region
-% binaryImage = e.createMask(); 
-% BW = uint16(binaryImage);
-% figure('Name', 'Histogram with ROI');
-% for n = 7:7
-%     I1 = I_mat{n};
-%     I2 = I_mat{n}(find(I_mat{n}>0));
-% 
-%     I3 = I1.*BW; %sets all pixels outside of ROI to 0 
-%     I4 = I3(find(I3>0));
-% 
-% %     subplot(4,4,n)
-%     histogram(I2,500,'FaceColor','r','EdgeColor','r');
-%     hold on
-%     yyaxis right
-%     ylim([0 50])
-%     histogram(I4,500,'FaceColor','k','EdgeColor','k');
-% end
+e = imfreehand(); 
+xy = wait(e); %Double click to select freehand region
+binaryImage = e.createMask(); 
+BW = uint16(binaryImage);
+figure('Name', 'Histogram with ROI');
+for n = 7:7
+    I1 = I_mat{n};
+    I2 = I_mat{n}(find(I_mat{n}>0));
+
+    I3 = I1.*BW; %sets all pixels outside of ROI to 0 
+    I4 = I3(find(I3>0));
+
+%     subplot(4,4,n)
+    histogram(I2,500,'FaceColor','r','EdgeColor','r');
+    hold on
+    yyaxis right
+    ylim([0 50])
+    histogram(I4,500,'FaceColor','k','EdgeColor','k');
+end
