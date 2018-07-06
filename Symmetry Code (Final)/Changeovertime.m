@@ -427,12 +427,20 @@ xlabel('normalized change')
 
 %% Finds data for tumor and corresponding region
 if answer == "Patient"
-top50 = round(.3*(numel(totsquarechange)));
-[maximum, maxidx] = maxk(totsquarechange(:),top50);
+topx = round(.45*(numel(totsquarechange)));
+[maximum, maxidx] = maxk(totsquarechange(:),topx);
 [lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);
 
+avesquarechange1 = cell2mat(avesquarechange);
+[maxave, maxaveidx] = maxk(avesquarechange1(:),topx);
+[lowrowave, lowcolave] = ind2sub(size(avesquarechange1), maxaveidx);
+
+for j = 1:numel(lowrowave)
+    lowavesquarechange(j) = avesquarechange1(lowrowave(j),lowcolave(j));
+end
+
 for i = 1:numel(lowrow)
-        lowsquarechange(i) = totsquarechange(lowrow(i),lowcol(i));
+    lowsquarechange(i) = totsquarechange(lowrow(i),lowcol(i));
 end
 T = table(lowrow,lowcol,transpose(lowsquarechange)); % shows which squares have the least change
 T.Properties.VariableNames = {'Row','Column','Change'}
@@ -606,10 +614,19 @@ else
 end
 %% identiying regions of low change and highlighting them. Then comparing to ewach breast
 if answer == "Volunteer"
-[maximum, maxidx] = maxk(totsquarechange(:),10);
+topx = round(.3*(numel(totsquarechange)));
+[maximum, maxidx] = maxk(totsquarechange(:),topx);
 [lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);
 for i = 1:numel(lowrow)
         lowsquarechange(i) = totsquarechange(lowrow(i),lowcol(i));
+end
+
+avesquarechange1 = cell2mat(avesquarechange);
+[maxave, maxaveidx] = maxk(avesquarechange1(:),topx);
+[lowrowave, lowcolave] = ind2sub(size(avesquarechange1), maxaveidx);
+
+for j = 1:numel(lowrowave)
+    lowavesquarechange(j) = avesquarechange1(lowrowave(j),lowcolave(j));
 end
 T = table(lowrow,lowcol,transpose(lowsquarechange)); % shows which squares have the least change
 T.Properties.VariableNames = {'Row','Column','Change'}
