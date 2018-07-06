@@ -13,7 +13,7 @@ clear all;
 close all;
 
 %% Call to ChangeOverTime
-% Changeovertime;
+Changeovertime;
 
 %% Patient Selection
     [location, ptID] = pathfinder; 
@@ -267,16 +267,16 @@ end
 
 %% Idenfity left or right from Changeovertime data
 
-% if abs(totLbreastchange) < abs(totRbreastchange) &&  abs(aveLbreastchange) < abs(aveRbreastchange)
-%     fprintf('%s Tumor on Left\n',ptID);
-%     tumorSide = 'Left';
-% elseif abs(totLbreastchange) > abs(totRbreastchange) &&  abs(aveLbreastchange) > abs(aveRbreastchange)
-%     fprintf('%s Tumor on Right\n',ptID);
-%     tumorSide = 'Right';
-% else
-%     fprintf('Unsure\n');
-% end
-% fprintf('Tumor Truth Data: %s\n', sideString{1});
+if abs(totLbreastchange) < abs(totRbreastchange) &&  abs(aveLbreastchange) < abs(aveRbreastchange)
+    fprintf('%s Tumor on Left\n',ptID);
+    tumorSide = 'Left';
+elseif abs(totLbreastchange) > abs(totRbreastchange) &&  abs(aveLbreastchange) > abs(aveRbreastchange)
+    fprintf('%s Tumor on Right\n',ptID);
+    tumorSide = 'Right';
+else
+    fprintf('Unsure\n');
+end
+fprintf('Tumor Truth Data: %s\n', sideString{1});
 
 %% Look at clusters over time
 
@@ -301,19 +301,19 @@ for o = 7:7
 
     end
     
-%     if strcmp(tumorSide, 'Left') == 1
-%         for l = 1:numClusters
-%             if(abs(totalChange(:,l)) > abs(totLbreastchange) || abs(avgStepChange(:,l)) > abs(aveLbreastchange))
-%                 thisImage(l).RemoveCluster = 1;
-%             end 
-%         end 
-%     else
-%         for l = 1:numClusters
-%             if(abs(totalChange(:,l)) > abs(totRbreastchange) || abs(avgStepChange(:,l)) > abs(aveRbreastchange))
-%                 thisImage(l).RemoveCluster = 1;
-%             end 
-%         end
-%     end 
+    if strcmp(tumorSide, 'Left') == 1
+        for l = 1:numClusters
+            if(abs(totalChange(:,l)) > abs(totLbreastchange) || abs(avgStepChange(:,l)) > abs(aveLbreastchange))
+                thisImage(l).RemoveCluster = 1;
+            end 
+        end 
+    else
+        for l = 1:numClusters
+            if(abs(totalChange(:,l)) > abs(totRbreastchange) || abs(avgStepChange(:,l)) > abs(aveRbreastchange))
+                thisImage(l).RemoveCluster = 1;
+            end 
+        end
+    end 
     
     ClusterInfo{o,1} = thisImage;
 end 
@@ -381,26 +381,30 @@ end
     end
 for i = 1:15
     figure('Name','Select nipple'), imshow(I_corr{i}, [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
-    [X_corr{i},Y_corr{i}] = ginput(1)
+    [X_corrNip{i},Y_corrNip{i}] = ginput(1)
 end
 for i =1:15
     figure('Name','Select Nipple'), imshow(I_mat{i} , [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
-    [X_tum{i},Y_tum{i}] = ginput(1)
+    [X_tumNip{i},Y_tumNip{i}] = ginput(1)
 end
 %% Track clusters over time
 % numClust = length(ClustStruct);
+clear ClustInfoCell RemoveCluster NumClust JustClust Indices XClusterIndices YClusterIndices...
+    Xtumchange Ytumchange Xcorrchange Ycorrchange AdjustedClustStruct Values Xnip2tum Ynip2tum...
+    XCorrIndices YCorrIndices
 ClustInfoCell = struct2cell(ClusterInfo{7,1}); %converts data into cell array
 RemoveCluster = cell2mat(ClustInfoCell(7,:,:)); %separates the data indicating to remove clusters
 counter = 0;
-NumClust = numel(find(RemoveCluster)); %finds number of clusters
    for i = 1:length(ClustInfoCell)
-    if RemoveCluster(i) == 1
+    if RemoveCluster(i) == 0
         counter = counter+1;
         JustClust{counter} = ClustInfoCell(:,:,i);
     end
    end
+   NumClust = numel(JustClust); %finds number of clusters
+   clear d
 for i =1:length(JustClust)
-q{i} = i;
+d{i} = i;
 end
 for i = 1:length(JustClust)
     Indices{i} = JustClust{i}(2,1)
@@ -409,51 +413,82 @@ for i = 1:length(JustClust)
 XClusterIndices{i} = Indices{1,i}{1,1}(:,1);
 YClusterIndices{i} = Indices{1,i}{1,1}(:,2);
 end
+
 for i = 1:15
-Xtumchange{i} = X_tum{i} - Xorg;
-Ytumchange{i} = Y_tum{i} - Yorg;
-Xcorrchange{i} = X_corr{i} - X_corr{1};
-Ycorrchange{i} = Y_corr{i} - Y_corr{1};
+Xtumchange{i} = X_tumNip{i} - X_tumNip{7};
+Ytumchange{i} = Y_tumNip{i} - Y_tumNip{7};
+Xcorrchange{i} = X_corrNip{i} - X_corrNip{7};
+Ycorrchange{i} = Y_corrNip{i} - Y_corrNip{7};
 end
 
-AdjustedClustStruct = struct('ClusterNumber',q,'TumorBreastClustorXPoints',XClusterIndices,'TumorBreastClustorYPoints',YClusterIndices)
-NewXPoints = cell(15,NumClust)
-NewYPoints = cell(15,NumClust)
-[rtum,ctum] = size(I_mat{1});
+AdjustedClustStruct = struct('ClusterNumber',d,'TumorBreastClustorXPoints',XClusterIndices,'TumorBreastClustorYPoints',YClusterIndices)
+NewTumXPoints = cell(15,NumClust)
+NewTumYPoints = cell(15,NumClust)
+[rtum,ctum] = size(I_mat{7});
+[rcorr,ccorr] = size(I_corr{7});
 for i = 1:NumClust
     for j = 1:15
-        NewXPoints{j,i} = AdjustedClustStruct(i).TumorBreastClustorXPoints + cell2mat(Xtumchange(j));
-        NewYPoints{j,i} = AdjustedClustStruct(i).TumorBreastClustorYPoints + cell2mat(Ytumchange(j));
+        NewTumXPoints{j,i} = XClusterIndices{i} + cell2mat(Xtumchange(j)); % adjusts indices by the change in the nipple relative to time 7
+        NewTumYPoints{j,i} = YClusterIndices{i} + cell2mat(Ytumchange(j));
     end % New Xpoints. i = number cluster and j = points at time
 end
-[r,c] = size(NewXPoints)
+[r,c] = size(NewTumXPoints)
+for i = 1:c %cluster  
+Xnip2tum{i} = X_tumNip{7} - XClusterIndices{i}
+Ynip2tum{i} = Y_tumNip{7} - YClusterIndices{i}
+end
+for i = 1:NumClust
+    for j = 1:15
+       XCorrIndices{j,i} = X_CorrNip{j} + Xnip2tum{i}
+       YCorrIndices{j,i} = Y_CorrNip{j} + Ynip2tum{i}
+    end
+end
 for j = 1:c % cluster
     for i = 1:r % time
-    Xindice = cell2mat(NewXPoints(i,j)) %Creates the points for the cluster at this time
-    Yindice = cell2mat(NewYPoints(i,j))
-    L = length(Xindice)
+    XTumIndice = cell2mat(NewTumXPoints(i,j)) %Creates the points for the cluster at this time
+    YTumIndice = cell2mat(NewTumYPoints(i,j))
+    XCorrIndice = cell2mat(XCorrIndices(i,j))
+    YCorrIndice = cell2mat(YCorrIndices(i,j))
+    L = length(XTumIndice)
       for k = 1:L % pixel
-          if Xindice(k) <1 % adjusts indices if exceed image
-              Xindice(k) = 1              
-          elseif Xindice(k) > ctum
-              Xindice(k) = ctum            
+          if XTumIndice(k) <1 % adjusts indices if exceed image
+              XTumIndice(k) = 1              
+          elseif XTumIndice(k) > ctum
+              XTumIndice(k) = ctum   
+          elseif XCorrIndice(k) <1
+              XCorrIndice(k) = 1
+          elseif XCorrIndice(k) > ccorr
+              XCorrIndice(k) = ccorr
           end
-          if Yindice(k) <1
-              Yindice(k) = 1
-          elseif Yindice(k) > rtum
-              Yindice(k) = rtum
+          if YTumIndice(k) <1
+              YTumIndice(k) = 1
+          elseif YTumIndice(k) > rtum
+              YTumIndice(k) = rtum
+          elseif YCorrIndice(k) <1
+              YCorrIndice(k) = 1
+          elseif YCorrIndice(k) > rcorr
+              YCorrIndice(k) = rcorr
           end
-              
-      Values{k} = I_mat{i}(Xindice(k),Yindice(k)) %Records the value at each time
+      TumValues{k} = I_mat{i}(floor(YTumIndice(k)),floor(XTumIndice(k))) %Records the value at each time
+      CorrValues{k} = I_corr{i}(floor(YCorrIndice(k)),floor(XCorrIndice(k)))
       end
-      ClusterData{i,j} = mean(cell2mat(Values)) % Records the average cluster value at each time
-      clear Values
+      ClusterData{i,j} = mean(cell2mat(TumValues)) % Records the average cluster value at each time
+      CorrData{i,j} = mean(cell2mat(CorrValues))
+      clear TumValues CorrValues
     end
 end
       
 
-%% Comparing clusters to other breast
-
-
+%% PLOT THAT SHIT
+t = 0:14
+figure
+colors = {[1,0,0],[0,1,0],[0,0,1],[.5,0.5,0],[0.5,0,0.5],[0,1,.5],[0,0.9,.2],[0,0.8,0],[0,0.7,0]}
+for i = 1:NumClust
+    color = colors{i}
+    plot(t,transpose(cell2mat(ClusterData(:,i))),'Color',color), hold on
+    plot(t,transpose(cell2mat(CorrData(:,i))),'--','Color',color)
+    ylim([8000,10000])
+end
+legend
 
 
