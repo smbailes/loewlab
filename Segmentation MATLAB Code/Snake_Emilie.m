@@ -3,31 +3,32 @@
 
 % I = imread('1799 - V10.tif');
 % I = im2double(I); 
-%figure, imshow(I,[]); [y,x] = getpts;
-[y,x] = find(uppers2 == 1);
+figure, imshow(I,[]); [y,x] = getpts;
+[m,n] = size(total);
+%y = [0; 0.5*m; m; m; m; m; m; 0.5*m; 0];
+%x = [n; n; n; 0.75*n; 0.5*n; 0.25*n; 0; 0; 0];
 
-k = 0; m = 0;
-for i = 1:1:length(x)
-    for j = 1:1:length(y)
-        k = k + 1;
-        xx(k,m) = x(i,j);
-        yy(k,m) = y(i,j);
-    end
-end
+% k = 0; m = 0;
+% for i = 1:1:length(x)
+%     k = k + 1;
+%     xx(k,1) = x(i,1);
+%     yy(k,1) = y(i,1);
+% end
 
-P = [yy(:),xx(:)];
+P = [x(:),y(:)];
 
 figure;
 imshow(I,[])
 hold on
-plot(P);
+set(displ, 'AlphaData', total)
+hold off;
 Options = struct;
 
 %% Basic
 Options.Verbose = true;
 Options.Iterations = 300;
 Options.nPoints = 300;
-[O,J] = Snake2D(I,P,Options);
+[O,J] = Snake2D(connectedtop,P,Options);
 
 %% GVF
 clc
@@ -51,7 +52,7 @@ Options.Beta = 0.5;
 Options.Delta = 0.00050;
 Options.Kappa = 4;
 
-[O,J] = Snake2D(I,P,Options);
+[O,J] = Snake2D(connectedtop,P,Options);
 sprintf('done')
   %% Result
 figure;

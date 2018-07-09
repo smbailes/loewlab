@@ -4,6 +4,8 @@
 % I = imread('1799 - V10.tif');
 % I = im2double(I); 
 %figure, imshow(I,[]); [y,x] = getpts;
+snkarr = total;
+[m,n] = size(snkarr);
 [y,x] = find(connectedtop==1);
 
 k = 0;
@@ -18,6 +20,7 @@ P = [yy(:) xx(:)];
 figure;
 imshow(I,[])
 hold on
+set(displ, 'AlphaData', snkarr);
 plot(P);
 Options = struct;
 
