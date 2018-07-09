@@ -491,14 +491,43 @@ shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','L
 connectedtop = step(shapeInserter, bibi, uint16([x1 y1 x2 y2]));
 
 
-figure, imshow(I,[]), title('Connect Tops')
+%figure, imshow(I,[]), title('Connect Tops')
 %blue on top on figure
-blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
-hold on 
-displ = imshow(blue); 
-hold off 
+%blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+%hold on 
+%displ = imshow(blue); 
+%hold off 
 %Use our diff1 as the AlphaData for the solid red image. 
-set(displ, 'AlphaData', connectedtop)
+%set(displ, 'AlphaData', connectedtop)
+
+
+%JILLIAN
+%find the left most endpoint of breast outline
+% (x1,y1)
+%[x1,y1]=find()
+%find the right most endpoint of the breast outline
+% (x2,y2)
+%{x2,y2]=find()
+%create a line connecting the endpoints
+%hold on
+%line([x1 x2], [y1 y2])
+figure, imshow(I,[]), title('Connect Tops')
+hold on
+BW2 = bwmorph(connectedtop,'skel',inf);
+endPoints = bwmorph(BW2, 'endpoints');
+imshow(BW2);hold on;
+[rows cols] = find(endPoints);
+[lowestX indexOfLowestX] = min(rows);
+[highestX indexOfHighestX] = max(cols);
+sonY = [rows(indexOfLowestX) rows(indexOfHighestX)];
+sonX = [lowestX highestX];
+plot(sonX, sonY, 'go');
+hold on
+%line([rows(indexOfLowestX) rows(indexOfHighestX)], [lowestx highestx])
+plot(0:highestX, rows(indexOfLowestX)*ones(size(0:highestX)))
+plot(highestX*ones(size(0:rows(indexOfHighestX))),0:rows(indexOfHighestX))
+%plot(0:rows(indexOfHighestX), lowestX*ones(size(0:rows(indexOfHighestX))))
+%line([0 sonX], [0 inf], 'rs')
 
 
 % BW2= imfill(connectedtop,'holes');

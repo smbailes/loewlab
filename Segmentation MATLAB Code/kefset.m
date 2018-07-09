@@ -8,7 +8,7 @@ ptID = input('Enter image name you want to open: ','s'); %Request patient image 
 ptID = strcat(ptID,'.tif'); 
 %I = imread(['C:\Users\smbailes\Documents\GitHub\loewlab\Segmentation MATLAB Code\Images\' ptID]); %open the image, keeping it in 16-bits
 dir = uigetdir; 
-I = imread([dir '/' ptID]); 
+I = imread([dir '\' ptID]); 
 
 figure, imshow(I,[]) %to help decide if it should be cropped or not
 title('Original Image')
@@ -18,6 +18,8 @@ title('Original Image')
 %     I=imcrop(I,[]); %cropping, if necessary
 % end
 
+%% 
+
 I=getMatrixOutliers(I);
 figure, imshow(I,[]) %to help decide if it should be cropped or not
 title('Outliers Removed')
@@ -25,63 +27,18 @@ title('Outliers Removed')
 close Figure 1
 %perc = input('What is your desired percentage? '); 
 perc = 5; %top 5% of pixels used
+%% Canny Edges 
 
 edgecanny = edge(I,'canny');
 edgecanny=bwareaopen(edgecanny,10); %removes very small edge lines
 
 figure,imshow(edgecanny)
-title('Canny edges');
+title('Canny Edges for Ellipses');
 
 %% Part 2, Ellipse Detection
 
-figure;
-imshow(I,[]); %produce an image to overlay the ellipses onto
-title('Image with Ellipses')
-
 in = input('Is the breast small or large? Enter s/l: ','s');
-% if in == 's'
-%         %RIGHT SIDE
-%     % override some default parameters
-%     paramsr.minMajorAxis = 150;
-%     paramsr.maxMajorAxis = 300;
-%     paramsr.numBest = 12; %draws 12 ellipses
-%     paramsr.rotation = 45; %If rotationSpan is in (0,90), only angles within [rotation-rotationSpan,rotation+rotationSpan] are accepted.
-%     paramsr.rotationSpan = 35;
-%     paramsr.randomize = 7; %randomization component that may reduce changing of
-%     %ellipses
-% 
-%     % note that the edge (or gradient) image is used
-%     bestFitsr = ellipseDetection(edgecanny, paramsr);
-%     fprintf('Output %d best fits.\n', size(bestFitsr,1));
-% 
-%     %ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
-% 
-%     %takes the information that was found of the ellipses and draws them;also
-%     %keeping the information for each ellipse in a cell in qr(and later ql for those):
-%     qr{1,length(bestFitsr)}=0;
-%     for n=1:length(bestFitsr)
-%         qr{n} = ellipse(bestFitsr(n,3),bestFitsr(n,4),bestFitsr(n,5)*pi/180,bestFitsr(n,1),bestFitsr(n,2),'k');
-%     end
-%     %overriding parameters:
-%     paramsl.minMajorAxis = 150;
-%     paramsl.maxMajorAxis = 300;
-%     paramsl.numBest = 12; %draws 12 ellipses
-%     paramsl.rotation = 135; %If rotationSpan is in (0,90), only angles within [rotation-rotationSpan,rotation+rotationSpan] are accepted.
-%     paramsl.rotationSpan = 35;
-%     paramsl.randomize = 7; %randomization component that may reduce changing of
-%     %ellipses
-%     
-%     
-%     %LEFT SIDE
-%     bestFitsl = ellipseDetection(edgecanny, paramsl);
-%     fprintf('Output %d best fits.\n', size(bestFitsl,1));
-%     
-%     %ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
-%     ql{1,length(bestFitsl)}=0;
-%     for n=1:length(bestFitsl)
-%         ql{n} = ellipse(bestFitsl(n,3),bestFitsl(n,4),bestFitsl(n,5)*pi/180,bestFitsl(n,1),bestFitsl(n,2),'k');
-%     end
-%     
+
 if in == 'l'
     %RIGHT SIDE
     % override some default parameters
@@ -94,7 +51,10 @@ if in == 'l'
     %ellipses
     
     % note that the edge (or gradient) image is used
-    bestFitsr = ellipseDetection(edgecanny, paramsr);
+    fprintf('Pick lower bound for the right breast. \n');
+    figure, imshow(I, []), title('Bound Detection')
+    [Xlo1,Ylo1] = ginput(1);
+    bestFitsr = ellipseDetection(edgecanny, Xlo1, Ylo1, paramsr);
     fprintf('Output %d best fits.\n', size(bestFitsr,1));
     
     
@@ -117,7 +77,10 @@ if in == 'l'
 
 
     %LEFT SIDE
-    bestFitsl = ellipseDetection(edgecanny, paramsl);
+    fprintf('Pick lower bound for the left breast. \n');
+    figure, imshow(I, []), title('Bound Detection')
+    [Xlo2,Ylo2] = ginput(1);
+    bestFitsl = ellipseDetection(edgecanny, Xlo2, Ylo2, paramsl);
     fprintf('Output %d best fits.\n', size(bestFitsl,1));
 
     %ellipse drawing implementation: http://www.mathworks.com/matlabcentral/fileexchange/289 
@@ -201,7 +164,43 @@ displ = imshow(red);
 hold off 
 set(displ, 'AlphaData', ellipses)
 
-end 
+end
+%% Gets Rid of Background 
+
+%if in == 'l'
+    mini = min(min(I));
+    maxi = max(max(I));
+
+    %set background to black
+    [N, edges] = histcounts(I,2);
+
+    pts = I(I<edges(2));
+    pts = im2double(pts);
+    pts2 = isoutlier(pts); 
+    outlierz = I(pts2);
+%   [N2, edges2] = histcounts(outlierz, 2); threshold = edges2(2);
+    pts(pts2==1)= [];
+    threshold = max(pts);
+    if threshold>1000
+        I(I<threshold*.95) = 0; 
+    else 
+        I(I<edges(2)*.95) = 0; 
+    end
+%% Canny Edges for the Point System
+
+edgecanny2 = edge(I,'canny');
+edgecanny2=bwareaopen(edgecanny2,10); %removes very small edge lines
+
+if(Ylo1 < Ylo2)
+    edgecanny2(Ylo2:end,:) = 0;
+end
+if(Ylo1 > Ylo2)
+    edgecanny2(Ylo1:end,:) = 0;
+end
+
+figure,imshow(edgecanny2)
+title('Canny Edges for Ellipses');
+
 %% Part 3, Hot Pixel Finder
 
 bins = 2^16; %insert image bits here

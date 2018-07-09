@@ -5,15 +5,15 @@ largepoints=zeros(img_y,img_x);
 
 BW = edge(I,'log');
 
-%removes all connected components that have fewer than P=30 pixels 
-BW_long = bwareaopen(BW,30); 
+%removes all connected components that have fewer than P=20 pixels 
+BW_long = bwareaopen(BW,20); 
 %thickens objects by adding pixels to the exterior of objects
 BW_long = bwmorph(BW_long,'thicken');
 
 %implementing combined point systems
 for aa = 1:img_y
     for bb = 1:img_x
-        if edgecanny2(aa,bb)==1%add point if canny edge
+        if edgecanny(aa,bb)==1%add point if canny edge
             largepoints(aa,bb)=largepoints(aa,bb)+1; 
         end
         if ellipses(aa,bb)==1 %add points if included in ellipse
@@ -59,23 +59,23 @@ for cnt = 1:img_y                     % change 1's to a large number that's easi
     end
 end
 
-%make boundary one pixel thick
-bottoms3 = zeros(img_y, img_x);
-temp = zeros(1, img_x);
-for count = 1:img_x                     % for all columns
-    temp(count) = sum(bottoms2(:,count));    % get sum of each column
-    if temp(count)~=0                               % if sum isn't zero
-        loc = find(bottoms2(:,count));       % find indices of which rows aren't zero
-        if loc(end)-loc(1)>1                        % if pixels aren't next to each other, keep first and last
-            bottoms3(loc(1),count) = 2^16;
-            bottoms3(loc(end),count) = 2^16;
-        else                                        % otherwise only keep bottom pixel
-            bottoms3(loc(end),count) = 2^16;
-        end
-    else
-        continue;
-    end
-end
+% make boundary one pixel thick
+% bottoms3 = zeros(img_y, img_x);
+% temp = zeros(1, img_x);
+% for count = 1:img_x                     % for all columns
+%     temp(count) = sum(bottoms2(:,count));    % get sum of each column
+%     if temp(count)~=0                               % if sum isn't zero
+%         loc = find(bottoms2(:,count));       % find indices of which rows aren't zero
+%         if loc(end)-loc(1)>1                        % if pixels aren't next to each other, keep first and last
+%             bottoms3(loc(1),count) = 2^16;
+%             bottoms3(loc(end),count) = 2^16;
+%         else                                        % otherwise only keep bottom pixel
+%             bottoms3(loc(end),count) = 2^16;
+%         end
+%     else
+%         continue;
+%     end
+% end
 
 findthin = find(bottoms2>0);
 [thiny, thinx] = ind2sub(size(I),findthin);
@@ -128,18 +128,27 @@ displ = imshow(blue);
 hold off
 set(displ, 'AlphaData', uppers2)
 
-%total=bwmorph(total,'clean'); %removes individual 1's surrounded by 0's
 
-side=input('Are the breasts lower or higher? [h/l]: ','s');
-  if side=='l'
-    total = bottoms3;
-  else
-    total = uppers2;
-  end
-% 
-% 
-% 
-figure, imshow(I,[]), title('Best Fit')
+total=zeros(e,f);
+total(:,1:round(2*(f*(1/5))))= bottoms3(:,1:round(2*(f*(1/5))));
+total(:,round((4*(f*(1/5)))):end)= bottoms3(:,round((4*(f*(1/5)))):end);
+total(:,round(2*(f*(1/5))):(round((4*(f*(1/5))))-1))=uppers(:,round(2*(f*(1/5))):(round((4*(f*(1/5))))-1));
+
+ total=bwmorph(total,'clean'); %removes individual 1's surrounded by 0's
+ 
+ 
+ side=input('Are the breasts lower or higher? [h/l]: ','s');
+ if side=='l'
+    total(1:round(2*(e/3)),1:(round((f*(3/7)))))=0;
+    total(1:round(2*(e/3)),round(((f*(4/7)))):end)=0;
+ else
+    total(1:round((e/2)),1:(round((f*(3/7)))))=0;
+    total(1:round((e/2)),round(((f*(4/7)))):end)=0;
+ end
+
+
+
+figure, imshow(I,[]), title('Mixed')
 % blue on top on figure
 blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
 hold on 
@@ -172,11 +181,9 @@ set(displ, 'AlphaData', gett)
 
 %% Part 3, Connect
 
-newboundaries = connectDots(gett,50);
-
-% CC = bwconncomp(newboundaries);
-% newboundaries = newboundaries;
-%  
+% CC = bwconncomp(gett);
+% newboundaries = gett;
+% 
 % for n = 1:CC.NumObjects - 1 %the number of lines in the middle region of the patient
 % %     Store all row and col values of component n and the component after in
 % %     x1,y1, x2, y2
@@ -184,21 +191,22 @@ newboundaries = connectDots(gett,50);
 %     [x2, y2] = ind2sub(size(newboundaries),CC.PixelIdxList{n+1});
 %     
 %     [yy1, ind] = max(y1); %find the max col in component n
-%     xx1 = x1(ind); % The corrosponding row value for max col
-%    
-%     [yy2, ind] = min(y2); %find the min col in component n+1
+%     xx1 = x1(ind); % The corresponding row value for max col
+%     
+%     [yy2, ind] = max(y2); %find the min col in component n+1 %%FINDS MAX NOW 
 %     xx2 = x2(ind); % The corrosponding row value for min col
 %     
 % %     Draw a line between the two points (xx1,yy1) and (xx2,yy2) and insert
 % %     it in newboundaries4
-%     if abs(yy1-yy2) < 50 
-%         shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
+%     shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
 %         newboundaries = step(shapeInserter, newboundaries, uint16([yy1 xx1 yy2 xx2]));
-%     end
-% %     figure, imshow(newboundaries4), title('After step shapeinserter');
+% %      figure, imshow(newboundaries4), title('After step shapeinserter');
 %     
 % end
 % clear xx2 xx1 yy1 yy2 y1 y2 x1 x2;
+
+connectDots(gett,50) %can change
+
 
 figure, imshow(I,[]), title('Middle Connections')
 %blue on top on figure
