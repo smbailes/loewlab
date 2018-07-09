@@ -213,4 +213,186 @@ for g = 7:7
   
     ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
+%% Corresponding Nipple check: Get coordinates of nipples
+
+for i = 1:15
+    figure('Name','Select nipple (w/o Tumor)'), imshow(I_mat{i}, [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
+    [X_corrNip{i},Y_corrNip{i}] = ginput(1), close
+end
+questdlg('Switch sides','Switch sides','Ok','Sure','Ok')
+
+for i =1:15
+    figure('Name','Select Nipple (w/ Tumor)'), imshow(I_mat{i} , [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
+    [X_tumNip{i},Y_tumNip{i}] = ginput(1), close
+end
+%% Track clusters over time
+% numClust = length(ClustStruct);
+clear ClustInfoCell RemoveCluster NumClust JustClust Indices XClusterIndices YClusterIndices...
+    Xtumchange Ytumchange Xcorrchange Ycorrchange AdjustedClustStruct Values Xnip2tum Ynip2tum...
+    XCorrIndices YCorrIndices
+ClustInfoCell = struct2cell(ClusterInfo{7,1}); %converts data into cell array
+RemoveCluster = cell2mat(ClustInfoCell(7,:,:)); %separates the data indicating to remove clusters
+counter = 0;
+for i = 1:length(ClustInfoCell)
+    if RemoveCluster(i) == 0
+        counter = counter+1;
+        JustClust{counter} = ClustInfoCell(:,:,i);
+    end
+end
+   NumClust = numel(JustClust); %finds number of clusters
+   clear d
+for i =1:length(JustClust)
+    d{i} = i;
+end
+
+for i = 1:length(JustClust)
+    Indices{i} = JustClust{i}(2,1)
+end
+
+for i = 1:length(JustClust)
+    XClusterIndices{i} = Indices{1,i}{1,1}(:,1);
+    YClusterIndices{i} = Indices{1,i}{1,1}(:,2);
+end
+
+for i = 1:15
+    Xtumchange{i} = X_tumNip{i} - X_tumNip{7};
+    Ytumchange{i} = Y_tumNip{i} - Y_tumNip{7};
+    Xcorrchange{i} = X_corrNip{i} - X_corrNip{7};
+    Ycorrchange{i} = Y_corrNip{i} - Y_corrNip{7};
+end
+
+AdjustedClustStruct = struct('ClusterNumber',d,'TumorBreastClustorXPoints',XClusterIndices,'TumorBreastClustorYPoints',YClusterIndices)
+NewTumXPoints = cell(15,NumClust)
+NewTumYPoints = cell(15,NumClust)
+[rtum,ctum] = size(I_mat{7});
+
+for i = 1:NumClust
+    for j = 1:15
+        NewTumXPoints{j,i} = XClusterIndices{i} + cell2mat(Xtumchange(j)); % adjusts indices by the change in the nipple relative to time 7
+        NewTumYPoints{j,i} = YClusterIndices{i} + cell2mat(Ytumchange(j));
+    end % New Xpoints. i = number cluster and j = points at time
+end
+[r,c] = size(NewTumXPoints)
+for i = 1:c %cluster  
+Xnip2tum{i} = X_tumNip{7} - XClusterIndices{i};
+Ynip2tum{i} = Y_tumNip{7} - YClusterIndices{i};
+end
+for i = 1:NumClust
+    for j = 1:15
+       XCorrIndices{j,i} = X_corrNip{j} + Xnip2tum{i};
+       YCorrIndices{j,i} = Y_corrNip{j} + Ynip2tum{i};
+    end
+end
+for j = 1:c % cluster
+    for i = 1:r % time
+    XTumIndice = cell2mat(NewTumXPoints(i,j)); %Creates the points for the cluster at this time
+    YTumIndice = cell2mat(NewTumYPoints(i,j));
+    XCorrIndice = cell2mat(XCorrIndices(i,j));
+    YCorrIndice = cell2mat(YCorrIndices(i,j));
+    L = length(XTumIndice);
+      for k = 1:L % pixel
+          if XTumIndice(k) <1 % adjusts indices if exceed image
+              XTumIndice(k) = 1;              
+          elseif XTumIndice(k) > ctum
+              XTumIndice(k) = ctum;  
+          end
+          if XCorrIndice(k) <1
+              XCorrIndice(k) = 1;
+          elseif XCorrIndice(k) > ctum
+              XCorrIndice(k) = ctum;
+          end
+          if YTumIndice(k) <1
+              YTumIndice(k) = 1;
+          elseif YTumIndice(k) > rtum
+              YTumIndice(k) = rtum;
+          end
+          if YCorrIndice(k) <1
+              YCorrIndice(k) = 1;
+          elseif YCorrIndice(k) > rtum
+              YCorrIndice(k) = rtum;
+          end
+          
+          TumValues{k} = I_mat{i}(floor(YTumIndice(k)),floor(XTumIndice(k))); %Records the value at each time
+          CorrValues{k} = I_mat{i}(floor(YCorrIndice(k)),floor(XCorrIndice(k)));
+      end
+      
+      TimeClusterData{i,j} = mean(cell2mat(TumValues)); % Records the average cluster value at each time
+      CorrData{i,j} = mean(cell2mat(CorrValues)); %Records average cluster value for region opposite cluster at each time
+      
+      clear TumValues CorrValues
+    end
+end
+      
+%% Check: Compare cluster info to region on opposite breast
+
+numClustersLeft = length(TimeClusterData(2,:));
+for y = 1:numClustersLeft
+    clusterDifferenceData(y) = TimeClusterData{15,y} - TimeClusterData{1,y};
+    corrRegionDifference(y) = CorrData{15,y} - CorrData{1,y};
+    ClusterDifference(y) = abs(clusterDifferenceData(y)-corrRegionDifference(y));
+end 
+counter = 0
+ClusterDifference1 = ClusterDifference(find(ClusterDifference<3000));
+cutoff = std2(ClusterDifference1);
+
+for z = 1:numClustersLeft
+    
+    if ClusterDifference(z) < cutoff || ClusterDifference(z) > 3000
+        counter = counter+1
+        NumberOfRemoval(counter) = z
+    end
+end 
+
+%% Remove Clusters based on corresponding region change
+thisImage = ClusterInfo{7,1}
+ClusterCounter = 1
+RemoveClusterCounter = 1
+for i = 1:length(thisImage);
+   if thisImage(i).RemoveCluster == 0
+       if RemoveClusterCounter < length(NumberOfRemoval)
+          if ClusterCounter == NumberOfRemoval(RemoveClusterCounter)
+          RemoveClusterCounter = RemoveClusterCounter + 1
+          thisImage(i).RemoveCluster = 1 %Mark Cluster for Removal
+          end
+      end
+       ClusterCounter = ClusterCounter+1
+   end
+end
+%%     
+for g = 7:7 
+    
+%     thisImage = ClusterInfo{g,1}; %Get Current Image Info
+%     numClusters = length(thisImage);
+%     clustData = ClusterInfo{g,3}; %Copy Cluster Data 
+
+    for m = 1:numClusters %Sort through clusters for image
+        if thisImage(m).RemoveCluster == 1 %Remove Indices from Marked Clusters from Cluster Data copy
+            rows = find(clustData(:,3) == m);
+            clustData(rows,:) = [];
+        end     
+    end 
+    
+    hrEnd = clustData(:,(1:2)); %Cluster Indices of remaining Clusters
+    clEnd = clustData(:,3); %Cluster Number for remaining clusters
+    
+    picture = ClusterInfo{g,2};
+    pic_adj = picture(find(picture>0));
+    
+    figure('Name','Remaining Clusters'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
+    hold on
+    PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
+    title(sprintf('%s - Post Symmetrical Cluster Analysis',ptID));
+    hold on 
+    
+    %%PLOT MIDLINE IMAGE
+
+%     figure, imshow(picture, [min(pic_adj), max(pic_adj)]);
+%     hold on
+%     y1=get(gca,'ylim');
+%     plot([xcent xcent],y1);
+%         
+%     title(sprintf('%s - Mirror Midline Isolation',ptID));
+%     
+    ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
+end
 

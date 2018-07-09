@@ -360,24 +360,24 @@ end
 %}
 
 %% Select cluster to plot on histogram
-% e = imfreehand(); 
-% xy = wait(e); %Double click to select freehand region
-% binaryImage = e.createMask(); 
-% BW = uint16(binaryImage);
-% figure('Name', 'Histogram with ROI');
-% for n = 7:7
-%     I1 = I_mat{n};
-%     I2 = I_mat{n}(find(I_mat{n}>0));
-% 
-%     I3 = I1.*BW; %sets all pixels outside of ROI to 0 
-%     I4 = I3(find(I3>0));
-% 
-% %     subplot(4,4,n)
-%     histogram(I2,500,'FaceColor','r','EdgeColor','r');
-%     hold on
-%     yyaxis right
-%     ylim([0 50])
-%     histogram(I4,500,'FaceColor','k','EdgeColor','k');
+e = imellipse(); 
+xy = wait(e); %Double click to select freehand region
+binaryImage = e.createMask(); 
+BW = uint16(binaryImage);
+figure('Name', 'Histogram with ROI');
+for n = 7:7
+    I1 = I_mat{n};
+    I2 = I_mat{n}(find(I_mat{n}>0));
+
+    I3 = I1.*BW; %sets all pixels outside of ROI to 0 
+    I4 = I3(find(I3>0));
+
+%     subplot(4,4,n)
+    histogram(I2,500,'FaceColor','r','EdgeColor','r');
+    hold on
+    yyaxis right
+    ylim([0 50])
+    histogram(I4,500,'FaceColor','k','EdgeColor','k');
 end
 %% Corresponding Nipple check: Get coordinates of nipples
 
@@ -495,15 +495,73 @@ numClustersLeft = length(TimeClusterData(2,:));
 for y = 1:numClustersLeft
     clusterDifferenceData(y) = TimeClusterData{15,y} - TimeClusterData{1,y};
     corrRegionDifference(y) = CorrData{15,y} - CorrData{1,y};
+    ClusterDifference(y) = abs(clusterDifferenceData(y)-corrRegionDifference(y));
 end 
+counter = 0
+ClusterDifference1 = ClusterDifference(find(ClusterDifference<3000));
+cutoff = std2(ClusterDifference1);
 
 for z = 1:numClustersLeft
-    if abs(clusterDifferenceData(z)-corrRegionDifference(z)) < 150
-        %Remove cluster somehow
+    
+    if ClusterDifference(z) < cutoff || ClusterDifference(z) > 3000
+        counter = counter+1
+        NumberOfRemoval(counter) = z
     end
 end 
 
+%% Remove Clusters based on corresponding region change
+thisImage = ClusterInfo{7,1}
+ClusterCounter = 1
+RemoveClusterCounter = 1
+for i = 1:length(thisImage);
+   if thisImage(i).RemoveCluster == 0
+       if RemoveClusterCounter < length(NumberOfRemoval)
+          if ClusterCounter == NumberOfRemoval(RemoveClusterCounter)
+          RemoveClusterCounter = RemoveClusterCounter + 1
+          thisImage(i).RemoveCluster = 1 %Mark Cluster for Removal
+          end
+      end
+       ClusterCounter = ClusterCounter+1
+   end
+end
+%%     
+for g = 7:7 
+    
+%     thisImage = ClusterInfo{g,1}; %Get Current Image Info
+%     numClusters = length(thisImage);
+%     clustData = ClusterInfo{g,3}; %Copy Cluster Data 
 
+    for m = 1:numClusters %Sort through clusters for image
+        if thisImage(m).RemoveCluster == 1 %Remove Indices from Marked Clusters from Cluster Data copy
+            rows = find(clustData(:,3) == m);
+            clustData(rows,:) = [];
+        end     
+    end 
+    
+    hrEnd = clustData(:,(1:2)); %Cluster Indices of remaining Clusters
+    clEnd = clustData(:,3); %Cluster Number for remaining clusters
+    
+    picture = ClusterInfo{g,2};
+    pic_adj = picture(find(picture>0));
+    
+    figure('Name','Remaining Clusters'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
+    hold on
+    PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
+    title(sprintf('%s - Post Symmetrical Cluster Analysis',ptID));
+    plot(xunit, yunit);
+    hold on 
+    
+    %%PLOT MIDLINE IMAGE
+
+%     figure, imshow(picture, [min(pic_adj), max(pic_adj)]);
+%     hold on
+%     y1=get(gca,'ylim');
+%     plot([xcent xcent],y1);
+%         
+%     title(sprintf('%s - Mirror Midline Isolation',ptID));
+%     
+    ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
+end
 
 %% PLOT THAT SHIT
 t = 0:14
