@@ -16,19 +16,30 @@ midlinez(:,2) = midy;
 
 %% from col 1 to midline col, finds x and y location of lowest pixel
 
+r = 25;
+
 %get lowest pixel
-minx = min(xlocs); 
-miny = ylocs(minx); %???
+maxx = max(xlocs); 
+maxy = ylocs(find(xlocs==maxx)); %???
 
 %loop through pixels and find closest pixels 
+while pixx<maxn
 for yy = 1:midlinez(1,2)
      for xx = 1:xlocs(midyy)
          pixx = xlocs(xx,yy);
          pixy = ylocs(xx,yy); 
-         if (pix
-             
-         
+         theta = pi: 0.01 : 2*pi;
+         xcirc = r * cos(theta) + pixx;
+         ycirc = r * sin(theta) + pixy;
+         for i = 1:r
+            bound1x = round(xcirc(i));
+            bound1y = round(ycirc(i));
+            bound2x = round(xcirc(length(ycirc)-i)); 
+            bound2y = round(ycirc(length(ycirc)-i));
+            %[xfound yfound] = find(I(boundz)==1);
+         end     
      end
+end
 end
     %from first pixel to pixel at x and y location (from above), find closest pixel withing certian radius AND below y comp of that pixel
     %from x and y loc (from above) to midline, finds closest pixel within certain radius AND above y comp of that pixel
