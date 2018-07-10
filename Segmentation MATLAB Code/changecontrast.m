@@ -1,0 +1,2 @@
+imshow(P12_Original)
+imcontrast
