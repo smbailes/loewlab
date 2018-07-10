@@ -127,13 +127,13 @@ e = imellipse();
 
 xy = wait(e);
 binaryImage = e.createMask();
-BW = uint16(binaryImage);
+BW_t = uint16(binaryImage);
 hold on;
 
 I1 = I_mat{n};
 I2 = I_mat{n}(find(I_mat{n}>0));
 
-I3 = I1.*BW;
+I3 = I1.*BW_t;
 tumorRegion = I3(find(I3>0));
 
 %% Select ROI - corresponding region
@@ -145,13 +145,13 @@ e = imellipse();
 
 xy = wait(e);
 binaryImage = e.createMask();
-BW = uint16(binaryImage);
+BW_c = uint16(binaryImage);
 hold on;
 
 I1 = I_mat{n};
 I2 = I_mat{n}(find(I_mat{n}>0));
 
-I3 = I1.*BW;
+I3 = I1.*BW_c;
 corrRegion = I3(find(I3>0));
 
 
@@ -173,5 +173,25 @@ figure('Name', 'Histogram');
     histogram(corrRegion, 500, 'FaceColor', 'b', 'EdgeColor', 'b');
     
 %% Find averages
+
+for i = 1:15
+    
+    I = I_mat{i};
+    
+    I_t = I.*BW_t;
+    I_c = I.*BW_c;
+    
+    I_tumor = I_t(find(I_t>0));
+    I_corr = I_c(find(I_c>0));
+    
+    tumorAv(i) = mean2(I_tumor);
+    corrAv(i) = mean2(I_corr);
+    
+    diff(i) = abs(tumorAv(i)-corrAv(i));
+    
+end
+
+
+    
 
     
