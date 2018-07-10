@@ -23,6 +23,7 @@ clear all, close all
     sideString = txt(index,2);              % Get side from txt file
     notes = txt(index,7);                   % Get any notes from txt file
     celldisp(notes);   
+
     
 %% ROI Identification on First Image - Tumor side
 
@@ -45,31 +46,33 @@ clear all, close all
     I1 = I_mat{7};              % Display first image
     I = getMatrixOutliers(I1);  % Remove outliers
     I_adj1 = I1(find(I1>0));    % Remove zero pixels
-    I_sort1 = sort(I_adj1);
-    figure('Name','Nipple Identification (side with tumor)')
-    imshow(I,[min(I_adj1) max(I_adj1)]);               % Display with contrast
+    I_sort1 = sort(I_adj1)
+    %% Select Both Nipples at Each Minute
+for i = 1:15 % Get coordinates of both nipples at each minute
+    figure('Name','Select nipple (w/o Tumor)'), imshow(I_mat{i}, [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
+    [XCorrNip{i},YCorrNip{i}] = ginput(1), close
+end
+questdlg('Switch sides','Switch sides','Ok','Sure','Ok')
 
-    if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
-        xlabel('-->')
-    else
-        xlabel('<--')
-    end 
-    hold on
-    fprintf('Select Reference Nipple (side with tumor)\n');  % User input of nipple region
-    [Xorg,Yorg] = ginput(1);
-    plot(Xorg,Yorg, '*');                   % Plot center of nipple
-    Xnew = Xorg + dx;                       % Coordinates of center of tumor
-    Ynew = Yorg - dy;    
+for i =1:15
+    figure('Name','Select Nipple (w/ Tumor)'), imshow(I_mat{i} , [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
+    [XTumNip{i},YTumNip{i}] = ginput(1), close
+end 
+     
+% Get a center of tumor for each time
+for i = 1:15
+    XTumNew{i} = XTumNip{i} + dx;                       % Coordinates of center of tumor
+    YTumNew{i} = YTumNip{i} - dy; 
+end
     xbox = xbox * scale;                    % Convert X and Y dimensions of tumor from cm to pixels
-    ybox = ybox * scale;                    % xbox and ybox are length of x and y sides in pixels
- 
+    ybox = ybox * scale;    
     th = 0:pi/50:2*pi;
     if xbox <= ybox
-        xunit = xbox * cos(th) + Xnew;
-        yunit = xbox * sin(th) + Ynew;
+        xunit = xbox * cos(th) + XTumNew{7};
+        yunit = xbox * sin(th) + YTumNew{7};
     elseif ybox < xbox
-        xunit = ybox * cos(th) + Xnew;
-        yunit = ybox * sin(th) + Ynew;      
+        xunit = ybox * cos(th) + XTumNew{7};
+        yunit = ybox * sin(th) + YTumNew{7};      
     end 
     hold off  
     close    
@@ -90,30 +93,18 @@ clear all, close all
     end
     theta1 = hr_ang1;     % angle in radians
     
-    [dx1,dy1] = pol2cart(theta1, rho); % Convert tumor location as angle & dist to pixel location  
-
-    figure('Name','Nipple Identification (side without tumor)')
-    imshow(I,[min(I_adj1) max(I_adj1)]);               % Display with contrast
-
-    if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
-        xlabel('<--')
-    else
-        xlabel('-->')
-    end 
-    hold on
-    fprintf('Select Reference Nipple (side without tumor)\n');  % User input of nipple region
-    [Xorg1,Yorg1] = ginput(1);
-    plot(Xorg1,Yorg1, '*');                   % Plot center of nipple
-    Xnew1 = Xorg1 + dx1;                       % Coordinates of center of tumor
-    Ynew1 = Yorg1 - dy1;    
- 
+    [dx1,dy1] = pol2cart(theta1, rho); % Convert tumor location as angle & dist to pixel location 
+    for i = 1:15
+    XCorrNew{i} = XCorrNip{i} + dx1;
+    YCorrNew{i} = YCorrNip{i} - dy1;  
+    end
     th = 0:pi/50:2*pi;
     if xbox <= ybox
-        xunit1 = xbox * cos(th) + Xnew1;
-        yunit1 = xbox * sin(th) + Ynew1;
+        xunit1 = xbox * cos(th) + XCorrNew{7};
+        yunit1 = xbox * sin(th) + YCorrNew{7};
     elseif ybox < xbox
-        xunit1 = ybox * cos(th) + Xnew1;
-        yunit1 = ybox * sin(th) + Ynew1;      
+        xunit1 = ybox * cos(th) + XCorrNew{7};
+        yunit1 = ybox * sin(th) + YCorrNew{7};      
     end 
     hold off  
     close    
@@ -123,73 +114,77 @@ figure('Name', 'Select Tumor Region'),
 imshow(I,[min(I_adj1) max(I_adj1)]);               % Display with contrast
 hold on;
 plot(xunit, yunit);
-e = imellipse();
+e = imrect();
 
-xy = wait(e);
-binaryImage = e.createMask();
-BW_t = uint16(binaryImage);
+xyTum = wait(e);
 hold on;
-
-I1 = I_mat{n};
-I2 = I_mat{n}(find(I_mat{n}>0));
-
-I3 = I1.*BW_t;
-tumorRegion = I3(find(I3>0));
-
 %% Select ROI - corresponding region
 figure('Name', 'Select Coresponding Region'),
 imshow(I,[min(I_adj1) max(I_adj1)]);               % Display with contrast
 hold on;
 plot(xunit1, yunit1);
-e = imellipse();
+e = imrect();
 
-xy = wait(e);
+xyCorr = wait(e);
 binaryImage = e.createMask();
 BW_c = uint16(binaryImage);
 hold on;
-
-I1 = I_mat{n};
-I2 = I_mat{n}(find(I_mat{n}>0));
-
-I3 = I1.*BW_c;
-corrRegion = I3(find(I3>0));
-
-
 %% Show histograms
 
-figure('Name', 'Histogram');
-    I1 = I_mat{n};
-    I2 = I_mat{n}(find(I_mat{n}>0));
-
-%     subplot(4,4,n)
-
-    histogram(I2,500,'FaceColor','r','EdgeColor','r');
-    title('Entire Image(red) v. Tumor Region(yellow) v. Corresponding Region(blue)')
-    hold on
-    yyaxis right
-    ylim([0 100])
-    histogram(tumorRegion,500,'FaceColor','y','EdgeColor','y');
-    hold on
-    histogram(corrRegion, 500, 'FaceColor', 'b', 'EdgeColor', 'b');
-    
+% figure('Name', 'Histogram');
+%     I1 = I_mat{n};
+%     I2 = I_mat{n}(find(I_mat{n}>0));
+% 
+% %     subplot(4,4,n)
+% 
+%     histogram(I2,500,'FaceColor','r','EdgeColor','r');
+%     title('Entire Image(red) v. Tumor Region(yellow) v. Corresponding Region(blue)')
+%     hold on
+%     yyaxis right
+%     ylim([0 100])
+%     histogram(tumorRegion,500,'FaceColor','y','EdgeColor','y');
+%     hold on
+%     histogram(corrRegion, 500, 'FaceColor', 'b', 'EdgeColor', 'b');
+%     
 %% Find averages
+for i = 1:15
+    XTumChange{i} = XTumNip{7} - XTumNip{1};
+    YTumChange{i} = YTumNip{7} - YTumNip{1};
+    XCorrChange{i} = XCorrNip{7} - XCorrNip{1};
+    YCorrChange{i} = YCorrNip{7} - YCorrNip{1};
+    XTumRectInitial{i} = xyTum(1)- XTumChange{i};
+    YTumRectInitial{i} = xyTum(2) - YTumChange{i};
+    XCorrRectInitial{i} = xyCorr(1) - XCorrChange{i};
+    YCorrRectInital{i} = xyCorr(2) - YCorrChange{i};
+end
+TumWidth = xyTum(3);
+TumHeight = xyTum(4);
+CorrWidth = xyCorr(3);
+CorrHeight = xyCorr(4);
 
 for i = 1:15
+    TumRegion{i} = imcrop(I_mat{i}, [XTumRectInitial{i},YTumRectInitial{i},TumWidth,TumHeight]);
+    CorrRegion{i} = imcrop(I_mat{i},[XCorrRectInitial{i},YCorrRectInital{i},CorrWidth,CorrHeight]);
     
-    I = I_mat{i};
-    
-    I_t = I.*BW_t;
-    I_c = I.*BW_c;
-    
-    I_tumor = I_t(find(I_t>0));
-    I_corr = I_c(find(I_c>0));
-    
-    tumorAv(i) = mean2(I_tumor);
-    corrAv(i) = mean2(I_corr);
-    
-    diff(i) = abs(tumorAv(i)-corrAv(i));
+    TumRegion1{i} = TumRegion{i}(find(TumRegion{i}>0));
+    CorrRegion1{i} = CorrRegion{i}(find(CorrRegion{i}>0));
     
 end
+for i = 1:15
+    TumAve{i} = mean2((TumRegion1{i}));
+    CorrAve{i} = mean2((CorrRegion1{i}));
+end 
+
+for i = 1:14
+    TumStepChange{i} = TumAve{i+1} - TumAve{i};
+    CorrStepChange{i} = CorrAve{i+1} - CorrAve{i};
+end
+TumAve{1}, TumAve{15}, CorrAve{1}, CorrAve{15}
+TumAveStepChange = mean2(cell2mat(TumStepChange))
+CorrAveStepChange = mean2(cell2mat(CorrStepChange))
+TumTotChange = TumAve{15} - TumAve{1}
+CorrTotChange = CorrAve{15} - CorrAve{1}
+
 
 
     
