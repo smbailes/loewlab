@@ -1,4 +1,4 @@
-function [O,J]=Snake2D(I,P,Options)
+function [P,J]=Snake2D(I,P,Options)
 % This function SNAKE implements the basic snake segmentation. A snake is an 
 % active (moving) contour, in which the points are attracted by edges and
 % other boundaries. To keep the contour smooth, an membrame and thin plate
