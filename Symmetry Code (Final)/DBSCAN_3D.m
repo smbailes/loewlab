@@ -495,7 +495,7 @@ numClustersLeft = length(TimeClusterData(2,:));
 for y = 1:numClustersLeft
     clusterDifferenceData(y) = TimeClusterData{15,y} - TimeClusterData{1,y};
     corrRegionDifference(y) = CorrData{15,y} - CorrData{1,y};
-    ClusterDifference(y) = abs(clusterDifferenceData(y)-corrRegionDifference(y));
+    ClusterDifference(y) = abs(clusterDifferenceData(y))-abs(corrRegionDifference(y));
 end 
 counter = 0
 ClusterDifference1 = ClusterDifference(find(ClusterDifference<3000));
@@ -503,7 +503,7 @@ cutoff = std2(ClusterDifference1);
 
 for z = 1:numClustersLeft
     
-    if ClusterDifference(z) < cutoff || ClusterDifference(z) > 3000
+    if(ClusterDifference(z) > 0 || abs(ClusterDifference(z)) > 3000)
         counter = counter+1
         NumberOfRemoval(counter) = z
     end
