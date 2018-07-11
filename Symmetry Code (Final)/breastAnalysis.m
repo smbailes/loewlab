@@ -49,7 +49,11 @@ clear all, close all
     I_sort1 = sort(I_adj1)
     %% Select Both Nipples at Each Minute
 for i = 1:15 % Get coordinates of both nipples at each minute
-    figure('Name','Select nipple (w/o Tumor)'), imshow(I_mat{i}, [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
+    figure('Name','Select nipple (w/o Tumor)'), 
+    I1 = I_mat{i};              % Display first image
+    I = getMatrixOutliers(I1);  % Remove outliers
+    I_adj1 = I1(find(I1>0));
+    imshow(I1, [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
     hold on,
     if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
         xlabel('<--')
@@ -62,7 +66,11 @@ end
 questdlg('Switch sides','Switch sides','Ok','Sure','Ok')
 
 for i =1:15
-    figure('Name','Select Nipple (w/ Tumor)'), imshow(I_mat{i} , [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
+    figure('Name','Select Nipple (w/ Tumor)'), 
+    I1 = I_mat{i};              % Display first image
+    I = getMatrixOutliers(I1);  % Remove outliers
+    I_adj1 = I1(find(I1>0));
+    imshow(I1, [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
     hold on,
     if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
         xlabel('-->')
