@@ -50,13 +50,26 @@ clear all, close all
     %% Select Both Nipples at Each Minute
 for i = 1:15 % Get coordinates of both nipples at each minute
     figure('Name','Select nipple (w/o Tumor)'), imshow(I_mat{i}, [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
-    [XCorrNip{i},YCorrNip{i}] = ginput(1), close
+    hold on,
+    if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
+        xlabel('<--')
+    else
+        xlabel('-->')
+    end 
+    [XCorrNip{i},YCorrNip{i}] = ginput(1); close
 end
+
 questdlg('Switch sides','Switch sides','Ok','Sure','Ok')
 
 for i =1:15
     figure('Name','Select Nipple (w/ Tumor)'), imshow(I_mat{i} , [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
-    [XTumNip{i},YTumNip{i}] = ginput(1), close
+    hold on,
+    if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
+        xlabel('-->')
+    else
+        xlabel('<--')
+    end 
+    [XTumNip{i},YTumNip{i}] = ginput(1); close
 end 
      
 % Get a center of tumor for each time
@@ -126,8 +139,6 @@ plot(xunit1, yunit1);
 e = imrect();
 
 xyCorr = wait(e);
-binaryImage = e.createMask();
-BW_c = uint16(binaryImage);
 hold on;
 %% Show histograms
 
@@ -157,6 +168,7 @@ for i = 1:15
     XCorrRectInitial{i} = xyCorr(1) - XCorrChange{i};
     YCorrRectInital{i} = xyCorr(2) - YCorrChange{i};
 end
+
 TumWidth = xyTum(3);
 TumHeight = xyTum(4);
 CorrWidth = xyCorr(3);
@@ -170,16 +182,28 @@ for i = 1:15
     CorrRegion1{i} = CorrRegion{i}(find(CorrRegion{i}>0));
     
 end
+
+
 for i = 1:15
     TumAve{i} = mean2((TumRegion1{i}));
     CorrAve{i} = mean2((CorrRegion1{i}));
+end 
+
+for i = 1:15
+    TumorStdev{i} = std2((TumRegion1{i}));
+    CorrStdev{i} = std2((CorrRegion{i}));
 end 
 
 for i = 1:14
     TumStepChange{i} = TumAve{i+1} - TumAve{i};
     CorrStepChange{i} = CorrAve{i+1} - CorrAve{i};
 end
-TumAve{1}, TumAve{15}, CorrAve{1}, CorrAve{15}
+
+tumAveInitial = TumAve{1}, tumAveFinal = TumAve{15}, 
+corrAveInitial = CorrAve{1}, corrAveFinal = CorrAve{15}
+tumStdInitial = TumorStdev{1}, tumStdFinal = TumorStdev{15},
+corrStdIntial = CorrStdev{1}, corrStdFinal = CorrStdev{15},
+
 TumAveStepChange = mean2(cell2mat(TumStepChange))
 CorrAveStepChange = mean2(cell2mat(CorrStepChange))
 TumTotChange = TumAve{15} - TumAve{1}
