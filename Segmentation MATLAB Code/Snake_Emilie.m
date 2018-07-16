@@ -31,14 +31,14 @@ Options = struct;
 Options.Verbose = true;
 Options.Iterations = 300;
 Options.nPoints = 300;
-[O,J] = Snake2D(I,P,Options);
+[O,J] = Snake2D(total,P,Options);
 
 %% GVF
 clc
 Options.Verbose = true;
 Options.nPoints = 600;
 Options.Gamma = 2;
-Options.Iterations = 3000;
+Options.Iterations = 500;
 
 Options.Sigma1 = 20;
 Options.Wline = 0.06;
