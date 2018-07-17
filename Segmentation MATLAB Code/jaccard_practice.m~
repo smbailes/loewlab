@@ -17,7 +17,7 @@ title('Active Contour')
 imshow(BW)
 %BW_groundTruth = imread('0000 - P1.tif');
 %BW_groundTruth = imread('hands1-mask.png');
-
+size
 M = imread('Cropped_0000_P12.tif');
 N=logical(J)
 figure
