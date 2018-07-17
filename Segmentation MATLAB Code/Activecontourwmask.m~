@@ -12,7 +12,7 @@
 % title('Segmented Image')
 close all
 %I = imread('coins.jpg');
-I=imread('P1_CroppedContrast.tif');
+I=imread('P12_CroppedContrast.tif');
 imshow(I)
 title('Original Image')
 grysc=rgb2gray(I);
@@ -23,12 +23,12 @@ grysc=rgb2gray(I);
 %figure
 %imshow(J);
 %title('Complement')
-mask = false(size(grysc));
+mask = false(size(I));
 mask(25:end-25,25:end-25) = true;
 figure
 imshow(mask)
 title('Initial Contour Location')
-bw = activecontour(grysc,mask,5000);
+bw = activecontour(I,mask,5000);
 figure
 imshow(bw)
 title('Segmented Image')
