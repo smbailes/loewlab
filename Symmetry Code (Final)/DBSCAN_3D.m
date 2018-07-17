@@ -44,7 +44,7 @@ prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
     'Enter MinPts:','Enter Desired %:','Enter desired scaling factor'};  
 dlg_title = 'DBSCAN Parameters';                                         % box title
 num_lines = 1;                                                          % lines per answer
-defaultans = {'5.3','12','80','sqrt(5/3)'};          % default inputs
+defaultans = {'5.5','12','80','sqrt(5/3)'};          % default inputs
 options.Resize = 'on';                                                  % allows for resizing of box
 answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
 epsilon = str2double(answer{1});                
@@ -145,7 +145,7 @@ for c = 7:7
    for p = 1:numClust
       clustPoints = thisImage(p).ClusterIndices;
       for b = 1:length(clustPoints(:,1))
-          if length(clustPoints(:,1)) < 10 || length(clustPoints(:,1)) > 200
+          if length(clustPoints(:,1)) < minPts || length(clustPoints(:,1)) > 200
               thisImage(p).RemoveCluster = 1;
           end
       end
@@ -165,10 +165,16 @@ for c = 7:7
         xmax = max(xind);
         xmin = min(xind);
         xlength = xmax-xmin;
+        
+        DiagnolLength = sqrt(xlength^2 + ylength^2);
 
-        if(ylength > 30 || xlength > 30)
+        if(ylength > 30 || xlength > 30 || DiagnolLength > 30)
             thisImage(t).RemoveCluster = 1;
         end
+        
+        if(ylength >= xlength*5 || xlength>= ylength*5 || DiagnolLength >= xlength*5 || DiagnolLength >= ylength*5)
+            thisImage(t).RemoveCluster = 1;
+        end 
     end
     fprintf('Removed vessels\n');
     
@@ -216,7 +222,6 @@ fprintf('Finished Removing Cluster Mean Intensity Data\n');
 % fprintf('Finished Removing Clusters Below Threshold\n');
 %}
 
-
 %% Plot left over clusters
 for g = 7:7 
     
@@ -240,7 +245,7 @@ for g = 7:7
     figure('Name','Remaining Clusters'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
     hold on
     PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
-    title(sprintf('%s - Post Symmetrical Cluster Analysis',ptID));
+    title(sprintf('%s - Post Spatial Analysis',ptID));
     plot(xunit, yunit);
     hold on 
     
@@ -255,6 +260,7 @@ for g = 7:7
 %     
     ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
 end
+
 
 %% Idenfity left or right from Changeovertime data
 
@@ -297,20 +303,17 @@ for o = 7:7
        avgStepChange(:,p) = mean2(stepChange(:,p));
         
     end
-    a = 0; b=0;c=0;
+
     for l = 1:numClusters
-        if(abs(totalChange(l)) > abs(lowchange)) %If the total change of a cluster is too high
+        if(totalChange(l) > abs(lowchange)) %If the total change of a cluster is too high
             thisImage(l).RemoveCluster = 1;
-            a = a+1;
-        end
+       end
         if(abs(avgStepChange(l)) > abs(lowsquarechange)) %If the average change is too high
             thisImage(l).RemoveCluster = 1;
-            b = b+1;
         end
         for n = 1:14 %If any of the differences between 2 times is too high
             if(abs(stepChange(n,l)) > abs(lowchange))
                 thisImage(l).RemoveCluster = 1;
-                c = c+1;
             end
         end
     end
@@ -346,50 +349,78 @@ for g = 7:7
     plot(xunit, yunit);
     hold on 
     
-    %%PLOT MIDLINE IMAGE
-
-%     figure, imshow(picture, [min(pic_adj), max(pic_adj)]);
-%     hold on
-%     y1=get(gca,'ylim');
-%     plot([xcent xcent],y1);
-%         
-%     title(sprintf('%s - Mirror Midline Isolation',ptID));
-%     
     ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
 %}
 
-%% Select cluster to plot on histogram
-e = imellipse(); 
-xy = wait(e); %Double click to select freehand region
-binaryImage = e.createMask(); 
-BW = uint16(binaryImage);
-figure('Name', 'Histogram with ROI');
-for n = 7:7
-    I1 = I_mat{n};
-    I2 = I_mat{n}(find(I_mat{n}>0));
 
-    I3 = I1.*BW; %sets all pixels outside of ROI to 0 
-    I4 = I3(find(I3>0));
+ %% Select cluster to plot on histogram
+%{
+% e = imellipse(); 
+% xy = wait(e); %Double click to select freehand region
+% binaryImage = e.createMask(); 
+% BW = uint16(binaryImage);
+% figure('Name', 'Histogram with ROI');
+% for n = 7:7
+%     I1 = I_mat{n};
+%     I2 = I_mat{n}(find(I_mat{n}>0));
+% 
+%     I3 = I1.*BW; %sets all pixels outside of ROI to 0 
+%     I4 = I3(find(I3>0));
+% 
+% %     subplot(4,4,n)
+%     histogram(I2,500,'FaceColor','r','EdgeColor','r');
+%     hold on
+%     yyaxis right
+%     ylim([0 50])
+%     histogram(I4,500,'FaceColor','k','EdgeColor','k');
+% end
+ %}
+ %% Remove clusters
+% 
+%  thisImage = ClusterInfo{7,1};
+%  numClusters = length(thisImage);
+%  h = 1;
+%  i = 1;
+% while h <= length(thisImage)
+%      if thisImage(h).RemoveCluster == 1
+%          thisImage(h) = [];
+%      else
+%          h = h+1;
+%      end
+% end
+% 
+% ClusterInfo{7,1} = thisImage;
+% fprintf('Removed clusters marked for removal \n');
+ 
 
-%     subplot(4,4,n)
-    histogram(I2,500,'FaceColor','r','EdgeColor','r');
+ %% Corresponding Nipple check: Get coordinates of nipples
+
+figure('Name','Select nipple (w/o Tumor)'), 
+ for i = 1:15
+    I1 = I_mat{i}(find(I_mat{i}>0));
+    imshow(I_mat{i}, [min(I1) max(I1)])
     hold on
-    yyaxis right
-    ylim([0 50])
-    histogram(I4,500,'FaceColor','k','EdgeColor','k');
-end
-%% Corresponding Nipple check: Get coordinates of nipples
-
-for i = 1:15
-    figure('Name','Select nipple (w/o Tumor)'), imshow(I_mat{i}, [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
-    [X_corrNip{i},Y_corrNip{i}] = ginput(1), close
+    if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
+        xlabel('<--')
+    else
+        xlabel('-->')
+    end % gets coordinates of nipple
+    [X_corrNip{i},Y_corrNip{i}] = ginput(1)
 end
 questdlg('Switch sides','Switch sides','Ok','Sure','Ok')
 
+figure('Name','Select nipple (w/ Tumor)'), 
 for i =1:15
-    figure('Name','Select Nipple (w/ Tumor)'), imshow(I_mat{i} , [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
-    [X_tumNip{i},Y_tumNip{i}] = ginput(1), close
+    I1 = I_mat{i}(find(I_mat{i}>0));
+    imshow(I_mat{i}, [min(I1) max(I1)]) % gets coordinates of nipple
+    hold on,
+    if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
+        xlabel('-->')
+    else
+        xlabel('<--')
+    end 
+    [X_tumNip{i},Y_tumNip{i}] = ginput(1)
 end
 %% Track clusters over time
 % numClust = length(ClustStruct);
@@ -485,6 +516,7 @@ for j = 1:c % cluster
       TimeClusterData{i,j} = mean(cell2mat(TumValues)); % Records the average cluster value at each time
       CorrData{i,j} = mean(cell2mat(CorrValues)); %Records average cluster value for region opposite cluster at each time
       
+
       clear TumValues CorrValues
     end
 end
@@ -497,33 +529,58 @@ for y = 1:numClustersLeft
     corrRegionDifference(y) = CorrData{15,y} - CorrData{1,y};
     ClusterDifference(y) = abs(clusterDifferenceData(y))-abs(corrRegionDifference(y));
 end 
-counter = 0
+counter = 0;
 ClusterDifference1 = ClusterDifference(find(ClusterDifference<3000));
 cutoff = std2(ClusterDifference1);
 
 for z = 1:numClustersLeft
-    
-    if(ClusterDifference(z) > 0 || abs(ClusterDifference(z)) > 3000)
-        counter = counter+1
+    %If the cluster changes more than the corresponding region or it is an
+    %outlier
+    if(ClusterDifference(z) > 0 || abs(ClusterDifference(z)) > 3000 || clusterDifferenceData(z)>0)
+        counter = counter+1;
         NumberOfRemoval(counter) = z
     end
 end 
+counter1 = 0;
+for z = 1:numClustersLeft
+    for y = 1:15
+        if TimeClusterData{y,z} > CorrData{y,z}
+            counter1 = counter1+1;
+            NumberOfRemoval2(counter1) = z
+        end 
+    end 
+end
 
 %% Remove Clusters based on corresponding region change
-thisImage = ClusterInfo{7,1}
-ClusterCounter = 1
-RemoveClusterCounter = 1
+thisImage = ClusterInfo{7,1};
+ClusterCounter = 1;
+RemoveClusterCounter = 1;
 for i = 1:length(thisImage);
    if thisImage(i).RemoveCluster == 0
        if RemoveClusterCounter < length(NumberOfRemoval)
           if ClusterCounter == NumberOfRemoval(RemoveClusterCounter)
-          RemoveClusterCounter = RemoveClusterCounter + 1
-          thisImage(i).RemoveCluster = 1 %Mark Cluster for Removal
+            RemoveClusterCounter = RemoveClusterCounter + 1;
+            thisImage(i).RemoveCluster = 1; %Mark Cluster for Removal
           end
       end
-       ClusterCounter = ClusterCounter+1
+       ClusterCounter = ClusterCounter+1;
    end
 end
+
+ClusterCounter = 1;
+RemoveClusterCounter = 1;
+for i = 1:length(thisImage);
+   if thisImage(i).RemoveCluster == 0
+       if RemoveClusterCounter < length(NumberOfRemoval2)
+          if ClusterCounter == NumberOfRemoval2(RemoveClusterCounter)
+            RemoveClusterCounter = RemoveClusterCounter + 1;
+            thisImage(i).RemoveCluster = 1; %Mark Cluster for Removal
+          end
+      end
+       ClusterCounter = ClusterCounter+1;
+   end
+end
+
 %%     
 for g = 7:7 
     
@@ -544,10 +601,10 @@ for g = 7:7
     picture = ClusterInfo{g,2};
     pic_adj = picture(find(picture>0));
     
-    figure('Name','Remaining Clusters'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
+    figure('Name','Remaining Clusters 3.0'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
     hold on
     PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
-    title(sprintf('%s - Post Symmetrical Cluster Analysis',ptID));
+    title(sprintf('%s - Post Cluster/Corresponding Region Analysis',ptID));
     plot(xunit, yunit);
     hold on 
     
@@ -563,15 +620,134 @@ for g = 7:7
     ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
 end
 
-%% PLOT THAT SHIT
-t = 0:14
-figure
-colors = {[1,0,0],[0.9,0,0],[0.8,0,0],[0.7,0,0],[0.6,0,0],[0,1,0],[0,0.9,0],[0,0.8,0],[0,0.7,0],[0,0.6,0],[0,0,1],[0,0,0.9],[0,0,0.8],[0,0,0.7],[0,0,0.6],[1,0,1],[0.9,0,0.9],[0.8,0,0.8],[0.7,0,0.7],[0.6,0,0.6],[0,1,1],[0,0.9,0.9],[0,0.8,0.8],[0,0.7,0.7],[0,0.6,0.6],[1,1,0],[0.9,0.9,0],[0.8,0.8,0],[0.7,0.7,0],[0.6,0.6,0],[.85,0.325,0],[0.9,0.6,0.1],[0.4,0.2,0.6],[0.6,0.4,0.8],[0.3,0.74,0.9],[1,1,1],[0.8,0.8,0.8],[0.6,0.6,0.6]};
+%{
+  %% Map cluster to corresponding region on opposite side
+ 
+thisImage = ClusterInfo{7,1};
+numClusters = length(thisImage);
 
-for i = 1:NumClust
-    color = colors{i}
-    plot(t,transpose(cell2mat(TimeClusterData(:,i))),'Color',color), hold on
-    plot(t,transpose(cell2mat(CorrData(:,i))),'--','Color',color)
-    ylim([8000,10000])
+figure('Name', 'Select center of breast');
+imshow(I_mat{7}, [min(I_adj1) max(I_adj1)]);
+hold on;
+if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
+    xlabel('<--')
+else
+    xlabel('-->')
+end 
+hold on
+[xnip, ynip] = ginput(1);
+close
+
+for i = 1:numClusters
+    clusterX{i} = thisImage(i).ClusterIndices(:,1);
+    clusterY{i} = thisImage(i).ClusterIndices(:,2);
 end
-legend
+
+for i = 1:numClusters
+    for j = 1:length(clusterX{i})
+        clusterXDiff{i}(j) = clusterX{i}(j)-Xorg;
+        clusterYDiff{i}(j) = clusterY{i}(j)-Yorg;
+    end
+end
+
+[ysize, xsize] = size(I_mat{7});
+
+for i = 1:numClusters
+    for j = 1:length(clusterX{i})
+        corrXIndices{i}(j) = xnip-clusterXDiff{i}(j);
+        corrYIndices{i}(j) = ynip+clusterYDiff{i}(j);
+        if floor(corrYIndices{i}(j)) <= 0
+            corrYIndices{i}(j) = 1;
+        elseif corrYIndices{i}(j) > ysize
+            corrYIndices{i} = ysize;
+        end
+        if floor(corrXIndices{i}(j)) <= 0
+            corrXIndices{i}(j) = 1;
+        elseif corrXIndices{i}(j) > xsize;
+            corrXIndices{i}(j) = xsize;
+        end
+    end
+end 
+
+for i = 1:numClusters
+    corrIndices{i}(:,1) = corrXIndices{i};
+    corrIndices{i}(:,2) = corrYIndices{i};
+end
+
+for p = 1:numClusters
+    for q = 1:15
+        I1 = I_mat{q};
+        for r = 1:length(clusterY{p})
+            clusterTemp(r) = I1(clusterY{p}(r), clusterX{p}(r));
+            cluster = clusterTemp(find(clusterTemp>0));
+            corrTemp(r) = I1(floor(corrYIndices{p}(r)), floor(corrXIndices{p}(r)));
+            corr = corrTemp(find(corrTemp>0));
+        end
+        %averages of same cluster over time
+        avgsCluster(q,p) = mean2(cluster);
+        avgsCorr(q,p) = mean2(corr);
+    end 
+    
+   totalChangeCluster(:,p) = avgsCluster(15,p) - avgsCluster(1,p);
+   totalChangeCorr(:,p) = avgsCorr(15,p) - avgsCorr(1,p);
+
+   %Amount of change each minute 
+   for m = 1:14
+        stepChangeCluster(m,p) = avgsCluster(m+1,p) - avgsCluster(m,p);
+        stepChangeCorr(m,p) = avgsCorr(m+1,p) - avgsCorr(m,p);
+   end 
+
+   %Average amount of change over the 15 minutes
+   avgStepChangeCluster(:,p) = mean2(stepChangeCluster(:,p));
+   avgStepChangeCorr(:,p) = mean2(stepChangeCorr(:,p));
+        
+end
+
+for w = 1:numClusters
+    if(abs(totalChangeCluster(w)) > abs(totalChangeCorr(w)))
+        thisImage(w).RemoveCluster = 1;
+    end 
+    
+    if(abs(avgStepChangeCluster(w)) > abs(avgStepChangeCorr(w)))
+        thisImage(w).RemoveCluster = 1;
+    end
+    
+%     for d=1:15
+%         if avgsCluster(d,w) < avgsCorr(d,w)
+%             thisImage(w).RemoveCluster = 1;
+%         end 
+%     end 
+end
+
+ClusterInfo{o,1} = thisImage;
+fprintf('Removed clusters based on comparison to corresponding region \n');
+%% Plot left over clusters (again)  
+for g = 7:7 
+    
+    thisImage = ClusterInfo{g,1}; %Get Current Image Info
+    numClusters = length(thisImage);
+    clustData = ClusterInfo{g,3}; %Copy Cluster Data 
+
+    for m = 1:numClusters %Sort through clusters for image
+        if thisImage(m).RemoveCluster == 1 %Remove Indices from Marked Clusters from Cluster Data copy
+            rows = find(clustData(:,3) == m);
+            clustData(rows,:) = [];
+        end     
+    end 
+    
+    hrEnd = clustData(:,(1:2)); %Cluster Indices of remaining Clusters
+    clEnd = clustData(:,3); %Cluster Number for remaining clusters
+    
+    picture = ClusterInfo{g,2};
+    pic_adj = picture(find(picture>0));
+    
+    figure('Name','Remaining Clusters 3.0'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
+    hold on
+    PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
+    title(sprintf('%s - Post Cluster/Corresponding Region Analysis',ptID));
+    plot(xunit, yunit);
+    hold on 
+    
+    ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
+end
+%}

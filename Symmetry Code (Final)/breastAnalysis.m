@@ -52,7 +52,7 @@ for i = 1:15 % Get coordinates of both nipples at each minute
     figure('Name','Select nipple (w/o Tumor)'), 
     I1 = I_mat{i};              % Display first image
     I = getMatrixOutliers(I1);  % Remove outliers
-    I_adj1 = I1(find(I1>0));
+    I_adj1 = I(find(I>0));
     imshow(I1, [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
     hold on,
     if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
@@ -69,7 +69,7 @@ for i =1:15
     figure('Name','Select Nipple (w/ Tumor)'), 
     I1 = I_mat{i};              % Display first image
     I = getMatrixOutliers(I1);  % Remove outliers
-    I_adj1 = I1(find(I1>0));
+    I_adj1 = I(find(I>0));
     imshow(I1, [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
     hold on,
     if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
@@ -199,7 +199,7 @@ end
 
 for i = 1:15
     TumorStdev{i} = std2((TumRegion1{i}));
-    CorrStdev{i} = std2((CorrRegion{i}));
+    CorrStdev{i} = std2((CorrRegion1{i}));
 end 
 
 for i = 1:14
@@ -218,6 +218,11 @@ TumTotChange = TumAve{15} - TumAve{1}
 CorrTotChange = CorrAve{15} - CorrAve{1}
 
 
+for i = 1:15
+    if TumAve{i} < CorrAve{i}
+        fprintf('Corresponding region is warmer at n=%f \n', i)
+    end
+end
 
     
 
