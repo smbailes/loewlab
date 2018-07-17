@@ -165,12 +165,14 @@ for c = 7:7
         xmax = max(xind);
         xmin = min(xind);
         xlength = xmax-xmin;
+        
+        DiagnolLength = sqrt(xlength^2 + ylength^2);
 
-        if(ylength > 30 || xlength > 30)
+        if(ylength > 30 || xlength > 30 || DiagnolLength > 30)
             thisImage(t).RemoveCluster = 1;
         end
         
-        if(ylength >= xlength*5 || xlength>= ylength*5)
+        if(ylength >= xlength*5 || xlength>= ylength*5 || DiagnolLength >= xlength*5 || DiagnolLength >= ylength*5)
             thisImage(t).RemoveCluster = 1;
         end 
     end
