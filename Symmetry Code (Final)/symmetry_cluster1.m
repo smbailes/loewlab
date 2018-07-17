@@ -29,7 +29,7 @@ xyzNew = xyz;
 xyzNew(isNoise,:,:) = [];
 xy = xyzNew(:,1:2); %xy coordinates of pixels included in clusters
 
-figure('Name','Pre-Symmetrical Cluster Analysis')
+figure('Name','Initial Clusters')
 imshow(I,[min(I_adj) max(I_adj)]);                          % Display Image w Contrast
 hold on;
 PlotClusterinResult(xyzNew, ClustersNew); hold on;              % Plot Clusters on Image
@@ -37,7 +37,7 @@ PlotClusterinResult(xyzNew, ClustersNew); hold on;              % Plot Clusters 
 % plot([c2(1) c3(1)],[c2(2) c3(2)],'k');
 % plot([c3(1) c4(1)],[c3(2) c4(2)],'k');
 % plot([c4(1) c1(1)],[c4(2) c1(2)],'k');
-title(sprintf('%s - Pre Symmetrical Cluster Analysis',ptID));
+title(sprintf('%s - Initial Clusters',ptID));
 
 % hold off; 
 ClusterData(:,(1:2)) = xy;    % Columns 1,2 are X,Y Indices
