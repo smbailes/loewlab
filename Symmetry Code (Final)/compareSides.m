@@ -112,7 +112,9 @@ for k = 1:15
     nonzeroR = rightROI{k}(find(rightROI{k}>0));
     nonzeroL = leftROI{k}(find(leftROI{k}>0));
     aveRight(k) = mean2(nonzeroR);
+    stdRight(k) = std2(nonzeroR);
     aveLeft(k) = mean2(nonzeroL);
+    stdLeft(k) = std2(nonzeroL);
 end 
 
 for l = 1:14
@@ -127,6 +129,9 @@ aveStepChangeRight = mean2(stepChangeRight);
 totalChangeLeft = aveLeft(15) - aveLeft(1);
 aveStepChangeLeft = mean2(stepChangeLeft);
 
+stdChangeRight = stdRight(15) - stdRight(1);
+stdChangeLeft = stdLeft(15) - stdLeft(1);
+
 %Print Results
 fprintf('Clock Hour (Right): %d \nDistance: %d \nSquare Size: %d \n'...
     ,hrRight, dist, sqSize/15);
@@ -134,6 +139,13 @@ fprintf('Initial Right: %f \nFinal Right: %f \nInitial Left: %f \nFinal Left: %f
     aveRight(1),aveRight(15),aveLeft(1),aveLeft(15));
 fprintf('Total Change Right: %f \nTotal Change Left: %f \nAverage Rate of Change Right: %f \nAverqage Rate of Change Left: %f\n',...
     totalChangeRight, totalChangeLeft, aveStepChangeRight, aveStepChangeLeft);
+fprintf('Initial Standard Deviation Right: %f \nFinal Standard Deviation Right: %f\n',...
+    stdRight(1), stdRight(15));
+fprintf('Initial Standard Deviation Left: %f \nFinal Standard Deviation Left: %f\n',...
+    stdLeft(1), stdLeft(15));
+fprintf('Change in Standard Deviation Right: %f \nChange in Standard Deviation Left: %f\n',...
+    stdChangeRight, stdChangeLeft);
+
 
 %% Verify the regions
 %{
