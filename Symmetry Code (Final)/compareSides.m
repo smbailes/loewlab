@@ -40,7 +40,7 @@ close
 
 prompt = {'Clock Hour', 'Distance', 'Square size'};  
 dlg_title = 'Select a Region';                                         % box title
-defaultans = {'12','1','2'};          % default inputs
+defaultans = {'12','2','2'};          % default inputs
 options.Resize = 'on';                                                  % allows for resizing of box
 answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
 
@@ -91,25 +91,20 @@ for j = 1:15
     leftMinX{j} = round(xLeft - sqSize/2);
     leftMinY{j} = round(yLeft - sqSize/2);
     
+    c1R{j} = [round(xRight - sqSize/2), round(yRight - sqSize/2)];  % Top Left Corner
+    c2R{j} = [round(xRight - sqSize/2), round(yRight + sqSize/2)];  % Bottom Left Corner
+    c3R{j} = [round(xRight + sqSize/2), round(yRight + sqSize/2)];  % Bottum Right Corner
+    c4R{j} = [round(xRight + sqSize/2), round(yRight - sqSize/2)];  % Top Right Corner      
+    
+    c1L{j} = [round(xLeft - sqSize/2), round(yLeft - sqSize/2)];  % Top Left Corner
+    c2L{j} = [round(xLeft - sqSize/2), round(yLeft + sqSize/2)];  % Bottom Left Corner
+    c3L{j} = [round(xLeft + sqSize/2), round(yLeft + sqSize/2)];  % Bottum Right Corner
+    c4L{j} = [round(xLeft + sqSize/2), round(yLeft - sqSize/2)];  % Top Right Corner      
+    
     rightROI{j} = imcrop(I_mat{j}, [rightMinX{j} rightMinY{j} sqSize sqSize]);
     leftROI{j} = imcrop(I_mat{j}, [leftMinX{j} leftMinY{j} sqSize sqSize]);
     
 end 
-
-%% 
-for m = 1:15
-    figure, 
-    I1 = I_mat{m}(find(I_mat{m}>0));
-    imshow(I_mat{m}, [min(I1) max(I1)])
-    hold on,
-    plot(rightMinX{m}, rightMinY{m}, '*');
-    hold on,
-    plot(xR{m}, yR{m}, '+');
-    hold on,
-    plot(leftMinX{m}, leftMinY{m}, '*');
-    hold on,
-    plot(xL{m}, yL{m}, '+');
-end
 
 %% Find data for ROI 
 
@@ -131,3 +126,23 @@ aveStepChangeRight = mean2(stepChangeRight)
 totalChangeLeft = aveLeft(15) - aveLeft(1)
 aveStepChangeLeft = mean2(stepChangeLeft)
     
+%% Verify the regions
+% for m = 1:15
+%     figure, 
+%     I1 = I_mat{m}(find(I_mat{m}>0));
+%     imshow(I_mat{m}, [min(I1) max(I1)])
+%     hold on,
+%     plot(xR{m}, yR{m}, '+');
+%     hold on,
+%     plot(xL{m}, yL{m}, '+');
+%     hold on
+%     plot([c1R{m}(1 ) c2R{m}(1)],[c1R{m}(2) c2R{m}(2)],'b');                      % Create red box region on Image Display
+%     plot([c2R{m}(1) c3R{m}(1)],[c2R{m}(2) c3R{m}(2)],'b');
+%     plot([c3R{m}(1) c4R{m}(1)],[c3R{m}(2) c4R{m}(2)],'b');
+%     plot([c4R{m}(1) c1R{m}(1)],[c4R{m}(2) c1R{m}(2)],'b');
+%     hold on,
+%     plot([c1L{m}(1 ) c2L{m}(1)],[c1L{m}(2) c2L{m}(2)],'r');                      % Create red box region on Image Display
+%     plot([c2L{m}(1) c3L{m}(1)],[c2L{m}(2) c3L{m}(2)],'r');
+%     plot([c3L{m}(1) c4L{m}(1)],[c3L{m}(2) c4L{m}(2)],'r');
+%     plot([c4L{m}(1) c1L{m}(1)],[c4L{m}(2) c1L{m}(2)],'r');
+% end
