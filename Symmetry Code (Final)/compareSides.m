@@ -1,7 +1,11 @@
 %Compare two sides
+%after running it once for a patient comment out Location and Select
+%nipples sections
 
-%% Inputs 
+clearvars -except location ptId I_mat xR yR xL yL,
+close all, 
 
+%% Location
 [location, ptID] = pathfinder; 
 
 a=0;
@@ -9,18 +13,6 @@ for i=1:15
     I_mat{i} = imread([location sprintf('%04d.tif',a)]);    % Read each image into I_mat
     a=a+120;            % Go to next image (for cropped)
 end
-
-prompt = {'Clock Hour', 'Distance', 'Square size'};  
-dlg_title = 'Select a Region';                                         % box title
-defaultans = {'12','1','2'};          % default inputs
-options.Resize = 'on';                                                  % allows for resizing of box
-answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
-
-hr = str2double(answer{1});
-dist = str2double(answer{2});
-sqSize = str2double(answer{3});
-
-
 
 %% Select Nipples
 
@@ -33,7 +25,6 @@ figure('Name','Select nipple (Right)'),
     [xR{i},yR{i}] = ginput(1);
  end
 close
-questdlg('Switch sides','Switch sides','Ok','Sure','Ok')
 
 figure('Name','Select nipple (Left)'), 
 for i =1:15
@@ -45,6 +36,17 @@ for i =1:15
 end
 close
 
+%% Parameters
+
+prompt = {'Clock Hour', 'Distance', 'Square size'};  
+dlg_title = 'Select a Region';                                         % box title
+defaultans = {'12','1','2'};          % default inputs
+options.Resize = 'on';                                                  % allows for resizing of box
+answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
+
+hr = str2double(answer{1});
+dist = str2double(answer{2});
+sqSize = str2double(answer{3});
 %% Create boxes
 if hr <= 9 && hr > 3            
     hr_ang = (abs((hr - 9)) * (pi/6)) + pi;
@@ -58,15 +60,14 @@ theta = hr_ang;     % angle in radians
 scale = 15;
 rho = dist * scale;     % Distance from origin to ROI
 [dx,dy] = pol2cart(theta, rho); % Convert tumor location as angle & dist to pixel location  
+sqSize = sqSize * scale;
 
 for j = 1:15
     xRight = xR{j} + dx;                       % Coordinates of center of tumor
     yRight = yR{j} - dy; 
     xLeft = xL{j} + dx;
     yLeft = yL{j} - dy;
-    
-    sqSize = sqSize * scale;                    % Convert X and Y dimensions of tumor from cm to pixels
-   
+       
     rightMinX = round(xRight - sqSize/2);
     rightMinY = round(yRight - sqSize/2);
     
@@ -90,12 +91,11 @@ for l = 1:14
     stepChangeLeft(l) = aveLeft(l+1) - aveLeft(l);
 end
 
+fprintf('Clock Hour: %d \nDistance: %d \nSquare Size: %d \n',hr, dist, sqSize);
+
 totalChangeRight = aveRight(15) - aveRight(1)
 aveStepChangeRight = mean2(stepChangeRight)
 
 totalChangeLeft = aveLeft(15) - aveLeft(1)
 aveStepChangeLeft = mean2(stepChangeLeft)
-
     
-    
-
