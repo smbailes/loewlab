@@ -2,10 +2,12 @@
 %after running it once for a patient comment out Location and Select
 %nipples sections
 
-clearvars -except xR yR xL yL,
+clearvars -except I_mat xR yR xL yL,
 close all, 
 
-%% Location
+redo = questdlg('New Patient/Volunteer?', 'Yes', 'No');
+if strcmp(redo, 'Yes') == 1%% Input
+
 path  = uigetdir;
 location = strcat(path, '\');
 
@@ -16,8 +18,7 @@ for i=1:15
 end
 
 %% Select Nipples
-redo = questdlg('Redo Nipple Selection?', 'Yes', 'No');
-if strcmp(redo, 'Yes') == 1
+
     figure('Name','Select nipple (Right)'), 
      for i = 1:15
         I1 = I_mat{i}(find(I_mat{i}>0));
@@ -50,6 +51,7 @@ answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % create
 hrRight = str2num(answer{1});
 dist = str2num(answer{2});
 sqSize = str2num(answer{3});
+
 %% Create boxes
 if hrRight <= 9 && hrRight > 3            
     hr_ang = (abs((hrRight - 9)) * (pi/6)) + pi;
@@ -123,14 +125,19 @@ for l = 1:14
     stepChangeLeft(l) = aveLeft(l+1) - aveLeft(l);
 end
 
-fprintf('Clock Hour: %d \nDistance: %d \nSquare Size: %d \n',hrRight, dist, sqSize);
 
-totalChangeRight = aveRight(15) - aveRight(1)
-aveStepChangeRight = mean2(stepChangeRight)
+totalChangeRight = aveRight(15) - aveRight(1);
+aveStepChangeRight = mean2(stepChangeRight);
 
-totalChangeLeft = aveLeft(15) - aveLeft(1)
-aveStepChangeLeft = mean2(stepChangeLeft)
-    
+totalChangeLeft = aveLeft(15) - aveLeft(1);
+aveStepChangeLeft = mean2(stepChangeLeft);
+
+%Print Results
+fprintf('Clock Hour (Right): %d \nDistance: %d \nSquare Size: %d \n'...
+    ,hrRight, dist, sqSize/15);
+fprintf('Total Change Right: %f \nTotal Change Left: %f \nAverage Rate of Change Right: %f \nAverqage Rate of Change Left: %f\n',...
+    totalChangeRight, totalChangeLeft, aveStepChangeRight, aveStepChangeLeft);
+
 %% Verify the regions
 %{
 for m = 1:15
