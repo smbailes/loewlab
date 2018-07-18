@@ -420,10 +420,10 @@ for i = 1:numrows
         relativesquarechange(i,j) = totsquarechange(i,j)./cell2mat(averages(i,j,1));
     end
 end
-figure, histogram(relativesquarechange)
-title('relative change of each square')
-ylabel('number of squares')
-xlabel('normalized change')
+% figure, histogram(relativesquarechange)
+% title('relative change of each square')
+% ylabel('number of squares')
+% xlabel('normalized change')
 
 %% Finds data for tumor and corresponding region
 if answer == "Patient"
@@ -467,149 +467,149 @@ for i = 1:numel(lowcol)
        ,squareside*(lowcol(i)-1)+p:squareside-p:squareside*lowcol(i),:) = 10000; 
 end
 end
-figure('Name','Crop Tumor Region')
-[tumorcrop,tumrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); %sets the rectangle to crop all images
-figure('Name','Crop corresponging region')
-[corrcrop,corrrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); % sets crop for corresponding area
-surrtumrect(1) = tumrect(1) - tumrect(3)*0.5; % makes a crop for the surronding region
-surrtumrect(2) = tumrect(2) - tumrect(4)*0.5;
-surrtumrect(3) = tumrect(3)*2;
-surrtumrect(4) = tumrect(4)*2;
-if surrtumrect(1) < 1 % makes surronding area crop stop if they go past the limits
-    surrtumrect(1) = 1;
-elseif surrtumrect(1)+ surrtumrect(3) > c
-    surrtumrect(3) = c - surrtumrect(1);
-elseif surrtumrect(2) < 1
-    surrtumrect(2) = 1;
-elseif surrtumrect(2) + surrtumrect(4) > r
-    surrtumrect(4) = r - surrtumrect(2);
-end
-Itumor = cell(1,numpics);
-Icorr = cell(1,numpics);
-Isurrtum = cell(1,numpics);
- for k =1:numpics % creates the tumor and corresponding area images
-     Itumor{k} =imcrop(I_mat{k},tumrect);
-     Icorr{k} = imcrop(I_mat{k}, corrrect); 
-     Isurrtum{k} = imcrop(I_mat{k} , surrtumrect);
- end
- [tumrow,tumcol] = size(Itumor{1});
- for k = 1:numpics % removes black pixels from calculations
-    J = Itumor{k};
-   J = double(J);
-     for i = 1:tumrow
-        for j = 1:tumcol
-            if J(i,j) == 0 || J(i,j) == 10000
-               J(i,j) = NaN;
-            end
-        end
-     end
-     Itumor{k} = J;
-     
- end
- [corrrow,corrcol] = size(Icorr{1});
- % corrrow
-for k = 1:numpics
-   K = Icorr{k};
-   K = double(K);
-    for i = 1:corrrow
-        for j =1:corrcol
-            if K(i,j) == 0 || K(i,j) == 10000
-                K(i,j) = NaN;
-            end
-        end
-    end
-    Icorr{k} = K;
-end
-[surrrow,surrcol] = size(Isurrtum{1});
-for k = 1:numpics
-    L = Isurrtum{k};
-    L = double(L);
-    for i = 1:surrrow
-        for j = 1:surrcol
-            if L(i,j) == 0 || L(i,j) == 10000
-                L(i,j) = NaN;
-            end
-        end
-    end
-    Isurrtum{k} = L;
-end
-[surrrow,surrcol] = size(Isurrtum{1});
-for k = 1:numpics
-    for i = ceil((surrrow - tumrow)/2):(ceil(surrrow-tumrow)/2)+tumrow
-        for j = ceil((surrcol - tumcol)/2):(ceil(surrcol-tumcol)/2)+tumcol
-            Isurrtum{k}(i,j) = NaN;
-        end
-    end
-end
-% for k = 1:numpics
-%     surrregion{k} = (nansum(nansum(Isurrtum{k})) - nansum(nansum(Itumor{k})))/(numel(Isurrtum{k})-numel(Itumor{k}))
+% figure('Name','Crop Tumor Region')
+% [tumorcrop,tumrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); %sets the rectangle to crop all images
+% figure('Name','Crop corresponging region')
+% [corrcrop,corrrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); % sets crop for corresponding area
+% surrtumrect(1) = tumrect(1) - tumrect(3)*0.5; % makes a crop for the surronding region
+% surrtumrect(2) = tumrect(2) - tumrect(4)*0.5;
+% surrtumrect(3) = tumrect(3)*2;
+% surrtumrect(4) = tumrect(4)*2;
+% if surrtumrect(1) < 1 % makes surronding area crop stop if they go past the limits
+%     surrtumrect(1) = 1;
+% elseif surrtumrect(1)+ surrtumrect(3) > c
+%     surrtumrect(3) = c - surrtumrect(1);
+% elseif surrtumrect(2) < 1
+%     surrtumrect(2) = 1;
+% elseif surrtumrect(2) + surrtumrect(4) > r
+%     surrtumrect(4) = r - surrtumrect(2);
 % end
-tumorregion = cell(1,numpics); %treats tumor and corresponding region as a single square
-corrregion = cell(1,numpics);
-surrregion = cell(1,numpics);
-for k = 1:numpics
-    tumorregion{k} = nanmean(Itumor{k});
-    corrregion{k} = nanmean(Icorr{k});
-    surrregion{k} = nanmean(Isurrtum{k});
-    tumorregion{k} = nanmean(tumorregion{k});
-    corrregion{k} = nanmean(corrregion{k});
-    surrregion{k} = nanmean(surrregion{k});
-    tumstdv{k} = nanstd(Itumor{k});
-    corrstdv{k} = nanstd(Icorr{k});
-    surrstdv{k} = nanstd(Isurrtum{k});
-    tumstdv{k} = nanstd(tumstdv{k});
-    corrstdv{k} = nanstd(corrstdv{k});
-    surrstdv{k} = nanstd(surrstdv{k});
+% Itumor = cell(1,numpics);
+% Icorr = cell(1,numpics);
+% Isurrtum = cell(1,numpics);
+%  for k =1:numpics % creates the tumor and corresponding area images
+%      Itumor{k} =imcrop(I_mat{k},tumrect);
+%      Icorr{k} = imcrop(I_mat{k}, corrrect); 
+%      Isurrtum{k} = imcrop(I_mat{k} , surrtumrect);
+%  end
+%  [tumrow,tumcol] = size(Itumor{1});
+%  for k = 1:numpics % removes black pixels from calculations
+%     J = Itumor{k};
+%    J = double(J);
+%      for i = 1:tumrow
+%         for j = 1:tumcol
+%             if J(i,j) == 0 || J(i,j) == 10000
+%                J(i,j) = NaN;
+%             end
+%         end
+%      end
+%      Itumor{k} = J;
+%      
+%  end
+%  [corrrow,corrcol] = size(Icorr{1});
+%  % corrrow
+% for k = 1:numpics
+%    K = Icorr{k};
+%    K = double(K);
+%     for i = 1:corrrow
+%         for j =1:corrcol
+%             if K(i,j) == 0 || K(i,j) == 10000
+%                 K(i,j) = NaN;
+%             end
+%         end
+%     end
+%     Icorr{k} = K;
+% end
+% [surrrow,surrcol] = size(Isurrtum{1});
+% for k = 1:numpics
+%     L = Isurrtum{k};
+%     L = double(L);
+%     for i = 1:surrrow
+%         for j = 1:surrcol
+%             if L(i,j) == 0 || L(i,j) == 10000
+%                 L(i,j) = NaN;
+%             end
+%         end
+%     end
+%     Isurrtum{k} = L;
+% end
+% [surrrow,surrcol] = size(Isurrtum{1});
+% for k = 1:numpics
+%     for i = ceil((surrrow - tumrow)/2):(ceil(surrrow-tumrow)/2)+tumrow
+%         for j = ceil((surrcol - tumcol)/2):(ceil(surrcol-tumcol)/2)+tumcol
+%             Isurrtum{k}(i,j) = NaN;
+%         end
+%     end
+% end
+% % for k = 1:numpics
+% %     surrregion{k} = (nansum(nansum(Isurrtum{k})) - nansum(nansum(Itumor{k})))/(numel(Isurrtum{k})-numel(Itumor{k}))
+% % end
+% tumorregion = cell(1,numpics); %treats tumor and corresponding region as a single square
+% corrregion = cell(1,numpics);
+% surrregion = cell(1,numpics);
+% for k = 1:numpics
+%     tumorregion{k} = nanmean(Itumor{k});
+%     corrregion{k} = nanmean(Icorr{k});
+%     surrregion{k} = nanmean(Isurrtum{k});
 %     tumorregion{k} = nanmean(tumorregion{k});
 %     corrregion{k} = nanmean(corrregion{k});
-end
-tumstdv = cell2mat(tumstdv);
-corrstdv = cell2mat(corrstdv);
-surrstdv = cell2mat(surrstdv);
-
-tottumorchange = tumorregion{numpics} - tumorregion{1}; %calculates the total change of the region
-totcorrchange = corrregion{numpics} - corrregion{1};
-totsurrchange = surrregion{numpics} - surrregion{1};
-figure
-t = 0:numpics-1;
-errorbar(t,totRbreastmean,Rbreaststdv,'r'), hold on
-errorbar(t,totLbreastmean,Lbreaststdv,'b')
-errorbar(t,cell2mat(tumorregion),tumstdv,'g')
-errorbar(t,cell2mat(corrregion),corrstdv,'m')
-errorbar(t,cell2mat(surrregion),surrstdv,'Color',[0.9,0.6,0.125])
-legend('Right Breast','Left Breast','Tumor region','Corresponding region','Surronding Region')
-xlabel('Time (min)')
-ylabel('Pixel Value')
-title('Tumor region, Corresponding Region, and Surronding Region Comapared to both Breasts')
-changetumor = cell(1,numpics-1);
-changecorr = cell(1,numpics-1);
-changesurr = cell(1,numpics-1);
-for k = 1:numpics-1
-    changetumor{k} = tumorregion{k+1} - tumorregion{k};
-    changecorr{k} = corrregion{k+1} - corrregion{k};
-    changesurr{k} = surrregion{k+1} - surrregion{k};
-end
-avetumorchange = nanmean(cell2mat(changetumor));
-avecorrchange = nanmean(cell2mat(changecorr));
-avesurrchange = nanmean(cell2mat(changesurr));
-figure
-c = categorical({'Rbreast','Lbreast','Tumor region','Corresponding region','Surronding Region'}); % graphs total change of both breasts, tumor region and corr region
-bardata = [totRbreastchange,totLbreastchange,tottumorchange,totcorrchange,totsurrchange];
-bar(c,bardata)
-title('Total Change')
-figure
-bardata = [aveRbreastchange,aveLbreastchange,avetumorchange,avecorrchange,avesurrchange]; % graphs average rate of change
-bar(c,bardata)
-title('Average Rate of change')
+%     surrregion{k} = nanmean(surrregion{k});
+%     tumstdv{k} = nanstd(Itumor{k});
+%     corrstdv{k} = nanstd(Icorr{k});
+%     surrstdv{k} = nanstd(Isurrtum{k});
+%     tumstdv{k} = nanstd(tumstdv{k});
+%     corrstdv{k} = nanstd(corrstdv{k});
+%     surrstdv{k} = nanstd(surrstdv{k});
+% %     tumorregion{k} = nanmean(tumorregion{k});
+% %     corrregion{k} = nanmean(corrregion{k});
+% end
+% tumstdv = cell2mat(tumstdv);
+% corrstdv = cell2mat(corrstdv);
+% surrstdv = cell2mat(surrstdv);
+% 
+% tottumorchange = tumorregion{numpics} - tumorregion{1}; %calculates the total change of the region
+% totcorrchange = corrregion{numpics} - corrregion{1};
+% totsurrchange = surrregion{numpics} - surrregion{1};
+% figure
+% t = 0:numpics-1;
+% errorbar(t,totRbreastmean,Rbreaststdv,'r'), hold on
+% errorbar(t,totLbreastmean,Lbreaststdv,'b')
+% errorbar(t,cell2mat(tumorregion),tumstdv,'g')
+% errorbar(t,cell2mat(corrregion),corrstdv,'m')
+% errorbar(t,cell2mat(surrregion),surrstdv,'Color',[0.9,0.6,0.125])
+% legend('Right Breast','Left Breast','Tumor region','Corresponding region','Surronding Region')
+% xlabel('Time (min)')
+% ylabel('Pixel Value')
+% title('Tumor region, Corresponding Region, and Surronding Region Comapared to both Breasts')
+% changetumor = cell(1,numpics-1);
+% changecorr = cell(1,numpics-1);
+% changesurr = cell(1,numpics-1);
+% for k = 1:numpics-1
+%     changetumor{k} = tumorregion{k+1} - tumorregion{k};
+%     changecorr{k} = corrregion{k+1} - corrregion{k};
+%     changesurr{k} = surrregion{k+1} - surrregion{k};
+% end
+% avetumorchange = nanmean(cell2mat(changetumor));
+% avecorrchange = nanmean(cell2mat(changecorr));
+% avesurrchange = nanmean(cell2mat(changesurr));
+% figure
+% c = categorical({'Rbreast','Lbreast','Tumor region','Corresponding region','Surronding Region'}); % graphs total change of both breasts, tumor region and corr region
+% bardata = [totRbreastchange,totLbreastchange,tottumorchange,totcorrchange,totsurrchange];
+% bar(c,bardata)
+% title('Total Change')
+% figure
+% bardata = [aveRbreastchange,aveLbreastchange,avetumorchange,avecorrchange,avesurrchange]; % graphs average rate of change
+% bar(c,bardata)
+% title('Average Rate of change')
 %% determining percent changes
-answer = questdlg('Which side is the tumor on?','TumorSide','Left','Right','Left') % used to get total data accross all
-if isequal(answer,'Left') == 1
-    perchangebreast = ((totLbreastchange - tottumorchange)/totLbreastchange)*100
-elseif isequal(answer,'Right') ==1
-    perchangebreast = ((totRbreastchange - tottumorchange)/totRbreastchange)*100
-end
-percorrchange = ((totcorrchange - tottumorchange)/totcorrchange)*100
-perchangesurr = ((totsurrchange - tottumorchange)/totsurrchange)*100
+% answer = questdlg('Which side is the tumor on?','TumorSide','Left','Right','Left') % used to get total data accross all
+% if isequal(answer,'Left') == 1
+%     perchangebreast = ((totLbreastchange - tottumorchange)/totLbreastchange)*100
+% elseif isequal(answer,'Right') ==1
+%     perchangebreast = ((totRbreastchange - tottumorchange)/totRbreastchange)*100
+% end
+% percorrchange = ((totcorrchange - tottumorchange)/totcorrchange)*100
+% perchangesurr = ((totsurrchange - tottumorchange)/totsurrchange)*100
 else
 end
 %% identiying regions of low change and highlighting them. Then comparing to ewach breast
@@ -653,145 +653,145 @@ for i = 1:numel(lowcol)
        ,squareside*(lowcol(i)-1)+p:squareside-p:squareside*lowcol(i),:) = 10000; 
 end
 end
-figure('Name','Crop Warm Region')
-[~,warmrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); %sets the rectangle to crop all images
-figure('Name','Crop corresponging region')
-[~,corrrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); % sets crop for corresponding area
-surrwarmrect(1) = warmrect(1) - warmrect(3)*0.5; % makes a crop for the surronding region
-surrwarmrect(2) = warmrect(2) - warmrect(4)*0.5;
-surrwarmrect(3) = warmrect(3)*2;
-surrwarmrect(4) = warmrect(4)*2;
-if surrwarmrect(1) < 1 % makes surronding area crop stop if they go past the limits
-    surrwarmrect(1) = 1;
-elseif surrwarmrect(1)+ surrwarmrect(3) > c
-    surrwarmrect(3) = c - surrwarmrect(1);
-elseif surrwarmrect(2) < 1
-    surrwarmrect(2) = 1;
-elseif surrwarmrect(2) + surrwarmrect(4) > r
-    surrwarmrect(4) = r - surrwarmrect(2);
-end
-Iwarm = cell(1,numpics);
-Icorr = cell(1,numpics);
-Isurrwarm = cell(1,numpics);
- for k =1:numpics % creates the tumor and corresponding area images
-     Iwarm{k} =imcrop(I_mat{k},warmrect);
-     Icorr{k} = imcrop(I_mat{k}, corrrect); 
-     Isurrwarm{k} = imcrop(I_mat{k} , surrwarmrect);
- end
- [warmrow,warmcol] = size(Iwarm{1});
- for k = 1:numpics % removes black pixels from calculations
-    J = Iwarm{k};
-   J = double(J);
-     for i = 1:warmrow
-        for j = 1:warmcol
-            if J(i,j) == 0 || J(i,j) == 10000
-               J(i,j) = NaN;
-            end
-        end
-     end
-     Iwarm{k} = J;
-     
- end
- [corrrow,corrcol] = size(Icorr{1});
- % corrrow
-for k = 1:numpics
-   K = Icorr{k};
-   K = double(K);
-    for i = 1:corrrow
-        for j =1:corrcol
-            if K(i,j) == 0 || K(i,j) == 10000
-                K(i,j) = NaN;
-            end
-        end
-    end
-    Icorr{k} = K;
-end
-[surrrow,surrcol] = size(Isurrwarm{1});
-for k = 1:numpics
-    L = Isurrwarm{k};
-    L = double(L);
-    for i = 1:surrrow
-        for j = 1:surrcol
-            if L(i,j) == 0 || L(i,j) == 10000
-                L(i,j) = NaN;
-            end
-        end
-    end
-    Isurrwarm{k} = L;
-end
-[surrrow,surrcol] = size(Isurrwarm{1});
-for k = 1:numpics
-    for i = ceil((surrrow - warmrow)/2):(ceil(surrrow-warmrow)/2)+warmrow
-        for j = ceil((surrcol - warmcol)/2):(ceil(surrcol-warmcol)/2)+warmcol
-            Isurrwarm{k}(i,j) = NaN;
-        end
-    end
-end
-
-warmregion = cell(1,numpics); %treats tumor and corresponding region as a single square
-corrregion = cell(1,numpics);
-surrregion = cell(1,numpics);
-for k = 1:numpics
-    warmregion{k} = nanmean(Iwarm{k});
-    corrregion{k} = nanmean(Icorr{k});
-    surrregion{k} = nanmean(Isurrwarm{k});
-    warmregion{k} = nanmean(warmregion{k});
-    corrregion{k} = nanmean(corrregion{k});
-    surrregion{k} = nanmean(surrregion{k});
-    warmstdv{k} = nanstd(Iwarm{k});
-    corrstdv{k} = nanstd(Icorr{k});
-    surrstdv{k} = nanstd(Isurrwarm{k});
-    warmstdv{k} = nanstd(warmstdv{k});
-    corrstdv{k} = nanstd(corrstdv{k});
-    surrstdv{k} = nanstd(surrstdv{k});
-end
-warmstdv = cell2mat(warmstdv);
-corrstdv = cell2mat(corrstdv);
-surrstdv = cell2mat(surrstdv);
-
-totwarmchange = warmregion{numpics} - warmregion{1}; %calculates the total change of the region
-totcorrchange = corrregion{numpics} - corrregion{1};
-totsurrchange = surrregion{numpics} - surrregion{1};
-figure
-t = 0:numpics-1;
-errorbar(t,totRbreastmean,Rbreaststdv,'r'), hold on
-errorbar(t,totLbreastmean,Lbreaststdv,'b')
-errorbar(t,cell2mat(warmregion),warmstdv,'g')
-errorbar(t,cell2mat(corrregion),corrstdv,'m')
-errorbar(t,cell2mat(surrregion),surrstdv,'Color',[0.9,0.6,0.125])
-legend('Right Breast','Left Breast','Warm region','Corresponding region','Surronding Region')
-xlabel('Time (min)')
-ylabel('Pixel Value')
-title('Warm region, Corresponding Region, and Surronding Region Comapared to both Breasts')
-changewarm = cell(1,numpics-1);
-changecorr = cell(1,numpics-1);
-changesurr = cell(1,numpics-1);
-for k = 1:numpics-1
-    changewarm{k} = warmregion{k+1} - warmregion{k};
-    changecorr{k} = corrregion{k+1} - corrregion{k};
-    changesurr{k} = surrregion{k+1} - surrregion{k};
-end
-avewarmchange = nanmean(cell2mat(changewarm));
-avecorrchange = nanmean(cell2mat(changecorr));
-avesurrchange = nanmean(cell2mat(changesurr));
-figure
-c = categorical({'Rbreast','Lbreast','Warm region','Corresponding region','Surronding Region'}); % graphs total change of both breasts, tumor region and corr region
-bardata = [totRbreastchange,totLbreastchange,totwarmchange,totcorrchange,totsurrchange];
-bar(c,bardata)
-title('Total Change')
-figure
-bardata = [aveRbreastchange,aveLbreastchange,avewarmchange,avecorrchange,avesurrchange]; % graphs average rate of change
-bar(c,bardata)
-title('Average Rate of change')
+% figure('Name','Crop Warm Region')
+% [~,warmrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); %sets the rectangle to crop all images
+% figure('Name','Crop corresponging region')
+% [~,corrrect] = imcrop(warmregionidentifier{numpics},[min(I_adj1) max(I_adj1)]); % sets crop for corresponding area
+% surrwarmrect(1) = warmrect(1) - warmrect(3)*0.5; % makes a crop for the surronding region
+% surrwarmrect(2) = warmrect(2) - warmrect(4)*0.5;
+% surrwarmrect(3) = warmrect(3)*2;
+% surrwarmrect(4) = warmrect(4)*2;
+% if surrwarmrect(1) < 1 % makes surronding area crop stop if they go past the limits
+%     surrwarmrect(1) = 1;
+% elseif surrwarmrect(1)+ surrwarmrect(3) > c
+%     surrwarmrect(3) = c - surrwarmrect(1);
+% elseif surrwarmrect(2) < 1
+%     surrwarmrect(2) = 1;
+% elseif surrwarmrect(2) + surrwarmrect(4) > r
+%     surrwarmrect(4) = r - surrwarmrect(2);
+% end
+% Iwarm = cell(1,numpics);
+% Icorr = cell(1,numpics);
+% Isurrwarm = cell(1,numpics);
+%  for k =1:numpics % creates the tumor and corresponding area images
+%      Iwarm{k} =imcrop(I_mat{k},warmrect);
+%      Icorr{k} = imcrop(I_mat{k}, corrrect); 
+%      Isurrwarm{k} = imcrop(I_mat{k} , surrwarmrect);
+%  end
+%  [warmrow,warmcol] = size(Iwarm{1});
+%  for k = 1:numpics % removes black pixels from calculations
+%     J = Iwarm{k};
+%    J = double(J);
+%      for i = 1:warmrow
+%         for j = 1:warmcol
+%             if J(i,j) == 0 || J(i,j) == 10000
+%                J(i,j) = NaN;
+%             end
+%         end
+%      end
+%      Iwarm{k} = J;
+%      
+%  end
+%  [corrrow,corrcol] = size(Icorr{1});
+%  % corrrow
+% for k = 1:numpics
+%    K = Icorr{k};
+%    K = double(K);
+%     for i = 1:corrrow
+%         for j =1:corrcol
+%             if K(i,j) == 0 || K(i,j) == 10000
+%                 K(i,j) = NaN;
+%             end
+%         end
+%     end
+%     Icorr{k} = K;
+% end
+% [surrrow,surrcol] = size(Isurrwarm{1});
+% for k = 1:numpics
+%     L = Isurrwarm{k};
+%     L = double(L);
+%     for i = 1:surrrow
+%         for j = 1:surrcol
+%             if L(i,j) == 0 || L(i,j) == 10000
+%                 L(i,j) = NaN;
+%             end
+%         end
+%     end
+%     Isurrwarm{k} = L;
+% end
+% [surrrow,surrcol] = size(Isurrwarm{1});
+% for k = 1:numpics
+%     for i = ceil((surrrow - warmrow)/2):(ceil(surrrow-warmrow)/2)+warmrow
+%         for j = ceil((surrcol - warmcol)/2):(ceil(surrcol-warmcol)/2)+warmcol
+%             Isurrwarm{k}(i,j) = NaN;
+%         end
+%     end
+% end
+% 
+% warmregion = cell(1,numpics); %treats tumor and corresponding region as a single square
+% corrregion = cell(1,numpics);
+% surrregion = cell(1,numpics);
+% for k = 1:numpics
+%     warmregion{k} = nanmean(Iwarm{k});
+%     corrregion{k} = nanmean(Icorr{k});
+%     surrregion{k} = nanmean(Isurrwarm{k});
+%     warmregion{k} = nanmean(warmregion{k});
+%     corrregion{k} = nanmean(corrregion{k});
+%     surrregion{k} = nanmean(surrregion{k});
+%     warmstdv{k} = nanstd(Iwarm{k});
+%     corrstdv{k} = nanstd(Icorr{k});
+%     surrstdv{k} = nanstd(Isurrwarm{k});
+%     warmstdv{k} = nanstd(warmstdv{k});
+%     corrstdv{k} = nanstd(corrstdv{k});
+%     surrstdv{k} = nanstd(surrstdv{k});
+% end
+% warmstdv = cell2mat(warmstdv);
+% corrstdv = cell2mat(corrstdv);
+% surrstdv = cell2mat(surrstdv);
+% 
+% totwarmchange = warmregion{numpics} - warmregion{1}; %calculates the total change of the region
+% totcorrchange = corrregion{numpics} - corrregion{1};
+% totsurrchange = surrregion{numpics} - surrregion{1};
+% figure
+% t = 0:numpics-1;
+% errorbar(t,totRbreastmean,Rbreaststdv,'r'), hold on
+% errorbar(t,totLbreastmean,Lbreaststdv,'b')
+% errorbar(t,cell2mat(warmregion),warmstdv,'g')
+% errorbar(t,cell2mat(corrregion),corrstdv,'m')
+% errorbar(t,cell2mat(surrregion),surrstdv,'Color',[0.9,0.6,0.125])
+% legend('Right Breast','Left Breast','Warm region','Corresponding region','Surronding Region')
+% xlabel('Time (min)')
+% ylabel('Pixel Value')
+% title('Warm region, Corresponding Region, and Surronding Region Comapared to both Breasts')
+% changewarm = cell(1,numpics-1);
+% changecorr = cell(1,numpics-1);
+% changesurr = cell(1,numpics-1);
+% for k = 1:numpics-1
+%     changewarm{k} = warmregion{k+1} - warmregion{k};
+%     changecorr{k} = corrregion{k+1} - corrregion{k};
+%     changesurr{k} = surrregion{k+1} - surrregion{k};
+% end
+% avewarmchange = nanmean(cell2mat(changewarm));
+% avecorrchange = nanmean(cell2mat(changecorr));
+% avesurrchange = nanmean(cell2mat(changesurr));
+% figure
+% c = categorical({'Rbreast','Lbreast','Warm region','Corresponding region','Surronding Region'}); % graphs total change of both breasts, tumor region and corr region
+% bardata = [totRbreastchange,totLbreastchange,totwarmchange,totcorrchange,totsurrchange];
+% bar(c,bardata)
+% title('Total Change')
+% figure
+% bardata = [aveRbreastchange,aveLbreastchange,avewarmchange,avecorrchange,avesurrchange]; % graphs average rate of change
+% bar(c,bardata)
+% title('Average Rate of change')
 %% determining percent changes
-answer = questdlg('Which side is the tumor on?','TumorSide','Left','Right','Left') % used to get total data accross all
-if isequal(answer,'Left') == 1
-    perchangebreast = ((totLbreastchange - totwarmchange)/totLbreastchange)*100
-elseif isequal(answer,'Right') ==1
-    perchangebreast = ((totRbreastchange - totwarmchange)/totRbreastchange)*100
-end
-percorrchange = ((totcorrchange - totwarmchange)/totcorrchange)*100
-perchangesurr = ((totsurrchange - totwarmchange)/totsurrchange)*100
+% answer = questdlg('Which side is the tumor on?','TumorSide','Left','Right','Left') % used to get total data accross all
+% if isequal(answer,'Left') == 1
+%     perchangebreast = ((totLbreastchange - totwarmchange)/totLbreastchange)*100
+% elseif isequal(answer,'Right') ==1
+%     perchangebreast = ((totRbreastchange - totwarmchange)/totRbreastchange)*100
+% end
+% percorrchange = ((totcorrchange - totwarmchange)/totcorrchange)*100
+% perchangesurr = ((totsurrchange - totwarmchange)/totsurrchange)*100
 else
 end
 
