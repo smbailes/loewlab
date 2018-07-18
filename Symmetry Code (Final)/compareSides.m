@@ -2,11 +2,12 @@
 %after running it once for a patient comment out Location and Select
 %nipples sections
 
-clearvars -except location ptId I_mat xR yR xL yL,
+clearvars -except xR yR xL yL,
 close all, 
 
 %% Location
-[location, ptID] = pathfinder; 
+path  = uigetdir;
+location = strcat(path, '\');
 
 a=0;
 for i=1:15          
@@ -15,26 +16,28 @@ for i=1:15
 end
 
 %% Select Nipples
+redo = questdlg('Redo Nipple Selection?', 'Yes', 'No');
+if strcmp(redo, 'Yes') == 1
+    figure('Name','Select nipple (Right)'), 
+     for i = 1:15
+        I1 = I_mat{i}(find(I_mat{i}>0));
+        imshow(I_mat{i}, [min(I1) max(I1)])
+        hold on
+        xlabel('<--')
+        [xR{i},yR{i}] = ginput(1);
+     end
+    close
 
-figure('Name','Select nipple (Right)'), 
- for i = 1:15
-    I1 = I_mat{i}(find(I_mat{i}>0));
-    imshow(I_mat{i}, [min(I1) max(I1)])
-    hold on
-    xlabel('<--')
-    [xR{i},yR{i}] = ginput(1);
- end
-close
-
-figure('Name','Select nipple (Left)'), 
-for i =1:15
-    I1 = I_mat{i}(find(I_mat{i}>0));
-    imshow(I_mat{i}, [min(I1) max(I1)]) % gets coordinates of nipple
-    hold on,
-    xlabel('-->')
-    [xL{i},yL{i}] = ginput(1);
+    figure('Name','Select nipple (Left)'), 
+    for i =1:15
+        I1 = I_mat{i}(find(I_mat{i}>0));
+        imshow(I_mat{i}, [min(I1) max(I1)]) % gets coordinates of nipple
+        hold on,
+        xlabel('-->')
+        [xL{i},yL{i}] = ginput(1);
+    end
+    close
 end
-close
 
 %% Parameters
 
@@ -109,8 +112,10 @@ end
 %% Find data for ROI 
 
 for k = 1:15
-    aveRight(k) = mean2(rightROI{k});
-    aveLeft(k) = mean2(leftROI{k});
+    nonzeroR = rightROI{k}(find(rightROI{k}>0));
+    nonzeroL = leftROI{k}(find(leftROI{k}>0));
+    aveRight(k) = mean2(nonzeroR);
+    aveLeft(k) = mean2(nonzeroL);
 end 
 
 for l = 1:14
@@ -127,22 +132,24 @@ totalChangeLeft = aveLeft(15) - aveLeft(1)
 aveStepChangeLeft = mean2(stepChangeLeft)
     
 %% Verify the regions
-% for m = 1:15
-%     figure, 
-%     I1 = I_mat{m}(find(I_mat{m}>0));
-%     imshow(I_mat{m}, [min(I1) max(I1)])
-%     hold on,
-%     plot(xR{m}, yR{m}, '+');
-%     hold on,
-%     plot(xL{m}, yL{m}, '+');
-%     hold on
-%     plot([c1R{m}(1 ) c2R{m}(1)],[c1R{m}(2) c2R{m}(2)],'b');                      % Create red box region on Image Display
-%     plot([c2R{m}(1) c3R{m}(1)],[c2R{m}(2) c3R{m}(2)],'b');
-%     plot([c3R{m}(1) c4R{m}(1)],[c3R{m}(2) c4R{m}(2)],'b');
-%     plot([c4R{m}(1) c1R{m}(1)],[c4R{m}(2) c1R{m}(2)],'b');
-%     hold on,
-%     plot([c1L{m}(1 ) c2L{m}(1)],[c1L{m}(2) c2L{m}(2)],'r');                      % Create red box region on Image Display
-%     plot([c2L{m}(1) c3L{m}(1)],[c2L{m}(2) c3L{m}(2)],'r');
-%     plot([c3L{m}(1) c4L{m}(1)],[c3L{m}(2) c4L{m}(2)],'r');
-%     plot([c4L{m}(1) c1L{m}(1)],[c4L{m}(2) c1L{m}(2)],'r');
-% end
+%{
+for m = 1:15
+    figure, 
+    I1 = I_mat{m}(find(I_mat{m}>0));
+    imshow(I_mat{m}, [min(I1) max(I1)])
+    hold on,
+    plot(xR{m}, yR{m}, '+');
+    hold on,
+    plot(xL{m}, yL{m}, '+');
+    hold on
+    plot([c1R{m}(1 ) c2R{m}(1)],[c1R{m}(2) c2R{m}(2)],'b');                      % Create red box region on Image Display
+    plot([c2R{m}(1) c3R{m}(1)],[c2R{m}(2) c3R{m}(2)],'b');
+    plot([c3R{m}(1) c4R{m}(1)],[c3R{m}(2) c4R{m}(2)],'b');
+    plot([c4R{m}(1) c1R{m}(1)],[c4R{m}(2) c1R{m}(2)],'b');
+    hold on,
+    plot([c1L{m}(1 ) c2L{m}(1)],[c1L{m}(2) c2L{m}(2)],'r');                      % Create red box region on Image Display
+    plot([c2L{m}(1) c3L{m}(1)],[c2L{m}(2) c3L{m}(2)],'r');
+    plot([c3L{m}(1) c4L{m}(1)],[c3L{m}(2) c4L{m}(2)],'r');
+    plot([c4L{m}(1) c1L{m}(1)],[c4L{m}(2) c1L{m}(2)],'r');
+end
+%}
