@@ -50,7 +50,7 @@ height = bottomLine - topLine + 1;
 newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
 close;
 
-newLocation = strcat(location, 'Cropped_Emilie\');
+newLocation = strcat(location, 'Cropped (NEW)\');
 mkdir(newLocation);
 cd(newLocation);
 
