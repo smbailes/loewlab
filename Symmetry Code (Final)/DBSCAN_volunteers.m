@@ -24,7 +24,7 @@ prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
 'Enter MinPts:','Enter Desired %:','Enter desired scaling factor'};  
 dlg_title = 'DBSCAN Parameters';                                         % box title
 num_lines = 1;                                                          % lines per answer
-defaultans = {'5.3','12','80','sqrt(5/3)'};          % default inputs
+defaultans = {'5.7','12','80','sqrt(4/3)'};          % default inputs
 options.Resize = 'on';                                                  % allows for resizing of box
 answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
 epsilon = str2double(answer{1});                
@@ -81,7 +81,7 @@ for c = 7:7
    fprintf('Removed small/large clusters\n');
    
    %Check for vessels
-    for t = 1:numClust
+   for t = 1:numClust
         indices = thisImage(t).ClusterIndices;
         xind = indices(:,1);
         yind = indices(:,2);
@@ -93,10 +93,16 @@ for c = 7:7
         xmax = max(xind);
         xmin = min(xind);
         xlength = xmax-xmin;
+        
+        DiagnolLength = sqrt(xlength^2 + ylength^2);
 
-        if(ylength > 20 || xlength > 20)
+        if(ylength > 30 || xlength > 30 || DiagnolLength > 20)
             thisImage(t).RemoveCluster = 1;
         end
+        
+        if(ylength >= xlength*5 || xlength>= ylength*5)
+            thisImage(t).RemoveCluster = 1;
+        end 
     end
     fprintf('Removed vessels\n');
     
@@ -214,17 +220,25 @@ for g = 7:7
     ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
 %% Corresponding Nipple check: Get coordinates of nipples
-
-for i = 1:15
-    figure('Name','Select nipple (w/o Tumor)'), imshow(I_mat{i}, [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
-    [X_corrNip{i},Y_corrNip{i}] = ginput(1), close
-end
+figure('Name','Select nipple (w/o Tumor)'), 
+ for i = 1:15
+    I1 = I_mat{i}(find(I_mat{i}>0));
+    imshow(I_mat{i}, [min(I1) max(I1)])
+    hold on
+    
+    [X_corrNip{i},Y_corrNip{i}] = ginput(1)
+ end
+close
 questdlg('Switch sides','Switch sides','Ok','Sure','Ok')
 
+figure('Name','Select nipple (w/ Tumor)'), 
 for i =1:15
-    figure('Name','Select Nipple (w/ Tumor)'), imshow(I_mat{i} , [min(I_adj1) max(I_adj1)]) % gets coordinates of nipple
-    [X_tumNip{i},Y_tumNip{i}] = ginput(1), close
+    I1 = I_mat{i}(find(I_mat{i}>0));
+    imshow(I_mat{i}, [min(I1) max(I1)]) % gets coordinates of nipple
+    hold on,
+    [X_tumNip{i},Y_tumNip{i}] = ginput(1)
 end
+close
 %% Track clusters over time
 % numClust = length(ClustStruct);
 clear ClustInfoCell RemoveCluster NumClust JustClust Indices XClusterIndices YClusterIndices...
@@ -329,33 +343,57 @@ numClustersLeft = length(TimeClusterData(2,:));
 for y = 1:numClustersLeft
     clusterDifferenceData(y) = TimeClusterData{15,y} - TimeClusterData{1,y};
     corrRegionDifference(y) = CorrData{15,y} - CorrData{1,y};
-    ClusterDifference(y) = abs(clusterDifferenceData(y)-corrRegionDifference(y));
+    ClusterDifference(y) = abs(clusterDifferenceData(y))-abs(corrRegionDifference(y));
 end 
-counter = 0
+counter = 0;
 ClusterDifference1 = ClusterDifference(find(ClusterDifference<3000));
 cutoff = std2(ClusterDifference1);
 
 for z = 1:numClustersLeft
-    
-    if ClusterDifference(z) < cutoff || ClusterDifference(z) > 3000
-        counter = counter+1
+    %If the cluster changes more than the corresponding region or it is an
+    %outlier
+    if(ClusterDifference(z) > 0 || abs(ClusterDifference(z)) > 3000 || clusterDifferenceData(z)>0)
+        counter = counter+1;
         NumberOfRemoval(counter) = z
     end
 end 
+counter1 = 0;
+for z = 1:numClustersLeft
+    for y = 1:15
+        if TimeClusterData{y,z} > CorrData{y,z}
+            counter1 = counter1+1;
+            NumberOfRemoval2(counter1) = z
+        end 
+    end 
+end
 
 %% Remove Clusters based on corresponding region change
-thisImage = ClusterInfo{7,1}
-ClusterCounter = 1
-RemoveClusterCounter = 1
+thisImage = ClusterInfo{7,1};
+ClusterCounter = 1;
+RemoveClusterCounter = 1;
 for i = 1:length(thisImage);
    if thisImage(i).RemoveCluster == 0
        if RemoveClusterCounter < length(NumberOfRemoval)
           if ClusterCounter == NumberOfRemoval(RemoveClusterCounter)
-          RemoveClusterCounter = RemoveClusterCounter + 1
-          thisImage(i).RemoveCluster = 1 %Mark Cluster for Removal
+            RemoveClusterCounter = RemoveClusterCounter + 1;
+            thisImage(i).RemoveCluster = 1; %Mark Cluster for Removal
           end
       end
-       ClusterCounter = ClusterCounter+1
+       ClusterCounter = ClusterCounter+1;
+   end
+end
+
+ClusterCounter = 1;
+RemoveClusterCounter = 1;
+for i = 1:length(thisImage);
+   if thisImage(i).RemoveCluster == 0
+       if RemoveClusterCounter < length(NumberOfRemoval2)
+          if ClusterCounter == NumberOfRemoval2(RemoveClusterCounter)
+            RemoveClusterCounter = RemoveClusterCounter + 1;
+            thisImage(i).RemoveCluster = 1; %Mark Cluster for Removal
+          end
+      end
+       ClusterCounter = ClusterCounter+1;
    end
 end
 %%     
