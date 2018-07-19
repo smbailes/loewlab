@@ -128,6 +128,7 @@ displ = imshow(blue);
 hold off
 set(displ, 'AlphaData', uppers2)
 
+%total=bwmorph(total,'clean'); %removes individual 1's surrounded by 0's
 
 side=input('Are the breasts lower or higher? [h/l]: ','s');
   if side=='l'
@@ -135,6 +136,20 @@ side=input('Are the breasts lower or higher? [h/l]: ','s');
   else
     total = uppers2;
   end
+<<<<<<< HEAD
+=======
+% 
+% 
+% 
+figure, imshow(I,[]), title('Best Fit')
+% blue on top on figure
+blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+hold on 
+displ = imshow(blue); 
+hold off 
+set(displ, 'AlphaData', total)
+
+>>>>>>> a832de169d58276a753d89187f8f28f0ad813c10
 
    figure, imshow(I,[]), title('Best Fit')
    % blue on top on figure
@@ -168,29 +183,33 @@ set(displ, 'AlphaData', gett)
 
 %% Part 3, Connect
 
-CC = bwconncomp(gett);
-newboundaries = gett;
+newboundaries = connectDots(gett,50);
 
-for n = 1:CC.NumObjects - 1 %the number of lines in the middle region of the patient
-%     Store all row and col values of component n and the component after in
-%     x1,y1, x2, y2
-    [x1, y1] = ind2sub(size(newboundaries),CC.PixelIdxList{n});
-    [x2, y2] = ind2sub(size(newboundaries),CC.PixelIdxList{n+1});
-    
-    [yy1, ind] = max(y1); %find the max col in component n
-    xx1 = x1(ind); % The corresponding row value for max col
-    
-    [yy2, ind] = max(y2); %find the min col in component n+1 %%FINDS MAX NOW 
-    xx2 = x2(ind); % The corrosponding row value for min col
-    
-%     Draw a line between the two points (xx1,yy1) and (xx2,yy2) and insert
-%     it in newboundaries4
-    shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
-        newboundaries = step(shapeInserter, newboundaries, uint16([yy1 xx1 yy2 xx2]));
-%      figure, imshow(newboundaries4), title('After step shapeinserter');
-    
-end
-clear xx2 xx1 yy1 yy2 y1 y2 x1 x2;
+% CC = bwconncomp(newboundaries);
+% newboundaries = newboundaries;
+%  
+% for n = 1:CC.NumObjects - 1 %the number of lines in the middle region of the patient
+% %     Store all row and col values of component n and the component after in
+% %     x1,y1, x2, y2
+%     [x1, y1] = ind2sub(size(newboundaries),CC.PixelIdxList{n});
+%     [x2, y2] = ind2sub(size(newboundaries),CC.PixelIdxList{n+1});
+%     
+%     [yy1, ind] = max(y1); %find the max col in component n
+%     xx1 = x1(ind); % The corrosponding row value for max col
+%    
+%     [yy2, ind] = min(y2); %find the min col in component n+1
+%     xx2 = x2(ind); % The corrosponding row value for min col
+%     
+% %     Draw a line between the two points (xx1,yy1) and (xx2,yy2) and insert
+% %     it in newboundaries4
+%     if abs(yy1-yy2) < 50 
+%         shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
+%         newboundaries = step(shapeInserter, newboundaries, uint16([yy1 xx1 yy2 xx2]));
+%     end
+% %     figure, imshow(newboundaries4), title('After step shapeinserter');
+%     
+% end
+% clear xx2 xx1 yy1 yy2 y1 y2 x1 x2;
 
 figure, imshow(I,[]), title('Middle Connections')
 %blue on top on figure

@@ -1,6 +1,6 @@
 %% Clean Up
 clear all;
-close all;
+% close all;
 clc; 
 
 %% Choose reference image
@@ -29,9 +29,12 @@ demonRegLocation = strcat(newLocation, '\Demons Registered\');
 for k = 0000:120:1680
     RegPath = [registeredLocation '\' sprintf('%04d.tif',k)];
     registered = imread(RegPath);
+    registered_equalized = histeq(ref);
     
     DRPath = [demonRegLocation '\' sprintf('%04d.tif',k)];
     dRegistered = imread(DRPath);
+    dRegistered_equalized = histeq(ref);
+    
     
     figure %new figure for each minute
     

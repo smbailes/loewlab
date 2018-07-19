@@ -314,4 +314,3 @@ comp_ynow = comp_y{foundcomp_l};
 
 % go on to curvature code
 zm_8_curvature;
-
