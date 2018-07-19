@@ -561,14 +561,14 @@ for z = 1:numClustersLeft
     end
 end 
 counter1 = 0;
-for z = 1:numClustersLeft
-    for y = 1:15
-        if TimeClusterData{y,z} > CorrData{y,z}
-            counter1 = counter1+1;
-            NumberOfRemoval2(counter1) = z
-        end 
-    end 
-end
+% for z = 1:numClustersLeft
+%     for y = 1:15
+%         if TimeClusterData{y,z} > CorrData{y,z}
+%             counter1 = counter1+1;
+%             NumberOfRemoval2(counter1) = z
+%         end 
+%     end 
+% end
 
 %% Remove Clusters based on corresponding region change
 thisImage = ClusterInfo{7,1};
@@ -586,19 +586,19 @@ for i = 1:length(thisImage);
    end
 end
 
-ClusterCounter = 1;
-RemoveClusterCounter = 1;
-for i = 1:length(thisImage);
-   if thisImage(i).RemoveCluster == 0
-       if RemoveClusterCounter < length(NumberOfRemoval2)
-          if ClusterCounter == NumberOfRemoval2(RemoveClusterCounter)
-            RemoveClusterCounter = RemoveClusterCounter + 1;
-            thisImage(i).RemoveCluster = 1; %Mark Cluster for Removal
-          end
-      end
-       ClusterCounter = ClusterCounter+1;
-   end
-end
+% ClusterCounter = 1;
+% RemoveClusterCounter = 1;
+% for i = 1:length(thisImage);
+%    if thisImage(i).RemoveCluster == 0
+%        if RemoveClusterCounter < length(NumberOfRemoval2)
+%           if ClusterCounter == NumberOfRemoval2(RemoveClusterCounter)
+%             RemoveClusterCounter = RemoveClusterCounter + 1;
+%             thisImage(i).RemoveCluster = 1; %Mark Cluster for Removal
+%           end
+%       end
+%        ClusterCounter = ClusterCounter+1;
+%    end
+% end
 
 %%     
 for g = 7:7 
