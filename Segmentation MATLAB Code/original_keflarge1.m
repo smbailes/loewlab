@@ -127,7 +127,13 @@ hold on
 displ = imshow(blue); 
 hold off
 set(displ, 'AlphaData', uppers2)
-
+figure, imshow(I,[]), title('Uppers')
+% blue on top on figure
+blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+hold on 
+displ = imshow(blue); 
+hold off
+set(displ, 'AlphaData', uppers2)
 
 side=input('Are the breasts lower or higher? [h/l]: ','s');
   if side=='l'
@@ -143,7 +149,8 @@ side=input('Are the breasts lower or higher? [h/l]: ','s');
    displ = imshow(blue); 
    hold off 
    set(displ, 'AlphaData', total)
-  
+
+
 %% Part 2, Clean
 
 gettit=bwmorph(total,'close');

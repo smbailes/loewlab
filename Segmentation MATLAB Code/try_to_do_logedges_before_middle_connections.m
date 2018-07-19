@@ -128,7 +128,6 @@ displ = imshow(blue);
 hold off
 set(displ, 'AlphaData', uppers2)
 
-
 side=input('Are the breasts lower or higher? [h/l]: ','s');
   if side=='l'
     total = bottoms3;
@@ -166,7 +165,11 @@ displ = imshow(blue);
 hold off
 set(displ, 'AlphaData', gett)
 
-%% Part 3, Connect
+%% Part 3, Logedges
+
+zm_7_logedges;
+
+%% Part 4, Connect
 
 CC = bwconncomp(gett);
 newboundaries = gett;
