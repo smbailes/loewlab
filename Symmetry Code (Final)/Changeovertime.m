@@ -47,8 +47,10 @@ for j = 1:1:numcols
     row = squareside*(j-1)+1;
     for i = 1:1:numrows
         col = squareside*(i-1)+1 ;
-square = [row, col, squareside-2, squareside-2]; %  creates the square to be averaged
-averages{i,j,k} = mean2(imcrop(I_mat{k},square)); % takes the average of each block
+        square = [row, col, squareside-2, squareside-2]; %  creates the square to be averaged
+        crop = imcrop(I_mat{k},square);
+        nonzero = crop(find(crop>0));
+        averages{i,j,k} = mean2(nonzero); % takes the average of each block
 
     end
 end
@@ -100,21 +102,21 @@ end
 
 %% find good data for 
 
-for i = 1:numrows
-    for j = 1:numcols
-        for k = 1:numpics 
-            if abs(stdv{i,j,k}) >500  % eliminates data that deviates too, mostly edge squares
-                for d = 1:numpics % total number of pictures
-                averages{i,j,d} = NaN;
-                end   
-            elseif averages{i,j,k} == 0
-                for d = 1:numpics
-                    averages{i,j,k} = NaN;
-                end
-            end
-        end
-    end
-end
+% for i = 1:numrows
+%     for j = 1:numcols
+%         for k = 1:numpics 
+%             if abs(stdv{i,j,k}) >500  % eliminates data that deviates too, mostly edge squares
+%                 for d = 1:numpics % total number of pictures
+%                 averages{i,j,d} = NaN;
+%                 end   
+%             elseif averages{i,j,k} == 0
+%                 for d = 1:numpics
+%                     averages{i,j,k} = NaN;
+%                 end
+%             end
+%         end
+%     end
+% end
 
 %% determining y-value limits
 ylim_array = gooddata;
@@ -245,7 +247,7 @@ totsquarechange = cell2mat(totsquarechange);
 [xpoints,ypoints] = meshgrid(1:numcols,1:numrows);
 zpoints = totsquarechange;
 figure
-surface(xpoints,ypoints,zpoints)
+surface(zpoints)
 view(-37,64);
 xlabel('Column')
 ylabel('Row')
@@ -254,7 +256,7 @@ title('Total Temperature Change of sectios of Breast')
 axis ij % makes axis match the figures
 zpoints = cell2mat(avesquarechange);
 figure
-surface(xpoints,ypoints,zpoints)
+surface(zpoints)
 view(-37,64);
 xlabel('Column')
 ylabel('Row')
@@ -837,3 +839,26 @@ Lplot.Color = 'g';
 d = Rplot.Color;
 Rplot.Color = 'm'
 %}
+%% Scatter Plot
+i = 1;
+for x = 1:numcols
+    for y = 1:numrows 
+        points(i) = totsquarechange(y,x);
+        i = i+1;
+    end
+end 
+
+
+j = 1;
+figure, hold on
+for x = 1:numcols
+    for y = 1:numrows 
+        scatter3(x, y, points(j),'MarkerFaceColor','w','MarkerEdgeColor','b')
+        j = j+1;
+    end 
+end 
+axis ij
+xlabel('Column')
+ylabel('Row')
+zlabel('Change in Pixel Value')
+title('Total Square Change')
