@@ -1,5 +1,6 @@
 function varargout = snake(I)
 warning('off') 
+
 % SNAKE M-file for snake.fig
 %      SNAKE, by itself, creates a new SNAKE or raises the existing
 %      singleton*.
@@ -33,17 +34,16 @@ gui_State = struct('gui_Name',       mfilename, ...
                    'gui_OutputFcn',  @snake_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
-if nargin && ischar(I{1})
-    gui_State.gui_Callback = str2func(I{1});
-end
+% if nargin && ischar(I{1})
+%     gui_State.gui_Callback = str2func(I{1});
+% end
 
 if nargout
     [varargout{1:nargout}] = gui_mainfcn(gui_State, I{:});
 else
     gui_mainfcn(gui_State, I{:});
 end
-% End initialization code - DO NOT EDIT
-
+End initialization code - DO NOT EDIT
 
 % --- Executes just before snake is made visible.
 function snake_OpeningFcn(hObject, eventdata, handles, I)
@@ -654,7 +654,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
+imwrite(hObject, 'snake_P12.tif');
 
 
 
