@@ -48,8 +48,9 @@ clear all, close all
     I_adj1 = I1(find(I1>0));    % Remove zero pixels
     I_sort1 = sort(I_adj1)
     %% Select Both Nipples at Each Minute
+    
+figure('Name','Select nipple (w/o Tumor)'), 
 for i = 1:15 % Get coordinates of both nipples at each minute
-    figure('Name','Select nipple (w/o Tumor)'), 
     I1 = I_mat{i};              % Display first image
     I = getMatrixOutliers(I1);  % Remove outliers
     I_adj1 = I(find(I>0));
@@ -60,13 +61,13 @@ for i = 1:15 % Get coordinates of both nipples at each minute
     else
         xlabel('-->')
     end 
-    [XCorrNip{i},YCorrNip{i}] = ginput(1); close
+    [XCorrNip{i},YCorrNip{i}] = ginput(1);
 end
 
 questdlg('Switch sides','Switch sides','Ok','Sure','Ok')
 
+figure('Name','Select Nipple (w/ Tumor)'), 
 for i =1:15
-    figure('Name','Select Nipple (w/ Tumor)'), 
     I1 = I_mat{i};              % Display first image
     I = getMatrixOutliers(I1);  % Remove outliers
     I_adj1 = I(find(I>0));
@@ -77,7 +78,7 @@ for i =1:15
     else
         xlabel('<--')
     end 
-    [XTumNip{i},YTumNip{i}] = ginput(1); close
+    [XTumNip{i},YTumNip{i}] = ginput(1); 
 end 
      
 % Get a center of tumor for each time
@@ -86,15 +87,22 @@ for i = 1:15
     YTumNew{i} = YTumNip{i} - dy; 
 end
     xbox = xbox * scale;                    % Convert X and Y dimensions of tumor from cm to pixels
-    ybox = ybox * scale;    
-    th = 0:pi/50:2*pi;
-    if xbox <= ybox
-        xunit = xbox * cos(th) + XTumNew{7};
-        yunit = xbox * sin(th) + YTumNew{7};
-    elseif ybox < xbox
-        xunit = ybox * cos(th) + XTumNew{7};
-        yunit = ybox * sin(th) + YTumNew{7};      
-    end 
+    ybox = ybox * scale;
+    xbox = xbox*1.2;
+    ybox = ybox*1.2;
+    
+    cT1 = [round(XTumNew{7} - xbox/2), round(YTumNew{7} - ybox/2)];  % Top Left Corner
+    cT2 = [round(XTumNew{7} - xbox/2), round(YTumNew{7} + ybox/2)];  % Bottom Left Corner
+    cT3 = [round(XTumNew{7} + xbox/2), round(YTumNew{7} + ybox/2)];  % Bottum Right Corner
+    cT4 = [round(XTumNew{7} + xbox/2), round(YTumNew{7} - ybox/2)];  % Top Right Corner
+%     th = 0:pi/50:2*pi;
+%     if xbox <= ybox
+%         xunit = xbox * cos(th) + XTumNew{7};
+%         yunit = xbox * sin(th) + YTumNew{7};
+%     elseif ybox < xbox
+%         xunit = ybox * cos(th) + XTumNew{7};
+%         yunit = ybox * sin(th) + YTumNew{7};      
+%     end 
     hold off  
     close    
 %% ROI Identification on First Image - Corresponding side
@@ -116,17 +124,21 @@ end
     
     [dx1,dy1] = pol2cart(theta1, rho); % Convert tumor location as angle & dist to pixel location 
     for i = 1:15
-    XCorrNew{i} = XCorrNip{i} + dx1;
-    YCorrNew{i} = YCorrNip{i} - dy1;  
+        XCorrNew{i} = XCorrNip{i} + dx1;
+        YCorrNew{i} = YCorrNip{i} - dy1;  
     end
-    th = 0:pi/50:2*pi;
-    if xbox <= ybox
-        xunit1 = xbox * cos(th) + XCorrNew{7};
-        yunit1 = xbox * sin(th) + YCorrNew{7};
-    elseif ybox < xbox
-        xunit1 = ybox * cos(th) + XCorrNew{7};
-        yunit1 = ybox * sin(th) + YCorrNew{7};      
-    end 
+    c1 = [round(XCorrNew{7} - xbox/2), round(YCorrNew{7} - ybox/2)];  % Top Left Corner
+    c2 = [round(XCorrNew{7} - xbox/2), round(YCorrNew{7} + ybox/2)];  % Bottom Left Corner
+    c3 = [round(XCorrNew{7} + xbox/2), round(YCorrNew{7} + ybox/2)];  % Bottum Right Corner
+    c4 = [round(XCorrNew{7} + xbox/2), round(YCorrNew{7} - ybox/2)];  % Top Right Corner      
+%     th = 0:pi/50:2*pi;
+%     if xbox <= ybox
+%         xunit1 = xbox * cos(th) + XCorrNew{7};
+%         yunit1 = xbox * sin(th) + YCorrNew{7};
+%     elseif ybox < xbox
+%         xunit1 = ybox * cos(th) + XCorrNew{7};
+%         yunit1 = ybox * sin(th) + YCorrNew{7};      
+%     end 
     hold off  
     close    
 
@@ -134,7 +146,12 @@ end
 figure('Name', 'Select Tumor Region'),
 imshow(I,[min(I_adj1) max(I_adj1)]);               % Display with contrast
 hold on;
-plot(xunit, yunit);
+plot([cT1(1) cT2(1)],[cT1(2) cT2(2)],'b');                      % Create red box region on Image Display
+plot([cT2(1) cT3(1)],[cT2(2) cT3(2)],'b');
+plot([cT3(1) cT4(1)],[cT3(2) cT4(2)],'b');
+plot([cT4(1) cT1(1)],[cT4(2) cT1(2)],'b');
+
+
 e = imrect();
 
 xyTum = wait(e);
@@ -143,7 +160,10 @@ hold on;
 figure('Name', 'Select Coresponding Region'),
 imshow(I,[min(I_adj1) max(I_adj1)]);               % Display with contrast
 hold on;
-plot(xunit1, yunit1);
+plot([c1(1 ) c2(1)],[c1(2) c2(2)],'b');                      % Create red box region on Image Display
+plot([c2(1) c3(1)],[c2(2) c3(2)],'b');
+plot([c3(1) c4(1)],[c3(2) c4(2)],'b');
+plot([c4(1) c1(1)],[c4(2) c1(2)],'b');
 e = imrect();
 
 xyCorr = wait(e);
