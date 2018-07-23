@@ -33,9 +33,9 @@ while pixx<maxx %runs until it hits pixel at row of breast lower boundary
     for xx = 1:length(xlocs) %runs thru each pixel
          pixx = xlocs(xx,1); %x location of pixel
          pixy = ylocs(xx,1); %y location of pixel
-         theta = pi: 0.01 : 2*pi; %angles of lower half circle
-         xcirc = r * cos(theta) + pixx; %draws half circle of radius r around pixel (x components)
-         ycirc = r * sin(theta) + pixy; %draws half circle of radius r around pixel (y components)
+         theta = 0: 0.01 : pi; %angles of lower half circle
+         xcirc = r * cos(theta) + pixy; %draws half circle of radius r around pixel (x components)
+         ycirc = r * sin(theta) + pixx; %draws half circle of radius r around pixel (y components)
          for i = 1:r %loops through first half of points on circle
             bound1x = round(xcirc(i)); %first bound x
                 if bound1x<1, bound1x = 1; end
