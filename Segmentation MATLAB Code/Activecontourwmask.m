@@ -28,7 +28,7 @@ mask(25:end-25,25:end-25) = true;
 figure
 imshow(mask)
 title('Initial Contour Location')
-bw = activecontour(grysc,mask,300);
+bw = activecontour(grysc,mask,300,'edges');
 figure
 imshow(bw)
 title('Segmented Image')
