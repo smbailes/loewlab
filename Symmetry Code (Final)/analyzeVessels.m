@@ -46,21 +46,29 @@ for i = 1:15
     figure,
     I1 = I_mat{i}(find(I_mat{i}>0));
     imshow(I_mat{i}, [min(I1) max(I1)])
-    rect1 = imrect();
-    position{i} = wait(rect1);
-end 
-
-
-for i = 1:15
-    I_cropped{i} = imcrop(I_mat{i}, position{i});
-    avg(i) = mean2(I_cropped{i});
+    e = imfreehand();
+    xy = wait(e);
+    binaryImage = e.createMask();
+    BW = uint16(binaryImage);
+    ThisValue = BW.*I_mat{i};
+    VesselMean{i} = mean2(ThisValue);
+%     rect1 = imrect();
+%     position{i} = wait(rect1);
 end 
 
 for i = 1:14
-    stepChange(i) = avg(i+1)- avg(i);
-end 
+    StepVesselChange{i} = VesselMean{i+1} - VesselMean{i};
+end
+% for i = 1:15
+%     I_cropped{i} = imcrop(I_mat{i}, position{i});
+%     avg(i) = mean2(I_cropped{i});
+% end 
+% 
+% for i = 1:14
+%     stepChange(i) = avg(i+1)- avg(i);
+% end 
 
-avgStepChange = mean2(stepChange);
-totalChange = avg(15) - avg(1);
+AvgStepChange = mean2(cell2mat(StepVesselChange));
+TotalChange = cell2mat(VesselMean(15)) - cell2mat(VesselMean(1));
 
 
