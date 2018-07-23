@@ -20,7 +20,7 @@ clc, clearvars -except perchangebreast perchangecorr v
         a=a+120;            % Go to next image (for cropped)
     end
     
-    I1 = I_mat{1};              % Display first image
+    I1 = I_mat{8};              % Display first image
     I1 = getMatrixOutliers(I1);  % Remove outliers
     I_adj1 = I1(find(I1>0));   % Remove zero pixels
     I = cell(1,numpics);
@@ -35,8 +35,8 @@ num_lines = 1;
 defaultans = {'50'};
 squareside = str2double(answers{1}); %converts ans to a number
 for k = 1:numpics
-I_mat{k}(squareside:squareside:end,:,:) = 0;% converts every nth row to black
-I_mat{k}(:,squareside:squareside:end,:) = 0;% converts every nth column to black
+I_mat{k}(squareside:squareside:end,:,:) = 10000;% converts every nth row to black
+I_mat{k}(:,squareside:squareside:end,:) = 10000;% converts every nth column to black
 
 [r,c] = size(I_mat{k});
 numrows = floor(r/squareside); %calculates the number of full rows
@@ -54,7 +54,8 @@ for j = 1:1:numcols
 
     end
 end
-figure, imshow(I_mat{k},[min(I_adj1) max(I_adj1)]) % displays each image at each minute
+I1 = I_mat{k}(find(I_mat{k}>0));
+figure, imshow(I_mat{k},[min(I1) max(I1)]) % displays each image at each minute
 axis on
 xticks([squareside/2:squareside:c]) %adds axes to images
 xticklabels([1:1:numcols])
@@ -66,8 +67,8 @@ end
 
 %% standard Deviation
 for k = 1:numpics
-I_mat{k}(squareside:squareside:end,:,:) = 0;% converts every nth row to black
-I_mat{k}(:,squareside:squareside:end,:) = 0;% converts every nth column to black
+I_mat{k}(squareside:squareside:end,:,:) = 10000;% converts every nth row to black
+I_mat{k}(:,squareside:squareside:end,:) = 10000;% converts every nth column to black
 
 [r,c] = size(I_mat{k});
 numrows = floor(r/squareside); %calculates the number of full rows
@@ -429,7 +430,7 @@ end
 
 %% Finds data for tumor and corresponding region
 if answer == "Patient"
-topx = round(.3*(numel(totsquarechange)));
+topx = round(.5*(numel(totsquarechange)));
 [maximum, maxidx] = maxk(totsquarechange(:),topx);
 [lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);
 
@@ -849,6 +850,7 @@ for x = 1:numcols
 end 
 
 
+
 j = 1;
 figure, hold on
 for x = 1:numcols
@@ -857,6 +859,7 @@ for x = 1:numcols
         j = j+1;
     end 
 end 
+
 axis ij
 xlabel('Column')
 ylabel('Row')

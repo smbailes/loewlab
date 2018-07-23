@@ -230,7 +230,7 @@ fprintf('Finished Removing Cluster Mean Intensity Data\n');
 %  ClusterInfo{f,1} = thisImage;
 % end 
 % fprintf('Finished Removing Clusters Below Threshold\n');
-%}
+%} 
 
 %% Plot left over clusters
 for g = 7:7 
@@ -324,11 +324,11 @@ for o = 7:7
         if(abs(avgStepChange(l)) > abs(lowsquarechange)) %If the average change is too high
             thisImage(l).RemoveCluster = 1;
         end
-        for n = 1:14 %If any of the differences between 2 times is too high
-            if(abs(stepChange(n,l)) > abs(lowchange))
-                thisImage(l).RemoveCluster = 1;
-            end
-        end
+%         for n = 1:14 %If any of the differences between 2 times is too high
+%             if(abs(stepChange(n,l)) > abs(lowchange))
+%                 thisImage(l).RemoveCluster = 1;
+%             end
+%         end
     end
     
     ClusterInfo{o,1} = thisImage;
@@ -423,7 +423,7 @@ figure('Name','Select nipple (w/o Tumor)'),
     else
         xlabel('-->')
     end % gets coordinates of nipple
-    [X_corrNip{i},Y_corrNip{i}] = ginput(1)
+    [X_corrNip{i},Y_corrNip{i}] = ginput(1);
  end
 close
 questdlg('Switch sides','Switch sides','Ok','Sure','Ok')
@@ -438,7 +438,7 @@ for i =1:15
     else
         xlabel('<--')
     end 
-    [X_tumNip{i},Y_tumNip{i}] = ginput(1)
+    [X_tumNip{i},Y_tumNip{i}] = ginput(1);
 end
 close
 %% Track clusters over time
@@ -462,7 +462,7 @@ for i =1:length(JustClust)
 end
 
 for i = 1:length(JustClust)
-    Indices{i} = JustClust{i}(2,1)
+    Indices{i} = JustClust{i}(2,1);
 end
 
 for i = 1:length(JustClust)
@@ -477,9 +477,9 @@ for i = 1:15
     Ycorrchange{i} = Y_corrNip{i} - Y_corrNip{7};
 end
 
-AdjustedClustStruct = struct('ClusterNumber',d,'TumorBreastClustorXPoints',XClusterIndices,'TumorBreastClustorYPoints',YClusterIndices)
-NewTumXPoints = cell(15,NumClust)
-NewTumYPoints = cell(15,NumClust)
+AdjustedClustStruct = struct('ClusterNumber',d,'TumorBreastClustorXPoints',XClusterIndices,'TumorBreastClustorYPoints',YClusterIndices);
+NewTumXPoints = cell(15,NumClust);
+NewTumYPoints = cell(15,NumClust);
 [rtum,ctum] = size(I_mat{7});
 
 for i = 1:NumClust
@@ -557,7 +557,7 @@ for z = 1:numClustersLeft
     %outlier
     if(ClusterDifference(z) > 0 || abs(ClusterDifference(z)) > 3000 || clusterDifferenceData(z)>0)
         counter = counter+1;
-        NumberOfRemoval(counter) = z
+        NumberOfRemoval(counter) = z;
     end
 end 
 counter1 = 0;
@@ -600,6 +600,8 @@ end
 %    end
 % end
 
+
+
 %%     
 for g = 7:7 
     
@@ -640,6 +642,7 @@ for g = 7:7
 %         
 %     title(sprintf('%s - Mirror Midline Isolation',ptID));
 %     
+    ClusterInfo{7,1} = thisImage;
     ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
 end
 
