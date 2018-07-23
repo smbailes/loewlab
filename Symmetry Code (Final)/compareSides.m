@@ -32,7 +32,7 @@ if strcmp(redo, 'Yes') == 1%% Input
         xlabel('-->')
         [xL{i},yL{i}] = ginput(1);
     end
-    close
+    
 end
 
 %% Parameters
@@ -148,7 +148,7 @@ fprintf('Change in Standard Deviation Right: %f \nChange in Standard Deviation L
 
 
 %% Verify the regions
-%{
+
 for m = 1:15
     figure, 
     I1 = I_mat{m}(find(I_mat{m}>0));
