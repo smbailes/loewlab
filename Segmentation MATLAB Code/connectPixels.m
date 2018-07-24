@@ -16,12 +16,13 @@ midlinez(:,2) = midy;
 
 %% from col 1 to midline col, finds x and y location of lowest pixel
 
-r = 25;
+r = 50;
 
 %get lowest pixel (row of lower boundary of breast)
-maxx = max(xlocs); 
+maxx = max(xlocs);
+maxxloc = max(find(xlocs==maxx));
 maxy = ylocs(find(xlocs==maxx)); %finds column of lower boundary of breast (is this necessary??)
-
+maxy = max(maxy);
 pixx = 0;
 %% 
 
@@ -29,13 +30,15 @@ total1 = total;
 %% 
 
 %loop through pixels and find closest pixels 
-while pixx<maxx %runs until it hits pixel at row of breast lower boundary 
-    for xx = 1:length(xlocs) %runs thru each pixel
+%while pixx~=maxx %runs until it hits pixel at row of breast lower boundary
+figure, imshow(total), hold on;
+    for xx = 1:maxxloc %runs thru each pixel
          pixx = xlocs(xx,1); %x location of pixel
          pixy = ylocs(xx,1); %y location of pixel
          theta = 0: 0.01 : pi; %angles of lower half circle
          xcirc = r * cos(theta) + pixy; %draws half circle of radius r around pixel (x components)
          ycirc = r * sin(theta) + pixx; %draws half circle of radius r around pixel (y components)
+         plot(xcirc,ycirc), hold on;
          for i = 1:r %loops through first half of points on circle
             bound1x = round(xcirc(i)); %first bound x
                 if bound1x<1, bound1x = 1; end
@@ -65,8 +68,16 @@ while pixx<maxx %runs until it hits pixel at row of breast lower boundary
             total1(xPts,yPts) = 1; %sets pixels from above to one 
         end
     end
-end
+    hold off;
+%end
 %% 
+figure, imshow(I,[]), title('Total Original')
+% blue on top on figure
+blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+hold on 
+displ = imshow(blue); 
+hold off 
+set(displ, 'AlphaData', total)
 
 figure, imshow(I,[]), title('Connect Pixels')
 % blue on top on figure
