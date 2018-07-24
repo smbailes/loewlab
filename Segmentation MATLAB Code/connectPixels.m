@@ -35,10 +35,10 @@ figure, imshow(total), hold on;
     for xx = 1:maxxloc %runs thru each pixel
          pixx = xlocs(xx,1); %x location of pixel
          pixy = ylocs(xx,1); %y location of pixel
-         theta = 0: 0.01 : pi; %angles of lower half circle
+         theta = 0: pi/100 : pi; %angles of lower half circle
          xcirc = r * cos(theta) + pixy; %draws half circle of radius r around pixel (x components)
          ycirc = r * sin(theta) + pixx; %draws half circle of radius r around pixel (y components)
-         plot(xcirc,ycirc), hold on;
+        plot(xcirc,ycirc), hold on;
          for i = 1:r %loops through first half of points on circle
             bound1x = round(xcirc(i)); %first bound x
                 if bound1x<1, bound1x = 1; end
@@ -46,13 +46,13 @@ figure, imshow(total), hold on;
             bound1y = round(ycirc(i)); %first bound y
                 if bound1y<1, bound1y = 1; end
                 if bound1y>480, bound1y = 480; end
-            bound2x = round(xcirc(length(ycirc)-i)); %second bound x
+            bound2x = round(xcirc(length(ycirc)+1-i)); %second bound x
                 if bound2x<1, bound2x = 1; end
                 if bound2x>640, bound2x = 640; end
-            bound2y = round(ycirc(length(ycirc)-i)); %second bound y
+            bound2y = round(ycirc(length(ycirc)+1-i)); %second bound y
                 if bound2y<1, bound2y = 1; end
                 if bound2y>480, bound2y = 480; end
-            [xfound yfound] = find(total(bound1y, bound1x:bound2x)==1); %find where there is a pixel on line between first and second bounds 
+            [xfound yfound] = find(total(bound1y, bound2x:bound1x)==1) %find where there is a pixel on line between first and second bounds 
          end 
         dist = zeros(length(xfound),3);
         if xfound~=0
