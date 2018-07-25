@@ -136,8 +136,6 @@ side=input('Are the breasts lower or higher? [h/l]: ','s');
   else
     total = uppers2;
   end
-<<<<<<< HEAD
-=======
 % 
 % 
 % 
@@ -148,8 +146,6 @@ hold on
 displ = imshow(blue); 
 hold off 
 set(displ, 'AlphaData', total)
-
->>>>>>> a832de169d58276a753d89187f8f28f0ad813c10
 
    figure, imshow(I,[]), title('Best Fit')
    % blue on top on figure

@@ -112,7 +112,6 @@ imshow(I) ;
 guidata(hObject,handles) ;
 
 
-
 function sizeOfLocalEnergyWindow_Callback(hObject, eventdata, handles)
 % hObject    handle to sizeOfLocalEnergyWindow (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -242,7 +241,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
+%********************************
 % --- Executes during object creation, after setting all properties.
 function edit5_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to edit5 (see GCBO)
@@ -304,7 +303,7 @@ end
 
 
 % --- Executes on button press in start.
-function start_Callback(hObject, eventdata, handles)
+function Itt = start_Callback(hObject, eventdata, handles)
 % hObject    handle to start (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -494,7 +493,8 @@ while(((abs(New_Etot - Old_Etot) > Stop_Cr) | (iter < 2)) & (iter < max_iter) & 
 end
                 
 time=toc;
-set(handles.text18 ,'String',{num2str(time)}) ;
+set(handles.text18 ,'String',{num2str(time)});
+return
 
 
 % --- Executes on button press in pushbutton3.
@@ -578,6 +578,7 @@ else
 %         guidata(hObject, handles)
 %     end
 end
+
 guidata(handles.figure1, handles);
 
 

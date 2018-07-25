@@ -13,3 +13,4 @@ I = imread([dir '\' ptID]);
 %% Run Snakes
 
 snakimg = snake(I);
+imwrite(snakimg, 'SnakeImg_0000_P12.tif');
