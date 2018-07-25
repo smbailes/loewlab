@@ -327,43 +327,43 @@ Gra_We = Gra_We/(Cur_We + Con_We + Gra_We) ;
 
 
 gx = fspecial('sobel')/8 ;
-gy = gx' ;
+gy = gx';
 % cur_Tresh = 0.8 ;
 % con_Tresh = 0.9 ; 
 %I = imread('041_2_3.bmp') ;
-max_I = max(I(:)) ;
-rn = size(I,1) ;
-cn = size(I,2) ;
-It = double(I) ;
-Itt = It ;
+max_I = max(I(:));
+rn = size(I,1);
+cn = size(I,2);
+It = double(I);
+Itt = It;
 
-xs = length(xp) ;
-ne1(1) = xs ;
-ne2(1) = 2 ;
+xs = length(xp);
+ne1(1) = xs;
+ne2(1) = 2;
 for i = 2:xs-1
-    ne1(i) = i-1 ;
-    ne2(i) = i+1 ;
+    ne1(i) = i-1;
+    ne2(i) = i+1;
 end
-ne2(xs) = 1 ;
-ne1(xs) = xs-1 ;    
+ne2(xs) = 1;
+ne1(xs) = xs-1;    
 
-gradx = imfilter(It,gx,'same') ;
-grady = imfilter(It,gy,'same') ;
-Igrad = (gradx.^2 + grady.^2).^(1/2) ; 
+gradx = imfilter(It,gx,'same');
+grady = imfilter(It,gy,'same');
+Igrad = (gradx.^2 + grady.^2).^(1/2);
 % ws = 4 ;
-Old_Etot = 100 ;
-New_Etot = 1 ;
+Old_Etot = 100;
+New_Etot = 1;
 %for iter = 1:60
-iter = 0 ;
-Tuv = ones(1,xs) ;
-Stop_Force = 0 ;
+iter = 0;
+Tuv = ones(1,xs);
+Stop_Force = 0;
 while(((abs(New_Etot - Old_Etot) > Stop_Cr) | (iter < 2)) & (iter < max_iter) & (Stop_Force == 0))
-    iter = iter + 1 ;
-    set(handles.text10 ,'String',{num2str(iter)}) ;
-    Old_Etot = New_Etot ;
-    Itt = It ;
-    lix = [] ;
-    liy = [] ;
+    iter = iter + 1;
+    set(handles.text10 ,'String',{num2str(iter)});
+    Old_Etot = New_Etot;
+    Itt = It;
+    lix = [];
+    liy = [];
     for i = 1:xs
         r1 = max([1 xp(i)-3]):min([rn xp(i)+3]) ;
         r2 = max([1 yp(i)-3]):min([cn yp(i)+3]) ;
@@ -493,7 +493,8 @@ end
                 
 time=toc;
 set(handles.text18 ,'String',{num2str(time)});
-imwrite(Itt,'ConnectionDots.tif')
+figure, imshow(Itt); line(lix,liy,'Color',[1 0 0],'linewidth',1);
+imwrite(Itt,'Connections.tif');
 
 
 % --- Executes on button press in pushbutton3.
