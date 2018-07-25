@@ -345,7 +345,7 @@ for o = 7:7
         YIntercept = -ClusterPerpSlope*thisImage(t).ClusterCentroid(1) + thisImage(t).ClusterCentroid(2)
         %ReferenceLine = refline(ClusterPerpSlope,YIntercept)
         for i = 1:length(thisImage(t).ClusterIndices)
-           v = thisImage(t).ClusterIndices(i,2) - ClusterPerpSlope*thisImage(t).ClusterIndices(i,1) + YIntercept;
+           v = floor(thisImage(t).ClusterIndices(i,2) - (ClusterPerpSlope*thisImage(t).ClusterIndices(i,1) + YIntercept));
             %ClusterLineIndices{i,t} = [thisImage(t).ClusterIndices(i,1),thisImage(t).ClusterIndices(i,2)];
            ClusterLineIndices{i,t} = v;
 %             if floor(thisImage(t).ClusterIndices(i,2)) < floor(ClusterPerpSlope*thisImage(t).ClusterIndices(i,1) + YIntercept)
