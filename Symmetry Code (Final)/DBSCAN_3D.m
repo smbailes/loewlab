@@ -277,7 +277,7 @@ for g = 7:7
 %         
 %     title(sprintf('%s - Mirror Midline Isolation',ptID));
 %     
-    ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
+    ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
 
 
@@ -324,7 +324,38 @@ for o = 7:7
         end   
         
     end
-
+  for t = 1:numClust
+      if thisImage(t).RemoveCluster == 0
+        indices = thisImage(t).ClusterIndices;
+        xind = indices(:,1);
+        yind = indices(:,2);
+        
+        ymax = max(yind);
+        ymin = min(yind);
+        ylength = ymax-ymin;
+        
+        xmax = max(xind);
+        xmin = min(xind);
+        xlength = xmax-xmin;
+        
+        DiagnolLength = sqrt(xlength^2 + ylength^2);
+        
+        ClusterSlope = ylength/xlength
+        ClusterPerpSlope = -1/ClusterSlope
+        YIntercept = -ClusterPerpSlope*thisImage(t).ClusterCentroid(1) + thisImage(t).ClusterCentroid(2)
+        %ReferenceLine = refline(ClusterPerpSlope,YIntercept)
+        for i = 1:length(thisImage(t).ClusterIndices)
+           v = thisImage(t).ClusterIndices(i,2) - ClusterPerpSlope*thisImage(t).ClusterIndices(i,1) + YIntercept;
+            %ClusterLineIndices{i,t} = [thisImage(t).ClusterIndices(i,1),thisImage(t).ClusterIndices(i,2)];
+           ClusterLineIndices{i,t} = v;
+%             if floor(thisImage(t).ClusterIndices(i,2)) < floor(ClusterPerpSlope*thisImage(t).ClusterIndices(i,1) + YIntercept)
+%                 ClusterLineIndices{i,t} = [thisImage(t).ClusterIndices(i,1),thisImage(t).ClusterIndices(i,2)];
+%                 
+%             end
+        end
+      end 
+      
+  end
     for l = 1:numClusters
         if thisImage(l).RemoveCluster == 0
             if(totalChange(l) > abs(lowchange)) %If the total change of a cluster is too high
@@ -662,6 +693,6 @@ for g = 7:7
 %     title(sprintf('%s - Mirror Midline Isolation',ptID));
 %     
     ClusterInfo{7,1} = thisImage;
-    ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
+    ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
 
