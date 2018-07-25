@@ -241,7 +241,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-%********************************
 % --- Executes during object creation, after setting all properties.
 function edit5_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to edit5 (see GCBO)
@@ -494,7 +493,7 @@ end
                 
 time=toc;
 set(handles.text18 ,'String',{num2str(time)});
-return
+imwrite(Itt,'ConnectionDots.tif')
 
 
 % --- Executes on button press in pushbutton3.
