@@ -142,48 +142,54 @@ for c = 7:7
    
    %Remove bottom border
    for i = 1:numClust %Iterate through Clusters
-       clustPoints = thisImage(i).ClusterIndices; %Get cluster indices
-       for a = 1:length(clustPoints(:,1)) %Search through cluster indices
-           if (pic((clustPoints(a,2)+1), clustPoints(a,1)) == 0) %If pixel below any cluster has intensity 0, mark cluster for removal
-               thisImage(i).RemoveCluster = 1;
-           end
-       end       
+       if thisImage(i).RemoveCluster == 0
+           clustPoints = thisImage(i).ClusterIndices; %Get cluster indices
+           for a = 1:length(clustPoints(:,1)) %Search through cluster indices
+               if (pic((clustPoints(a,2)+1), clustPoints(a,1)) == 0) %If pixel below any cluster has intensity 0, mark cluster for removal
+                   thisImage(i).RemoveCluster = 1;
+               end
+           end       
+       end 
    end    
    fprintf('Removed clusters from bottom border\n');
    
    %Remove small and large clusters
    for p = 1:numClust
-      clustPoints = thisImage(p).ClusterIndices;
-      for b = 1:length(clustPoints(:,1))
-          if length(clustPoints(:,1)) < minPts || length(clustPoints(:,1)) > 200
-              thisImage(p).RemoveCluster = 1;
+       if thisImage(p).RemoveCluster == 0 
+          clustPoints = thisImage(p).ClusterIndices;
+          for b = 1:length(clustPoints(:,1))
+              if length(clustPoints(:,1)) < minPts || length(clustPoints(:,1)) > 200
+                  thisImage(p).RemoveCluster = 1;
+              end
           end
-      end
+       end 
    end
    fprintf('Removed small/large clusters\n');
    
    %Check for vessels
     for t = 1:numClust
-        indices = thisImage(t).ClusterIndices;
-        xind = indices(:,1);
-        yind = indices(:,2);
-        
-        ymax = max(yind);
-        ymin = min(yind);
-        ylength = ymax-ymin;
-        
-        xmax = max(xind);
-        xmin = min(xind);
-        xlength = xmax-xmin;
-        
-        DiagnolLength = sqrt(xlength^2 + ylength^2);
+        if thisImage(t).RemoveCluster == 0
+            indices = thisImage(t).ClusterIndices;
+            xind = indices(:,1);
+            yind = indices(:,2);
 
-        if(ylength > 30 || xlength > 30 || DiagnolLength > 20)
-            thisImage(t).RemoveCluster = 1;
-        end
-        
-        if(ylength >= xlength*5 || xlength>= ylength*5)
-            thisImage(t).RemoveCluster = 1;
+            ymax = max(yind);
+            ymin = min(yind);
+            ylength = ymax-ymin;
+
+            xmax = max(xind);
+            xmin = min(xind);
+            xlength = xmax-xmin;
+
+            DiagnolLength = sqrt(xlength^2 + ylength^2);
+
+            if(ylength > 30 || xlength > 30 || DiagnolLength > 20)
+                thisImage(t).RemoveCluster = 1;
+            end
+
+            if(ylength >= xlength*5 || xlength>= ylength*5)
+                thisImage(t).RemoveCluster = 1;
+            end 
         end 
     end
     fprintf('Removed vessels\n');
@@ -299,30 +305,34 @@ for o = 7:7
     numClusters = length(thisImage);
     
     for p = 1:numClusters
-        clusterIndices = thisImage(p).ClusterIndices;
-        for q = 1:15
-            I1 = I_mat{q};
-            %averages of same cluster over time
-            avgs(q,p) = mean2(I1(clusterIndices(:,2),clusterIndices(:,1)));
-        end 
-       totalChange(:,p) = avgs(1,p) - avgs(15,p);
+        if thisImage(p).RemoveCluster == 0
+            clusterIndices = thisImage(p).ClusterIndices;
+            for q = 1:15
+                I1 = I_mat{q};
+                %averages of same cluster over time
+                avgs(q,p) = mean2(I1(clusterIndices(:,2),clusterIndices(:,1)));
+            end 
+           totalChange(:,p) = avgs(1,p) - avgs(15,p);
 
-       %Amount of change each minute 
-       for m = 1:14
-            stepChange(m,p) = avgs(m+1,p) - avgs(m,p);
-       end 
-       
-       %Average amount of change over the 15 minutes
-       avgStepChange(:,p) = mean2(stepChange(:,p));
+           %Amount of change each minute 
+           for m = 1:14
+                stepChange(m,p) = avgs(m+1,p) - avgs(m,p);
+           end 
+
+           %Average amount of change over the 15 minutes
+           avgStepChange(:,p) = mean2(stepChange(:,p));
+        end   
         
     end
 
     for l = 1:numClusters
-        if(totalChange(l) > abs(lowchange)) %If the total change of a cluster is too high
-            thisImage(l).RemoveCluster = 1;
-       end
-        if(abs(avgStepChange(l)) > abs(lowsquarechange)) %If the average change is too high
-            thisImage(l).RemoveCluster = 1;
+        if thisImage(l).RemoveCluster == 0
+            if(totalChange(l) > abs(lowchange)) %If the total change of a cluster is too high
+                thisImage(l).RemoveCluster = 1;
+            end
+            if(abs(avgStepChange(l)) > abs(lowsquarechange)) %If the average change is too high
+                thisImage(l).RemoveCluster = 1;
+            end
         end
 %         for n = 1:14 %If any of the differences between 2 times is too high
 %             if(abs(stepChange(n,l)) > abs(lowchange))
@@ -488,7 +498,7 @@ for i = 1:NumClust
         NewTumYPoints{j,i} = YClusterIndices{i} + cell2mat(Ytumchange(j));
     end % New Xpoints. i = number cluster and j = points at time
 end
-[r,c] = size(NewTumXPoints)
+[r,c] = size(NewTumXPoints);
 for i = 1:c %cluster  
 Xnip2tum{i} = X_tumNip{7} - XClusterIndices{i};
 Ynip2tum{i} = Y_tumNip{7} - YClusterIndices{i};
@@ -552,21 +562,30 @@ counter = 0;
 ClusterDifference1 = ClusterDifference(find(ClusterDifference<3000));
 cutoff = std2(ClusterDifference1);
 
+for x = 1:numClustersLeft
+    for v = 1:14
+        stepChangeCluster(x,v) = TimeClusterData{v+1,x} - TimeClusterData{v,x};
+        stepChangeCorr(x,v) = CorrData{v+1,x} - CorrData{v,x};
+    end
+    aveStepChangeCluster(x) = mean2(stepChangeCluster(x,:));
+    aveStepChangeCorr(x) = mean2(stepChangeCorr(x,:));
+    stepChangeDifference(x) = abs(aveStepChangeCluster(x)) - abs(aveStepChangeCorr(x));
+end
+
 for z = 1:numClustersLeft
     %If the cluster changes more than the corresponding region or it is an
     %outlier
-    if(ClusterDifference(z) > 0 || abs(ClusterDifference(z)) > 3000 || clusterDifferenceData(z)>0)
+    if((ClusterDifference(z) > 75 && clusterDifferenceData(z) < 8000) || (clusterDifferenceData(z)>0 && clusterDifferenceData(z) < 8000))
         counter = counter+1;
         NumberOfRemoval(counter) = z;
     end
 end 
-counter1 = 0;
+
+% counter1 = 0;
 % for z = 1:numClustersLeft
-%     for y = 1:15
-%         if TimeClusterData{y,z} > CorrData{y,z}
-%             counter1 = counter1+1;
-%             NumberOfRemoval2(counter1) = z
-%         end 
+%     if abs(aveStepChangeCluster(z)) > abs(aveStepChangeCorr(z))
+%         counter1 = counter1+1;
+%         NumberOfRemoval2(counter1) = z;
 %     end 
 % end
 
@@ -625,7 +644,7 @@ for g = 7:7
     figure('Name','Remaining Clusters 3.0'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
     hold on
     PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
-    title(sprintf('%s - Post Cluster/Corresponding Region Analysis',ptID));
+    title(sprintf('%s - Final Clusters',ptID));
 %     plot(xunit, yunit);
     plot([c1(1 ) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
     plot([c2(1) c3(1)],[c2(2) c3(2)],'r');

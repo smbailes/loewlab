@@ -30,7 +30,7 @@ prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
     'Enter MinPts:','Enter Desired %:','Enter desired scaling factor'};  
 dlg_title = 'DBSCAN Parameters';                                         % box title
 num_lines = 1;                                                          % lines per answer
-defaultans = {'5.2','12','80','sqrt(5/3)'};          % default inputs
+defaultans = {'6.25','10','80','sqrt(4/3)'};          % default inputs
 options.Resize = 'on';                                                  % allows for resizing of box
 answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
 epsilon = str2double(answer{1});                
@@ -80,14 +80,10 @@ fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,scali
     xbox = xbox * scale;                    % Convert X and Y dimensions of tumor from cm to pixels
     ybox = ybox * scale;                    % xbox and ybox are length of x and y sides in pixels
  
-    th = 0:pi/50:2*pi;
-    if xbox <= ybox
-        xunit = xbox * cos(th) + Xnew;
-        yunit = xbox * sin(th) + Ynew;
-    elseif ybox < xbox
-        xunit = ybox * cos(th) + Xnew;
-        yunit = ybox * sin(th) + Ynew;      
-    end 
+    c1 = [round(Xnew - xbox/2), round(Ynew - ybox/2)];  % Top Left Corner
+    c2 = [round(Xnew - xbox/2), round(Ynew + ybox/2)];  % Bottom Left Corner
+    c3 = [round(Xnew + xbox/2), round(Ynew + ybox/2)];  % Bottum Right Corner
+    c4 = [round(Xnew + xbox/2), round(Ynew - ybox/2)];  % Top Right Corner      
     hold off  
     close    
 %}
@@ -98,8 +94,10 @@ fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,scali
 for n = 7:7                  % Iterate through cell matrix for each minute
     I = I_mat{n};               % Get Image
     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID, s, percent);
-    plot(xunit, yunit);
-
+    plot([c1(1 ) c2(1)],[c1(2) c2(2)],'b');                      % Create red box region on Image Display
+    plot([c2(1) c3(1)],[c2(2) c3(2)],'b');
+    plot([c3(1) c4(1)],[c3(2) c4(2)],'b');
+    plot([c4(1) c1(1)],[c4(2) c1(2)],'b');
     hold off;
 %     ClusterInfo CELL ARRAY
     ClusterInfo{n,1} = ClustStruct;       %Cell 1 is ClusterStructure

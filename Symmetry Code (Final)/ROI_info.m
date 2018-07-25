@@ -75,7 +75,7 @@ clc;
     c4 = [round(Xnew + xbox/2), round(Ynew - ybox/2)];  % Top Right Corner
     
     th = 0:pi/50:2*pi;
-    if xbox < ybox
+    if xbox <= ybox
         xunit = xbox * cos(th) + Xnew;
         yunit = xbox * sin(th) + Ynew;
     elseif ybox < xbox
@@ -107,7 +107,10 @@ again = 'Yes';
 figure('Name', 'Select ROI'),
 imshow(I,[min(I_adj) max(I_adj)]);               % Display with contrast
 hold on;
-plot(xunit, yunit);
+plot([c1(1 ) c2(1)],[c1(2) c2(2)],'b');                      % Create red box region on Image Display
+plot([c2(1) c3(1)],[c2(2) c3(2)],'b');
+plot([c3(1) c4(1)],[c3(2) c4(2)],'b');
+plot([c4(1) c1(1)],[c4(2) c1(2)],'b');
 e = imellipse();
 
 while strcmp(again, 'Yes') == 1
@@ -130,7 +133,7 @@ while strcmp(again, 'Yes') == 1
 
             histogram(I2,500,'FaceColor','r','EdgeColor','r');
             hold on
-            yyaxis right
+%             yyaxis right
             histogram(I4,500,'FaceColor','k','EdgeColor','k');
 %         end
         

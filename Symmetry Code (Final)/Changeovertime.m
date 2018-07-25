@@ -6,7 +6,7 @@ clc, clearvars -except perchangebreast perchangecorr v
 
     prompt = {'Enter length of square in pixels:','Enter total number of pictures:'};
     dlgtitle = 'Input';
-    defaultans = {'16','15'};
+    defaultans = {'12','15'};
     numlines = 1;
     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     
