@@ -326,6 +326,7 @@ for o = 7:7
     end
   counter = 0
   for t = 1:numClust
+      clear NewVesClustX NewVesClustY 
       if thisImage(t).RemoveCluster == 0
         indices = thisImage(t).ClusterIndices;
         xind = indices(:,1);
@@ -343,25 +344,31 @@ for o = 7:7
         ClusterSlope = ylength/xlength
         ClusterPerpSlope = -1/ClusterSlope
         YIntercept = -ClusterPerpSlope*thisImage(t).ClusterCentroid(1) + thisImage(t).ClusterCentroid(2)
+        counter = 1;
         for i = 1:length(thisImage(t).ClusterIndices)
             v = floor(thisImage(t).ClusterIndices(i,2) - (ClusterPerpSlope*thisImage(t).ClusterIndices(i,1) + YIntercept))
             ClusterLineIndices{i,t} = v;
             if v == 0
-              counter = counter + 1;
-              XDistances{i,t} = (ClusterInfo{7,1}(t).ClusterIndices(i,1) - ClusterInfo{7,1}(t).ClusterCentroid(1))*2;
-              YDistances{i,t} = (ClusterInfo{7,1}(t).ClusterIndices(i,2) - ClusterInfo{7,1}(t).ClusterCentroid(2))*2;
+              XDistances{counter}= abs((ClusterInfo{7,1}(t).ClusterIndices(i,1) - ClusterInfo{7,1}(t).ClusterCentroid(1))*2);
+              YDistances{counter} = abs((ClusterInfo{7,1}(t).ClusterIndices(i,2) - ClusterInfo{7,1}(t).ClusterCentroid(2))*2);
+            counter = counter + 1;  
             end
-            
         end
-        [~,d] = size(XDistances);
-        if t < d + 1
-        XWidth{t} = max(abs(cell2mat(XDistances(:,t))));
-        YWidth{t} = max(abs(cell2mat(YDistances(:,t))));
-        end
-      end 
-      for t = 1:numClust
-          if thisImage(t).RemoveCluster == 0
-              
+         XWidth = max(cell2mat(XDistances));
+         YWidth = max(cell2mat(YDistances));
+      for j = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
+         NewVesClustX{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) + XWidth;
+         NewVesClustY{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) + YWidth;    
+      end
+         NewVesClustIndices{t} = transpose([NewVesClustX;NewVesClustY]);
+         
+      AdjustedVessels = I_mat{15}(cell2mat(NewVesClustIndices{t}(:,2)), cell2mat(NewVesClustIndices{t}(:,1)));
+      avgAdjustedVessel = mean2(AdjustedVessels);
+      
+      if(avgAdjustedVessel > avgs(15,t)+100)
+          thisImage(t).RemoveCluster = 1;
+      end
+    end 
   end
     for l = 1:numClusters
         if thisImage(l).RemoveCluster == 0
