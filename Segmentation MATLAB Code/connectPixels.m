@@ -6,8 +6,7 @@ mid_col(:,img_x/2) = 1;
 
 %find coordinates of midline
 [midx midy] = find(mid_col==1); 
-midlinez(:,1) = midx;
-midlinez(:,2) = midy;
+
 
 %find x and y locations of pixels (1s) in logical matrix
 [xlocs ylocs] = find(total == 1);
@@ -24,6 +23,7 @@ maxxloc = max(find(xlocs==maxx));
 maxy = ylocs(find(xlocs==maxx)); %finds column of lower boundary of breast (is this necessary??)
 maxy = max(maxy);
 pixx = 0;
+figure,imshow(total), hold on; plot(maxx,maxy);
 
 maxx2 = max(xlocs(midxx:end));
 maxxloc2 = max(find(xlocs==maxx2));
@@ -32,20 +32,21 @@ maxy2 = max(maxy2);
 pixx = 0;
 
 %% 
-
 total1 = total; 
+
 %% Section 1
 
 %loop through pixels and find closest pixels 
 %while pixx~=maxx %runs until it hits pixel at row of breast lower boundary
-figure, imshow(total), hold on;
-    for xx = 1:maxxloc %runs thru each pixel
+%figure, imshow(total), hold on;
+%    for xx = 1:maxxloc %runs thru each pixel
+     for xx = 1:maxxloc 
          pixx = xlocs(xx,1); %x location of pixel
          pixy = ylocs(xx,1); %y location of pixel
          theta = 0: pi/100 : pi; %angles of lower half circle
          xcirc = r * cos(theta) + pixy; %draws half circle of radius r around pixel (x components)
          ycirc = r * sin(theta) + pixx; %draws half circle of radius r around pixel (y components)
-        plot(xcirc,ycirc), hold on;
+%        plot(xcirc,ycirc), hold on;
         xfound = 0;
         yfound = 0;
         for i = 1:r %loops through first half of points on circle
@@ -102,20 +103,21 @@ figure, imshow(total), hold on;
 %             total1(xPts,yPts) = 1; %sets pixels from above to one 
 %         end
     end
-    hold off;
+%    hold off;
+figure, imshow(total1)
 %end
 %% Section 2
 
 %loop through pixels and find closest pixels 
 %while pixx~=maxx %runs until it hits pixel at row of breast lower boundary
-figure, imshow(total), hold on;
-    for xx = maxxloc:midxx %runs thru each pixel
+%figure, imshow(total), hold on;
+    for xx = maxxloc+1:midxx %runs thru each pixel
          pixx = xlocs(xx,1); %x location of pixel
          pixy = ylocs(xx,1); %y location of pixel
          theta = pi: pi/100 : 2*pi; %angles of lower half circle
          xcirc = r * cos(theta) + pixy; %draws half circle of radius r around pixel (x components)
          ycirc = r * sin(theta) + pixx; %draws half circle of radius r around pixel (y components)
-        plot(xcirc,ycirc), hold on;
+%        plot(xcirc,ycirc), hold on;
         xfound = 0;
         yfound = 0;
         for i = 1:r %loops through first half of points on circle
@@ -137,7 +139,8 @@ figure, imshow(total), hold on;
                 xfound = [xfound,xfoundnew];
                 yfound = [yfound,yfoundnew];
             %end
-        end 
+        end
+        
         yfound(find(yfound==0)) = [];
         xfound(find(yfound==0)) = [];
         xfound(find(xfound==0)) = [];
@@ -145,6 +148,7 @@ figure, imshow(total), hold on;
         
         xfound(find(yfound<pixy)) = [];
         yfound(find(yfound<pixy)) = [];
+
         
         yrem = find(yfound==pixy);
         for j = 1:length(yrem)
@@ -167,7 +171,7 @@ figure, imshow(total), hold on;
             closelocy = max(dist(mindistx,3)); %finds y component of closest found pixel 
             if ~isempty(closelocx) && ~isempty(closelocy)
 %                 [xPts,yPts] = bresenham(pixx,pixy,closelocx,closelocy); %finds pixels in between pixel and closest found pixel'
-                total1 = linept(total1,pixx,pixy,closelocx,closelocy);
+                  total1 = linept(total1,pixx,pixy,closelocx,closelocy);
             end
 %             yPts(find(yPts==0)) = [];
 %             xPts(find(yPts==0)) = [];
@@ -176,20 +180,21 @@ figure, imshow(total), hold on;
 %             total1(xPts,yPts) = 1; %sets pixels from above to one 
 %         end
     end
-    hold off;
+%    hold off;
+figure, imshow(total1)
 %end
 
 %% Section 3
 %loop through pixels and find closest pixels 
 %while pixx~=maxx %runs until it hits pixel at row of breast lower boundary
-figure, imshow(total), hold on;
-    for xx = midxx:maxxloc2 %runs thru each pixel
+%figure, imshow(total), hold on;
+    for xx = midxx+1:maxxloc2 %runs thru each pixel
          pixx = xlocs(xx,1); %x location of pixel
          pixy = ylocs(xx,1); %y location of pixel
          theta = 0: pi/100 : pi; %angles of lower half circle
          xcirc = r * cos(theta) + pixy; %draws half circle of radius r around pixel (x components)
          ycirc = r * sin(theta) + pixx; %draws half circle of radius r around pixel (y components)
-        plot(xcirc,ycirc), hold on;
+%        plot(xcirc,ycirc), hold on;
         xfound = 0;
         yfound = 0;
         for i = 1:r %loops through first half of points on circle
@@ -237,7 +242,7 @@ figure, imshow(total), hold on;
             closelocy = max(dist(mindistx,3)); %finds y component of closest found pixel 
             if ~isempty(closelocx) && ~isempty(closelocy)
 %                 [xPts,yPts] = bresenham(pixx,pixy,closelocx,closelocy); %finds pixels in between pixel and closest found pixel'
-                total1 = linept(total1,pixx,pixy,closelocx,closelocy);
+                 total1 = linept(total1,pixx,pixy,closelocx,closelocy);
             end
 %             yPts(find(yPts==0)) = [];
 %             xPts(find(yPts==0)) = [];
@@ -246,22 +251,23 @@ figure, imshow(total), hold on;
 %             total1(xPts,yPts) = 1; %sets pixels from above to one 
 %         end
     end
-    hold off;
+%    hold off;
+figure, imshow(total1)
 %end
 
 %% Section 4
 
 %loop through pixels and find closest pixels 
 %while pixx~=maxx %runs until it hits pixel at row of breast lower boundary
-figure, imshow(total), hold on;
+%figure, imshow(total), hold on;
 len = length(xlocs);
-    for xx = maxxloc2:len %runs thru each pixel
+    for xx = maxxloc2+1:len %runs thru each pixel
          pixx = xlocs(xx,1); %x location of pixel
          pixy = ylocs(xx,1); %y location of pixel
          theta = pi: pi/100 : 2*pi; %angles of lower half circle
          xcirc = r * cos(theta) + pixy; %draws half circle of radius r around pixel (x components)
          ycirc = r * sin(theta) + pixx; %draws half circle of radius r around pixel (y components)
-        plot(xcirc,ycirc), hold on;
+%        plot(xcirc,ycirc), hold on;
         xfound = 0;
         yfound = 0;
         for i = 1:r %loops through first half of points on circle
@@ -322,7 +328,8 @@ len = length(xlocs);
 %             total1(xPts,yPts) = 1; %sets pixels from above to one 
 %         end
     end
-    hold off;
+%    hold off;
+figure, imshow(total1)
 %end
 %% Images
 

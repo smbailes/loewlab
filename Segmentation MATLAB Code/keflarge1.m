@@ -296,7 +296,9 @@ set(displ, 'AlphaData', gett)
 
 %% Part 3, Connect
 
-newboundaries = connectDots(total,100);
+%newboundaries = connectDots(total,100);
+connectPixels;
+newboundaries = total1;
 
 % CC = bwconncomp(gett);
 % newboundaries = gett;
@@ -331,6 +333,7 @@ hold on
 displ = imshow(blue); 
 hold off 
 %Use our diff1 as the AlphaData for the solid red image. 
+% set(displ, 'AlphaData', newboundaries)
 set(displ, 'AlphaData', newboundaries)
 
 
