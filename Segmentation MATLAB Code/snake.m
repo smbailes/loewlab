@@ -493,7 +493,10 @@ end
                 
 time=toc;
 set(handles.text18 ,'String',{num2str(time)});
-figure, imshow(Itt); line(lix,liy,'Color',[1 0 0],'linewidth',1);
+for i = 1:length(lix)
+    [snake_x1,snake_y1] = [lix(1,i),liy(1,i)];
+end
+figure, imshow(I); line(snake_x1,snake_y1);
 imwrite(Itt,'Connections.tif');
 
 
