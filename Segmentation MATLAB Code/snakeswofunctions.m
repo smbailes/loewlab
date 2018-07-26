@@ -1,4 +1,4 @@
-function [varargout, lix, liy] = snake(varargin)
+
 warning('off') 
 % SNAKE M-file for snake.fig
 %      SNAKE, by itself, creates a new SNAKE or raises the existing
@@ -33,20 +33,20 @@ gui_State = struct('gui_Name',       mfilename, ...
                    'gui_OutputFcn',  @snake_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
-if nargin && ischar(varargin{1})
-    gui_State.gui_Callback = str2func(varargin{1});
-end
-
-if nargout
-    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
-else
-    gui_mainfcn(gui_State, varargin{:});
-end
+% if nargin && ischar(varargin{1})
+%     gui_State.gui_Callback = str2func(varargin{1});
+% end
+% 
+% if nargout
+%     [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+% else
+%     gui_mainfcn(gui_State, varargin{:});
+% end
 % End initialization code - DO NOT EDIT
 
 
 % --- Executes just before snake is made visible.
-function snake_OpeningFcn(hObject, eventdata, handles, varargin)
+
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -56,7 +56,7 @@ function snake_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for snake
 %Initialization Values
 I = ones(300,400) ;
-axes(handles.axes1);
+% axes(handles.axes1);
 cla;
 imshow(I)    
 handles.output = hObject;
@@ -81,7 +81,7 @@ guidata(hObject, handles);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = snake_OutputFcn(hObject, eventdata, handles) 
+
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -92,7 +92,7 @@ varargout{1} = handles.output;
 
 
 % --- Executes on button press in setInitialPoints.
-function setInitialPoints_Callback(hObject, eventdata, handles)
+
 % hObject    handle to setInitialPoints (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -112,7 +112,6 @@ imshow(I) ;
 guidata(hObject,handles) ;
 
 
-function sizeOfLocalEnergyWindow_Callback(hObject, eventdata, handles)
 % hObject    handle to sizeOfLocalEnergyWindow (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -133,7 +132,7 @@ guidata(hObject,handles) ;
 
 
 % --- Executes during object creation, after setting all properties.
-function sizeOfLocalEnergyWindow_CreateFcn(hObject, eventdata, handles)
+
 % hObject    handle to sizeOfLocalEnergyWindow (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -146,7 +145,7 @@ end
 
 
 
-function continutyWeight_Callback(hObject, eventdata, handles)
+
 % hObject    handle to continutyWeight (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -165,7 +164,7 @@ guidata(hObject,handles) ;
 
 
 % --- Executes during object creation, after setting all properties.
-function continutyWeight_CreateFcn(hObject, eventdata, handles)
+
 % hObject    handle to continutyWeight (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -178,7 +177,6 @@ end
 
 
 
-function curvatureWeight_Callback(hObject, eventdata, handles)
 % hObject    handle to curvatureWeight (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -197,7 +195,7 @@ guidata(hObject,handles) ;
 
 
 % --- Executes during object creation, after setting all properties.
-function curvatureWeight_CreateFcn(hObject, eventdata, handles)
+
 % hObject    handle to curvatureWeight (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -210,7 +208,7 @@ end
 
 
 
-function gradientWeight_Callback(hObject, eventdata, handles)
+
 % hObject    handle to gradientWeight (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -229,7 +227,7 @@ guidata(hObject,handles) ;
 
 
 % --- Executes during object creation, after setting all properties.
-function gradientWeight_CreateFcn(hObject, eventdata, handles)
+
 % hObject    handle to gradientWeight (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -242,7 +240,7 @@ end
 
 
 % --- Executes during object creation, after setting all properties.
-function edit5_CreateFcn(hObject, eventdata, handles)
+
 % hObject    handle to edit5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -255,7 +253,7 @@ end
 
 
 
-function curvatureThreshold_Callback(hObject, eventdata, handles)
+
 % hObject    handle to curvatureThreshold (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -275,7 +273,7 @@ guidata(hObject,handles) ;
 
 
 % --- Executes during object creation, after setting all properties.
-function curvatureThreshold_CreateFcn(hObject, eventdata, handles)
+
 % hObject    handle to curvatureThreshold (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -289,7 +287,7 @@ end
 
 
 % --- Executes during object creation, after setting all properties.
-function edit7_CreateFcn(hObject, eventdata, handles)
+
 % hObject    handle to edit7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -302,7 +300,7 @@ end
 
 
 % --- Executes on button press in start.
-function [lix,liy] = start_Callback(hObject, eventdata, handles)
+
 % hObject    handle to start (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -514,7 +512,6 @@ imwrite(Itt,'Connections.tif');
 
 
 
-function stopCriteria_Callback(hObject, eventdata, handles)
 % hObject    handle to stopCriteria (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -534,7 +531,7 @@ guidata(hObject,handles) ;
 
 
 % --- Executes during object creation, after setting all properties.
-function stopCriteria_CreateFcn(hObject, eventdata, handles)
+
 % hObject    handle to stopCriteria (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -549,7 +546,7 @@ end
 
 
 % --- Executes during object creation, after setting all properties.
-function figure1_CreateFcn(hObject, eventdata, handles)
+
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -558,7 +555,7 @@ function figure1_CreateFcn(hObject, eventdata, handles)
 
 
 % --- Executes on button press in imageLoad.
-function imageLoad_Callback(hObject, eventdata, handles)
+
 % hObject    handle to imageLoad (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -615,7 +612,7 @@ guidata(handles.figure1, handles);
 
 
 
-function maxIteration_Callback(hObject, eventdata, handles)
+
 % hObject    handle to maxIteration (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -637,7 +634,7 @@ guidata(hObject,handles) ;
 
 
 % --- Executes on button press in pushbutton5.
-function pushbutton5_Callback(hObject, eventdata, handles)
+
 % hObject    handle to pushbutton5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -651,7 +648,7 @@ msgbox(['         This program is designed by          ' ; '                    
 
 
 % --- Executes during object creation, after setting all properties.
-function maxIteration_CreateFcn(hObject, eventdata, handles)
+
 % hObject    handle to maxIteration (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -666,7 +663,6 @@ end
 
 
 
-function edit10_Callback(hObject, eventdata, handles)
 % hObject    handle to edit10 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -676,7 +672,7 @@ function edit10_Callback(hObject, eventdata, handles)
 
 
 % --- Executes during object creation, after setting all properties.
-function edit10_CreateFcn(hObject, eventdata, handles)
+
 % hObject    handle to edit10 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -691,9 +687,8 @@ end
 
 
 % --- Executes during object creation, after setting all properties.
-function text10_CreateFcn(hObject, eventdata, handles)
+
 % hObject    handle to text10 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-
 
