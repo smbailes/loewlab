@@ -324,6 +324,7 @@ for o = 7:7
         end   
         
     end
+  counter = 0
   for t = 1:numClust
       if thisImage(t).RemoveCluster == 0
         indices = thisImage(t).ClusterIndices;
@@ -339,22 +340,28 @@ for o = 7:7
         xlength = xmax-xmin;
         
         DiagnolLength = sqrt(xlength^2 + ylength^2);
-        
         ClusterSlope = ylength/xlength
         ClusterPerpSlope = -1/ClusterSlope
         YIntercept = -ClusterPerpSlope*thisImage(t).ClusterCentroid(1) + thisImage(t).ClusterCentroid(2)
-        %ReferenceLine = refline(ClusterPerpSlope,YIntercept)
         for i = 1:length(thisImage(t).ClusterIndices)
-           v = floor(thisImage(t).ClusterIndices(i,2) - (ClusterPerpSlope*thisImage(t).ClusterIndices(i,1) + YIntercept));
-            %ClusterLineIndices{i,t} = [thisImage(t).ClusterIndices(i,1),thisImage(t).ClusterIndices(i,2)];
-           ClusterLineIndices{i,t} = v;
-%             if floor(thisImage(t).ClusterIndices(i,2)) < floor(ClusterPerpSlope*thisImage(t).ClusterIndices(i,1) + YIntercept)
-%                 ClusterLineIndices{i,t} = [thisImage(t).ClusterIndices(i,1),thisImage(t).ClusterIndices(i,2)];
-%                 
-%             end
+            v = floor(thisImage(t).ClusterIndices(i,2) - (ClusterPerpSlope*thisImage(t).ClusterIndices(i,1) + YIntercept))
+            ClusterLineIndices{i,t} = v;
+            if v == 0
+              counter = counter + 1;
+              XDistances{i,t} = (ClusterInfo{7,1}(t).ClusterIndices(i,1) - ClusterInfo{7,1}(t).ClusterCentroid(1))*2;
+              YDistances{i,t} = (ClusterInfo{7,1}(t).ClusterIndices(i,2) - ClusterInfo{7,1}(t).ClusterCentroid(2))*2;
+            end
+            
+        end
+        [~,d] = size(XDistances);
+        if t < d + 1
+        XWidth{t} = max(abs(cell2mat(XDistances(:,t))));
+        YWidth{t} = max(abs(cell2mat(YDistances(:,t))));
         end
       end 
-      
+      for t = 1:numClust
+          if thisImage(t).RemoveCluster == 0
+              
   end
     for l = 1:numClusters
         if thisImage(l).RemoveCluster == 0
