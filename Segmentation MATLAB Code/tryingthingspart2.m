@@ -8,7 +8,7 @@ snakeID = input('Enter image name you want to open: ','s'); %Request patient ima
 snakeID = strcat(snakeID,'.tif'); 
 %I = imread(['C:\Users\smbailes\Documents\GitHub\loewlab\Segmentation MATLAB Code\Snakes Images\' ptID]); %open the image, keeping it in 16-bits
 dir = uigetdir; 
-I = imread([dir '\' snakeID]); 
+I = imread([dir '/' snakeID]); 
 
 figure, imshow(I,[]) %to help decide if it should be cropped or not
 title('Snakes Image')
@@ -22,7 +22,7 @@ Gra_We = 1 ;
 cur_Tresh = 0.8 ;
 %con_Tresh = handles.metricdata.Con_Th ;
 ws = 3 ;
-max_iter = 200  ;
+max_iter = 50  ;
 Stop_Cr = 0.0001 ;
 
 Cur_We = Cur_We/(Cur_We + Con_We + Gra_We) ;
@@ -193,6 +193,11 @@ while(((abs(New_Etot - Old_Etot) > Stop_Cr) | (iter < 2)) & (iter < max_iter) & 
     end       
     New_Etot = Etot ;
 end
+top_line=[lix(1,:),liy(1,:)];
+bottom_line=[lix(2,:),liy(2,:)];
+imshow(top_line);
+figure;
+imshow(bottom_line);
 
 figure, imshow(I); line(lix, liy,'Color',[1 0 0],'linewidth',1);
 
@@ -202,7 +207,7 @@ ptID = input('Enter image name you want to open: ','s'); %Request patient image 
 ptID = strcat(ptID,'.tif'); 
 %I = imread(['C:\Users\smbailes\Documents\GitHub\loewlab\Segmentation MATLAB Code\Images\' ptID]); %open the image, keeping it in 16-bits
 dir = uigetdir; 
-I = imread([dir '\' ptID]); 
+I = imread([dir '/' ptID]); 
 
 figure, imshow(I,[]) %to help decide if it should be cropped or not
 title('Original Image')
