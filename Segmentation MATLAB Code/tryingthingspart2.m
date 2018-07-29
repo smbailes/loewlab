@@ -22,7 +22,7 @@ Gra_We = 1 ;
 cur_Tresh = 0.8 ;
 %con_Tresh = handles.metricdata.Con_Th ;
 ws = 3 ;
-max_iter = 50  ;
+max_iter = 10  ;
 Stop_Cr = 0.0001 ;
 
 Cur_We = Cur_We/(Cur_We + Con_We + Gra_We) ;
@@ -193,13 +193,61 @@ while(((abs(New_Etot - Old_Etot) > Stop_Cr) | (iter < 2)) & (iter < max_iter) & 
     end       
     New_Etot = Etot ;
 end
-top_line=[lix(1,:),liy(1,:)];
-bottom_line=[lix(2,:),liy(2,:)];
-imshow(top_line);
-figure;
-imshow(bottom_line);
+m=1;
+top_line=[2,length(lix)]
+bottom_line=[2,length(lix)]
+for m=1:length(lix)
+     top_line(1,m)=lix(1,m);
+     top_line(2,m)=liy(1,m);
+     bottom_line(1,m)=lix(2,m);
+     bottom_line(2,m)=liy(2,m);
+     m+1;
+ end
+x_top=top_line(1,:);
+y_top=top_line(2,:);
+plot(-x_top,-y_top)
+
+x_bottom=bottom_line(1,:);
+y_bottom=bottom_line(2,:);
+plot(-x_bottom,-y_bottom)
+
+[img_y, img_x] = size(I);
+snake=zeros(img_y,img_x);
+%% 
+
+% %draw in left breast pixel by pixel
+% for a = 1:length(liy)                %a,b,n,m are just used as counters in the for loops - delete at end of section
+%     e1 = liy;
+%     for b = 1:length(e1.XData)              %get x and y data from cell array of ellipses and round so we can use them as indices
+%         xe1(a,b) = e1.XData(b);
+%         xe1(a,b) = round(xe1(a,b));
+%         ye1(a,b) = e1.YData(b);
+%         ye1(a,b) = round(ye1(a,b));
+%         if xe1(a,b)<0.5
+%             xe1(a,b)=1;
+%         end
+%         if ye1(a,b)<0.5
+%             ye1(a,b)=1;
+%         end
+%     end
+%     for d = 1:length(xe1)
+%         snakes(ye1(a,d),xe1(a,d)) = 1;      %fill in 1's wherever there is a point in the ellipse
+%     end
+%     
+% end
+% [r,c]=size(I);
+% for r=1:length(I)
+%     a=find(r>lix && c>liy)
+%     r+1;
+% end
+    
+        
+    
 
 figure, imshow(I); line(lix, liy,'Color',[1 0 0],'linewidth',1);
+
+
+
 
 %% Place Line on Top of Original Image from Kefset
 
@@ -210,8 +258,8 @@ dir = uigetdir;
 I = imread([dir '/' ptID]); 
 
 figure, imshow(I,[]) %to help decide if it should be cropped or not
-title('Original Image')
-line(lix, liy,'Color',[1 0 0],'linewidth',1);
+title('Segmented Patient 10')
+line(lix, liy,'Color',[1 0 0],'linewidth',1)
 
 %% Crop Outside of Lines
 %feed in lix and liy as points for which it can crop outside of
