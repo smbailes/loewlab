@@ -1,5 +1,5 @@
-% 
-function [total1] =  connectPixels(total, img_y, img_x, I)
+
+function total1 =  connectPixels(total, img_y, img_x, I)
 
 % split image in half
 mid_col = zeros(img_y,img_x);
@@ -267,9 +267,9 @@ total1 = total;
                     end
                 %end
             end
-            dist(find(dist(:,1)==0) = [];
-            dist(find(dist(:,2)==0) = [];
-            dist(find(dist(:,2)==0) = [];
+            dist(find(dist(:,1)==0)) = [];
+            dist(find(dist(:,2)==0)) = [];
+            dist(find(dist(:,2)==0)) = [];
             [mindistx mindisty] = find(dist(:,1)==min(dist(:,1))); %finds smallest distance and saves location to minddist
             closelocx = max(dist(mindistx,2)); %finds x component of closest found pixel 
             closelocy = max(dist(mindistx,3)); %finds y component of closest found pixel 

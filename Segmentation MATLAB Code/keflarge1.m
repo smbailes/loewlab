@@ -274,9 +274,11 @@ set(displ, 'AlphaData', total)
 
 %% Part 3, Connect
 
-%newboundaries = connectDots(total,100);
-total1 = connectPixels(total,img_y,img_x, I);
-newboundaries = total1;
+newboundaries = connectDots(total,100);
+totalnew = connectPixels(total,img_y,img_x, I);
+%connectPixels;
+newboundaries = totalnew;
+
 
 % CC = bwconncomp(gett);
 % newboundaries = gett;
