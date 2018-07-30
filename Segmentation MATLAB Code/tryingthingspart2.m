@@ -264,4 +264,10 @@ line(lix, liy,'Color',[1 0 0],'linewidth',1)
 %% Crop Outside of Lines
 %feed in lix and liy as points for which it can crop outside of
 %look up MatLab cropping
-[imgy, imgx] = zeroes(size(I));
+% Invert the image to form black curves on a white background
+connectedtop = ~connectedtop;
+% Get rid of huge background that touches the border
+connectedtop = imclearborder(connectedtop, 4);
+% Display the final image.
+imshow(connectedtop, []);
+title('Final Binary Image');
