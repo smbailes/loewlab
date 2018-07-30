@@ -264,3 +264,4 @@ line(lix, liy,'Color',[1 0 0],'linewidth',1)
 %% Crop Outside of Lines
 %feed in lix and liy as points for which it can crop outside of
 %look up MatLab cropping
+[imgy, imgx] = zeroes(size(I));
