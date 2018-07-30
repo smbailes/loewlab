@@ -23,16 +23,16 @@ ptID = strcat(ptID,'.tif');
 dir = uigetdir; 
 J = imread([dir '\' ptID]);
 
-%J = imread('Filled_0000_P7.tif');
-[x,y,z]=size(J) %necessary for snakes to run
-J(:,:,1)=[]; %neccessary for snakes to run
-J(:,:,2)=[]; %neccessary for snakes to run
-%J(:,641,:)=[]; %necessary if snakes file is bigger than 640
+% %J = imread('Filled_0000_P7.tif');
+% [x,y,z]=size(J) %necessary for snakes to run
+% J(:,:,1)=[]; %neccessary for snakes to run
+% J(:,:,2)=[]; %neccessary for snakes to run
+% %J(:,641,:)=[]; %necessary if snakes file is bigger than 640
 
-JJ=logical(J)
+JJ=logical(J);
 figure
 imshow(JJ)
-title('Snakes') %or connectPixels
+title('connectPixels') %or snakes
 %mask = false(size(J));
 %mask(25:end-25,25:end-25) = true;
 %BW = activecontour(J, mask, 300);
@@ -47,12 +47,12 @@ dir = uigetdir;
 M = imread([dir '\' cropID]);
 
 %M = imread('Cropped_0000_P7.tif');
-BW_groundTruth=logical(M)
+BW_groundTruth=logical(M);
 figure
 imshow(BW_groundTruth);
 title('Truth')
 similarity = jaccard(JJ, BW_groundTruth);
 figure
 imshowpair(JJ, BW_groundTruth)
-j=similarity*100
-fprintf('Jaccard Comparison for snakes and Truth. JIP= %2.2d',j)
+j=similarity*100;
+fprintf('Jaccard Comparison for connectPixels and Truth. JIP= %2.2d',j)
