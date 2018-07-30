@@ -16,7 +16,7 @@
 % figure
 % imshowpair(BW, BW_groundTruth)
 % title(['Jaccard Index = ' num2str(similarity)])
-J = imread('P12.tif');
+J = imread('P4.tif');
 figure
 imshow(J)
 title('connectPixels')
@@ -26,7 +26,7 @@ BW = activecontour(J, mask, 300);
 figure
 imshow(BW)
 title('Active Contour')
-M = imread('Cropped_1799_P12.tif');
+M = imread('Cropped_0000_P4.tif');
 BW_groundTruth=logical(M)
 similarity = jaccard(J, BW_groundTruth);
 figure
