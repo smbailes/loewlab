@@ -82,9 +82,9 @@ fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,scali
     imshow(I,[min(I_adj1) max(I_adj1)]);               % Display with contrast
 
     if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
-        xlabel('-->')
+        xlabel('DAT WAY -->')
     else
-        xlabel('<--')
+        xlabel('<-- DAT WAY')
     end 
     hold on
     fprintf('Select Reference Nipple \n');  % User input of nipple region
@@ -135,7 +135,7 @@ for n = 7:7                  % Iterate through cell matrix for each minute
 end    
 
 fprintf('Finished Clustering\n');
-
+%{
 %% Try thresholding
 
 thisImage = ClusterInfo{7,1};
@@ -202,7 +202,7 @@ for g = 7:7
 %     
     ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
-
+%}
 %% Cluster Checks
 for c = 7:7
    thisImage = ClusterInfo{c,1};
@@ -506,10 +506,10 @@ for i = 1:length(thisImage(t).ClusterIndices)
 end
 YWidth(t) = length(ValuesWithCenY);
 
-     [Xdimen,Ydimen] = size(I_mat{15});
+     [Ydimen,Xdimen] = size(I_mat{15});
       for j = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
          NewVesClustXpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) + (XWidth(t)+5);
-         NewVesClustYpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) + (YWidth(t)+5);    
+         NewVesClustYpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) + (YWidth(t)+5); 
          if NewVesClustXpos{j} > Xdimen
              NewVesClustXpos{j} = Xdimen;
          elseif  NewVesClustYpos{j} > Ydimen
@@ -518,25 +518,40 @@ YWidth(t) = length(ValuesWithCenY);
       end
       for j = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
          NewVesClustXneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) - (XWidth(t)+5);
-         NewVesClustYneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) - (YWidth(t)+5); 
+         NewVesClustYneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) - (YWidth(t)+5);  
          if NewVesClustXneg{j} < 1
              NewVesClustXneg{j} = 1;
          elseif NewVesClustYneg{j} < 1
              NewVesClustYneg{j} = 1;
          end
       end
+      for k = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
+          OriginalClusterYIndices{k} = ClusterInfo{7,1}(t).ClusterIndices(k,2);
+          OriginalClusterXIndices{k} = ClusterInfo{7,1}(t).ClusterIndices(k,1);
+      end
+      
       
          NewVesClustIndicesPos{t} = transpose([NewVesClustXpos;NewVesClustYpos]);
          NewVesClustIndicesNeg{t} = transpose([NewVesClustXneg;NewVesClustYneg]);
-         clear NewVesClustXpos NewVesClustYpos NewVesClustXneg NewVesClustYneg
+         NewVesClustIndicesRight{t} = transpose([NewVesClustXpos;OriginalClusterYIndices]);
+         NewVesClustIndicesLeft{t} = transpose([NewVesClustXneg;OriginalClusterYIndices]);
+         clear NewVesClustXpos NewVesClustYpos NewVesClustXneg NewVesClustYneg OriginalClusterYIndices OriginalClusterXIndices
       AdjustedVesselsPos = I_mat{7}(cell2mat(NewVesClustIndicesPos{t}(:,2)), cell2mat(NewVesClustIndicesPos{t}(:,1)));
       AdjustedVesselsNeg = I_mat{7}(cell2mat(NewVesClustIndicesNeg{t}(:,2)), cell2mat(NewVesClustIndicesNeg{t}(:,1)));
+      AdjustedVesselsRight = I_mat{7}(cell2mat(NewVesClustIndicesRight{t}(:,2)), cell2mat(NewVesClustIndicesRight{t}(:,1)));
+      AdjustedVesselsLeft = I_mat{7}(cell2mat(NewVesClustIndicesLeft{t}(:,2)), cell2mat(NewVesClustIndicesLeft{t}(:,1)));
       avgAdjustedVesselNeg(t) = mean2(AdjustedVesselsNeg);
       avgAdjustedVesselPos(t) = mean2(AdjustedVesselsPos);
-      VesselPDiff = avgs(7,t)*0.25
-%       if((avgAdjustedVesselPos(t) + VesselPDiff < avgs(7,t)) || (avgAdjustedVesselNeg(t)+ VesselPDiff < avgs(7,t)))
-%           thisImage(t).RemoveCluster = 1;
-%       end
+      avgAdjustedVesselRight(t) = mean2(AdjustedVesselsRight);
+      avgAdjustedVesselLeft(t) = mean2(AdjustedVesselsLeft);
+      
+      VesselPDiff = avgs(7,t)*0.25;
+      if((avgAdjustedVesselPos(t) + VesselPDiff < avgs(7,t)) || (avgAdjustedVesselNeg(t)+ VesselPDiff < avgs(7,t)))
+          thisImage(t).RemoveCluster = 1;
+      end
+      if(avgAdjustedVesselRight(t) + VesselPDiff < avgs(7,t) || avgAdjustedVesselLeft(t) + VesselPDiff < avgs(7,t))
+          thisImage(t).RemoveCluster = 1;
+      end 
     end 
   end
   ClusterInfo{o,1} = thisImage;
