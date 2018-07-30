@@ -274,7 +274,7 @@ line(lix, liy,'Color',[1 0 0],'linewidth',1)
 %% Crop Outside of Lines
 %feed in lix and liy as points for which it can crop outside of
 %look up MatLab cropping
-cropimg = zeros(size(I));
+ccropimg = zeros(size(I));
 for i = 1:length(x_connect)
     index_x = round(x_connect(i));
     index_y = round(y_connect(i));
@@ -289,6 +289,5 @@ end
 
 figure, imshow(cropimg);
 hold on;
-plot(x_connect,y_connect);
-area(x_connect,y_connect,y_connect(1));
+fill(x_connect,y_connect,'w');
 hold off;
