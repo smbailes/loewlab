@@ -137,7 +137,7 @@ side=input('Are the breasts lower or higher? [h/l]: ','s');
     total = uppers2;
   end
 % 
-imwrite(total, 'Total_1799_P9.tif');
+imwrite(total, 'Total_0000_P8.tif');
 % 
 figure, imshow(I,[]), title('Best Fit')
 % blue on top on figure
