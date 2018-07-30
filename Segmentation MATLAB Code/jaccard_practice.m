@@ -54,5 +54,5 @@ title('Truth')
 similarity = jaccard(JJ, BW_groundTruth);
 figure
 imshowpair(JJ, BW_groundTruth)
-j=similarity*100;
+j=similarity*100
 fprintf('Jaccard Comparison for connectPixels and Truth. JIP= %2.2d',j)
