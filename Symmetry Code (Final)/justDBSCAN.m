@@ -107,3 +107,71 @@ for n = 7:7                  % Iterate through cell matrix for each minute
 end    
 
 fprintf('Finished Clustering\n');
+
+%% Try thresholding
+
+thisImage = ClusterInfo{7,1};
+numClust = length(thisImage);
+
+for i = 1:numClust
+    clusterIntensities(i) = thisImage(i).ClusterMeanIntensity; 
+end 
+
+percent = 0.6;
+percent2 = 0.95;
+clusterSort = sort(clusterIntensities);       % Arrange Image Hist in Order Low -> High
+percent_ind_low = round(percent * numel(clusterSort));   % Find the index number for the User Input Percentage
+percent_val_low = clusterSort(end - percent_ind_low)        % Find Intensity for the Percentage Number
+percent_ind_high = round(percent2 * numel(clusterSort));
+percent_val_high = clusterSort(end - percent_ind_high);
+
+for j = 1:numClust
+    if(clusterIntensities(j) < percent_val_low || clusterIntensities(j) > percent_val_high)
+        thisImage(j).RemoveCluster = 1;
+    end 
+end
+
+ClusterInfo{7,1} = thisImage;
+
+%% Plot left over clusters
+for g = 7:7 
+    
+    thisImage = ClusterInfo{g,1}; %Get Current Image Info
+    numClusters = length(thisImage);
+    clustData = ClusterInfo{g,3}; %Copy Cluster Data 
+
+    for m = 1:numClusters %Sort through clusters for image
+        if thisImage(m).RemoveCluster == 1 %Remove Indices from Marked Clusters from Cluster Data copy
+            rows = find(clustData(:,3) == m);
+            clustData(rows,:) = [];
+        end     
+    end 
+    
+    hrEnd = clustData(:,(1:2)); %Cluster Indices of remaining Clusters
+    clEnd = clustData(:,3); %Cluster Number for remaining clusters
+    
+    picture = ClusterInfo{g,2};
+    pic_adj = picture(find(picture>0));
+    
+    figure('Name','Remaining Clusters'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
+    hold on
+    PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
+    title(sprintf('%s - Post Threshold',ptID));
+%     plot(xunit, yunit);plot([c1(1 ) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
+    plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
+    plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
+    plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
+    hold on 
+    
+    %%PLOT MIDLINE IMAGE
+
+%     figure, imshow(picture, [min(pic_adj), max(pic_adj)]);
+%     hold on
+%     y1=get(gca,'ylim');
+%     plot([xcent xcent],y1);
+%         
+%     title(sprintf('%s - Mirror Midline Isolation',ptID));
+%     
+    ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
+end
+

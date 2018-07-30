@@ -841,27 +841,27 @@ d = Rplot.Color;
 Rplot.Color = 'm'
 %}
 %% Scatter Plot
-i = 1;
-for x = 1:numcols
-    for y = 1:numrows 
-        points(i) = totsquarechange(y,x);
-        i = i+1;
-    end
-end 
-
-
-
-j = 1;
-figure, hold on
-for x = 1:numcols
-    for y = 1:numrows 
-        scatter3(x, y, points(j),'MarkerFaceColor','w','MarkerEdgeColor','b')
-        j = j+1;
-    end 
-end 
-
-axis ij
-xlabel('Column')
-ylabel('Row')
-zlabel('Change in Pixel Value')
-title('Total Square Change')
+% i = 1;
+% for x = 1:numcols
+%     for y = 1:numrows 
+%         points(i) = totsquarechange(y,x);
+%         i = i+1;
+%     end
+% end 
+% 
+% 
+% 
+% j = 1;
+% figure, hold on
+% for x = 1:numcols
+%     for y = 1:numrows 
+%         scatter3(x, y, points(j),'MarkerFaceColor','w','MarkerEdgeColor','b')
+%         j = j+1;
+%     end 
+% end 
+% 
+% axis ij
+% xlabel('Column')
+% ylabel('Row')
+% zlabel('Change in Pixel Value')
+% title('Total Square Change')
