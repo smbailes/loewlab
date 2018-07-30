@@ -287,3 +287,8 @@ for i = 1:length(x_connect)
     end
 end
 
+figure, imshow(cropimg);
+hold on;
+plot(x_connect,y_connect);
+area(x_connect,y_connect,y_connect(1));
+hold off;
