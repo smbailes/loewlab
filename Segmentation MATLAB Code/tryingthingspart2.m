@@ -205,11 +205,21 @@ for m=1:length(lix)
  end
 x_top=top_line(1,:);
 y_top=top_line(2,:);
-plot(-x_top,-y_top)
 
 x_bottom=bottom_line(1,:);
 y_bottom=bottom_line(2,:);
-plot(-x_bottom,-y_bottom)
+
+x_connect = [];
+x_connect(length(x_bottom)+1) = x_bottom(1);
+y_connect = [];
+y_connect(length(y_bottom)+1) = y_bottom(1);
+
+for index = 1:length(x_bottom)
+    x_connect(index) = x_bottom(index);
+    y_connect(index) = y_bottom(index);
+end
+
+figure, plot(x_connect, y_connect);
 
 [img_y, img_x] = size(I);
 snake=zeros(img_y,img_x);
@@ -244,7 +254,7 @@ snake=zeros(img_y,img_x);
         
     
 
-figure, imshow(I); line(lix, liy,'Color',[1 0 0],'linewidth',1);
+figure, imshow(I); line(lix,liy,'Color',[1 0 0],'linewidth',1);
 
 
 
@@ -264,10 +274,4 @@ line(lix, liy,'Color',[1 0 0],'linewidth',1)
 %% Crop Outside of Lines
 %feed in lix and liy as points for which it can crop outside of
 %look up MatLab cropping
-% Invert the image to form black curves on a white background
-connectedtop = ~connectedtop;
-% Get rid of huge background that touches the border
-connectedtop = imclearborder(connectedtop, 4);
-% Display the final image.
-imshow(connectedtop, []);
-title('Final Binary Image');
+
