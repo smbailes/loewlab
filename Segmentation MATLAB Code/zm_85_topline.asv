@@ -159,44 +159,31 @@ else
     set(displ, 'AlphaData', connectedtop)
 end
 %% Finding Enclosed Area
-% [rowc colc] = size(connectedtop);
-% i = 1;
-% r1 = 1; r2 = 1; c1 = 1; c2 = 1; 
-% for a = 1:colc-1
-%     locs = [];
-%     for b = 1:rowc-1
-%         if connectedtop(b,a)
-%             if isempty(locs)
-%                 r1 = b;
-%                 c1 = a;
-%             end
-%             locs(i,1) = b;
-%             locs(i,2) = a;
-%             r2 = b;
-%             c2 = a;
-%             i = i + 1; 
-%         end
-%     end
-%     %if r1~=0 && r2~=0 && r1~=r2
-%         connectedtop(r1:r2, c1) = 1; 
-%     %end
-% end
+[rowc colc] = size(connectedtop);
+i = 1;
+r1 = 1; r2 = 1; c1 = 1; c2 = 1; 
+for a = 1:colc-1
+    locs = [];
+    for b = 1:rowc-1
+        if connectedtop(b,a)
+            if isempty(locs)
+                r1 = b;
+                c1 = a;
+            end
+            locs(i,1) = b;
+            locs(i,2) = a;
+            r2 = b;
+            c2 = a;
+            i = i + 1; 
+        end
+    end
+    %if r1~=0 && r2~=0 && r1~=r2
+        connectedtop(r1:r2, c1) = 1; 
+    end
+end
 
 %newCrop = imcrop(connectedtop);
 %imshow(newCrop, [min(I) max(I)]);
-
-% Invert the image to form black curves on a white background
-binaryImage = ~binaryImage;
-% Display the final image.
-subplot(2, 2, 2);
-imshow(binaryImage, []);
-title('Intermediate Binary Image', 'FontSize', fontSize);
-% Get rid of huge background that touches the border
-binaryImage = imclearborder(binaryImage, 4);
-% Display the final image.
-subplot(2, 2, 3);
-imshow(binaryImage, []);
-title('Final Binary Image', 'FontSize', fontSize);
 
 %% Cropping image
 figure, imshow(I,[]), title('Final Crop')

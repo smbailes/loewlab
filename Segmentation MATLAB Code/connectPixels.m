@@ -1,5 +1,5 @@
 
-function total1 =  connectPixels(total, img_y, img_x, I)
+function [total1 colright colleft] =  connectPixels(total, img_y, img_x, I)
 
 % split image in half
 mid_col = zeros(img_y,img_x);
@@ -16,21 +16,37 @@ mid_col(:,img_x/2) = 1;
 
 %% from col 1 to midline col, finds x and y location of lowest pixel
 
-r = 100;
+ r = 100;
+% 
+% %get lowest pixel (row of lower boundary of breast)
+% maxx = max(xlocs(1:midxx));
+% maxxloc = max(find(xlocs==maxx));
+% maxy = ylocs(find(xlocs==maxx)); %finds column of lower boundary of breast (is this necessary??)
+% maxy = max(maxy);
+% pixx = 0;
+% %figure,imshow(total), hold on; plot(maxx,maxy);
+% 
+% maxx2 = max(xlocs(midxx:end));
+% maxxloc2 = max(find(xlocs==maxx2));
+% maxy2 = ylocs(find(xlocs==maxx2)); %finds column of lower boundary of breast (is this necessary??)
+% maxy2 = max(maxy2);
+% pixx = 0;
 
-%get lowest pixel (row of lower boundary of breast)
-maxx = max(xlocs(1:midxx));
-maxxloc = max(find(xlocs==maxx));
-maxy = ylocs(find(xlocs==maxx)); %finds column of lower boundary of breast (is this necessary??)
-maxy = max(maxy);
-pixx = 0;
-%figure,imshow(total), hold on; plot(maxx,maxy);
+fprintf('Pick lowest point on the left breast. \n');
+figure, imshow(I, [])
+[rowleft colleft] = ginput(1);
+    
+fprintf('Pick lowest point on the right breast. \n');
+figure, imshow(I, [])
+[rowright colright] = ginput(1);
 
-maxx2 = max(xlocs(midxx:end));
-maxxloc2 = max(find(xlocs==maxx2));
-maxy2 = ylocs(find(xlocs==maxx2)); %finds column of lower boundary of breast (is this necessary??)
-maxy2 = max(maxy2);
-pixx = 0;
+[~,ml] = min(abs(ylocs-rowleft));
+cl = ylocs(ml);
+[~,mr] = min(abs(ylocs-rowright));
+cr = ylocs(mr);
+
+maxxloc = max(find(ylocs==cr));
+maxxloc2 = max(find(ylocs==cl));
 
 %% 
 total1 = total; 
@@ -258,18 +274,16 @@ total1 = total;
             b = 1;
             for i = 1:length(xfound) %calculates distance of pixels found in radius from initial pixel
                 %if xfound(i)~=0 && yfound(i)~=0 
-                    distnc = sqrt(((yfound(i)-pixy)^2)+((xfound(i)-pixx)^2)); 
-                    if distnc~=0
-                        dist(b,1) = distnc; %saves distance to first column
-                        dist(b,2) = xfound(i); %saves x location of found pixel to second column
-                        dist(b,3) = yfound(i); %saves y location of found pixel to third column
-                        b = b+1;
-                    end
+                        dist(i,1) = sqrt(((yfound(i)-pixy)^2)+((xfound(i)-pixx)^2)); 
+                        dist(i,2) = xfound(i); %saves x location of found pixel to second column
+                        dist(i,3) = yfound(i); %saves y location of found pixel to third column
                 %end
             end
-            dist(find(dist(:,1)==0)) = [];
-            dist(find(dist(:,2)==0)) = [];
-            dist(find(dist(:,2)==0)) = [];
+%              dist(find(dist(:,1)==0)) = [];
+%              dist(find(dist(:,2)==0)) = [];
+%              dist(find(dist(:,2)==0)) = [];
+            [rowrem colrem] = find((dist(:,1)==0));
+            dist(rowrem,:)=[];
             [mindistx mindisty] = find(dist(:,1)==min(dist(:,1))); %finds smallest distance and saves location to minddist
             closelocx = max(dist(mindistx,2)); %finds x component of closest found pixel 
             closelocy = max(dist(mindistx,3)); %finds y component of closest found pixel 
@@ -284,12 +298,12 @@ total1 = total;
 %             total1(xPts,yPts) = 1; %sets pixels from above to one 
 %         end
 %     figure, imshow(total1)
-    pixx
-    pixy
-    closelocx
-    closelocy
-    dist
-    break;
+%     pixx
+%     pixy
+%     closelocx
+%     closelocy
+%     dist
+%     break;
     end
 %    hold off;
 %end
