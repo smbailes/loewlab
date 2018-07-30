@@ -186,19 +186,18 @@ end
 %imshow(newCrop, [min(I) max(I)]);
 
 % Invert the image to form black curves on a white background
-binaryImage = ~binaryImage;
-% Display the final image.
-subplot(2, 2, 2);
-imshow(binaryImage, []);
-title('Intermediate Binary Image', 'FontSize', fontSize);
+connectedtop = ~connectedtop;
 % Get rid of huge background that touches the border
-binaryImage = imclearborder(binaryImage, 4);
+connectedtop = imclearborder(connectedtop, 4);
 % Display the final image.
-subplot(2, 2, 3);
-imshow(binaryImage, []);
-title('Final Binary Image', 'FontSize', fontSize);
+imshow(connectedtop, []);
+title('Final Binary Image');
 
 %% Cropping image
+connectedtop=bwmorph(connectedtop,'fill');
+connectedtop=bwmorph(connectedtop,'bridge');
+connectedtop=bwmorph(connectedtop,'close');
+
 figure, imshow(I,[]), title('Final Crop')
     %blue on top on figure
     blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
