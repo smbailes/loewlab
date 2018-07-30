@@ -22,7 +22,7 @@ Gra_We = 1 ;
 cur_Tresh = 0.8 ;
 %con_Tresh = handles.metricdata.Con_Th ;
 ws = 3 ;
-max_iter = 60 ;
+max_iter = 30 ;
 Stop_Cr = 0.0001 ;
 
 Cur_We = Cur_We/(Cur_We + Con_We + Gra_We) ;
@@ -119,7 +119,7 @@ while(((abs(New_Etot - Old_Etot) > Stop_Cr) | (iter < 2)) & (iter < max_iter) & 
 
             Point_Ecur(i) = ((xp(n1) - 2*acc(1) + xp(n2))^2 + (yp(n1) - 2*acc(2) + yp(n2))^2) ;
             Point_Econ(i) = (d_mean-((xp(n1) - acc(1))^2 + (yp(n1) - acc(2))^2)^(1/2))^2 ;
-            Point_Egra(i) =  Igrad(acc(1),acc(2)) ;;
+            Point_Egra(i) =  Igrad(acc(1),acc(2)) ;
 
             for m = -ws:ws
                 for n = -ws:ws
@@ -274,7 +274,7 @@ line(lix, liy,'Color',[1 0 0],'linewidth',1)
 %% Crop Outside of Lines
 %feed in lix and liy as points for which it can crop outside of
 %look up MatLab cropping
-ccropimg = zeros(size(I));
+cropimg = zeros(size(I));
 for i = 1:length(x_connect)
     index_x = round(x_connect(i));
     index_y = round(y_connect(i));
