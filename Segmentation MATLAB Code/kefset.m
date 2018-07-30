@@ -341,7 +341,7 @@ title('Hot Pixel');
 %     else 
 %         I(I<edges(2)*.95) = 0; 
 %     end
-    
+%     
     edgecanny3 = edge(I,'canny');
     edgecanny3=bwareaopen(edgecanny3,10); %removes very small edge lines
 
