@@ -26,8 +26,8 @@ BW = activecontour(J, mask, 300);
 figure
 imshow(BW)
 title('Active Contour')
-M = imread('Cropped_1799_P12.tif');
+M = imread('Cropped__P12.tif');
 BW_groundTruth=logical(M)
-similarity = jaccard(J, BW_groundTruth);
+similarity = jaccard(BW, BW_groundTruth);
 figure
-imshowpair(J, BW_groundTruth)
+imshowpair(BW, BW_groundTruth)
