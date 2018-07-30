@@ -47,6 +47,7 @@ end
 bnds = [colr coll];
 rowbnd = max(bnds);
 biggest(rowbnd:rconn, :) = 0; 
+biggest = connectDots(biggest,25);
 
 figure, imshow(I,[]), title('Thick Under Curve')
 %blue on top on figure
@@ -146,7 +147,7 @@ if summed<kk*(2/3)
     hold off 
     %Use our diff1 as the AlphaData for the solid red image. 
     set(displ, 'AlphaData', fin)
-
+    connectedtop=fin;
 
 else
     figure, imshow(I,[]), title('Connect Tops')
@@ -188,7 +189,7 @@ end
 % Invert the image to form black curves on a white background
 connectedtop = ~connectedtop;
 % Get rid of huge background that touches the border
-connectedtop = imclearborder(connectedtop, 4);
+connectedtop = imclearborder(connectedtop,4);
 % Display the final image.
 imshow(connectedtop, []);
 title('Final Binary Image');
