@@ -31,4 +31,4 @@ height = bottomLine - topLine + 1;
 newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
 close;
 
-imwrite(blackMaskedImage, sprintf('Cropped_0000_P12a.tif'));  
+imwrite(blackMaskedImage, sprintf('Cropped_0000_8a.tif'));  
