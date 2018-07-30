@@ -485,8 +485,27 @@ for o = 7:7
               counter = counter + 1;  
             end
         end
-     XWidth(t) = max(cell2mat(XDistances));
-     YWidth(t) = max(cell2mat(YDistances));
+      OldXWidth(t) = max(cell2mat(XDistances));
+      OldYWidth(t) = max(cell2mat(YDistances));
+CenX = ClusterInfo{7,1}(t).ClusterCentroid(1);
+CenY = ClusterInfo{7,1}(t).ClusterCentroid(2);
+counter = 1;
+for i = 1:length(thisImage(t).ClusterIndices)
+    if ClusterInfo{7,1}(t).ClusterIndices(i,1) == CenX
+        ValuesWithCenX(counter) = ClusterInfo{7,1}(t).ClusterIndices(i,2);
+        counter = counter + 1;
+    end
+end
+XWidth(t) = length(ValuesWithCenX);
+counter = 1;
+for i = 1:length(thisImage(t).ClusterIndices)
+    if ClusterInfo{7,1}(t).ClusterIndices(i,2) == CenY
+        ValuesWithCenY(counter) = ClusterInfo{7,1}(t).ClusterIndices(i,1);
+        counter = counter + 1;
+    end
+end
+YWidth(t) = length(ValuesWithCenY);
+
      [Xdimen,Ydimen] = size(I_mat{15});
       for j = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
          NewVesClustXpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) + (XWidth(t)+5);
