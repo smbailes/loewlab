@@ -452,109 +452,121 @@ end
 %% Vessel Check
 for o = 7:7 
     thisImage = ClusterInfo{o,1}; %Get Current Image Info
-    
+
     numClusters = length(thisImage);
     
-  counter = 0;
-  for t = 1:numClust
-      
-      if thisImage(t).RemoveCluster == 0
+    counter = 0;
+for t = 1:numClust
+
+    if thisImage(t).RemoveCluster == 0
         indices = thisImage(t).ClusterIndices;
         xind = indices(:,1);
         yind = indices(:,2);
-        
+
         ymax = max(yind);
         ymin = min(yind);
         ylength = ymax-ymin;
-        
+
         xmax = max(xind);
         xmin = min(xind);
         xlength = xmax-xmin;
-        
+
         DiagnolLength = sqrt(xlength^2 + ylength^2);
         ClusterSlope = ylength/xlength;
         ClusterPerpSlope = -1/ClusterSlope;
         YIntercept = (-ClusterPerpSlope*thisImage(t).ClusterCentroid(1)) + thisImage(t).ClusterCentroid(2);
         counter = 1;
+        
         for i = 1:length(thisImage(t).ClusterIndices)
             v = floor(thisImage(t).ClusterIndices(i,2) - (ClusterPerpSlope*thisImage(t).ClusterIndices(i,1) + YIntercept));
             ClusterLineIndices{i,t} = v;
             if v == 0
-              XDistances{counter}= abs((ClusterInfo{7,1}(t).ClusterIndices(i,1) - ClusterInfo{7,1}(t).ClusterCentroid(1))*2);
-              YDistances{counter} = abs((ClusterInfo{7,1}(t).ClusterIndices(i,2) - ClusterInfo{7,1}(t).ClusterCentroid(2))*2);
-              counter = counter + 1;  
+                XDistances{counter}= abs((ClusterInfo{7,1}(t).ClusterIndices(i,1) - ClusterInfo{7,1}(t).ClusterCentroid(1))*2);
+                YDistances{counter} = abs((ClusterInfo{7,1}(t).ClusterIndices(i,2) - ClusterInfo{7,1}(t).ClusterCentroid(2))*2);
+                counter = counter + 1;  
             end
         end
-      OldXWidth(t) = max(cell2mat(XDistances));
-      OldYWidth(t) = max(cell2mat(YDistances));
-CenX = ClusterInfo{7,1}(t).ClusterCentroid(1);
-CenY = ClusterInfo{7,1}(t).ClusterCentroid(2);
-counter = 1;
-for i = 1:length(thisImage(t).ClusterIndices)
-    if ClusterInfo{7,1}(t).ClusterIndices(i,1) == CenX
-        ValuesWithCenX(counter) = ClusterInfo{7,1}(t).ClusterIndices(i,2);
-        counter = counter + 1;
-    end
-end
-XWidth(t) = length(ValuesWithCenX);
-counter = 1;
-for i = 1:length(thisImage(t).ClusterIndices)
-    if ClusterInfo{7,1}(t).ClusterIndices(i,2) == CenY
-        ValuesWithCenY(counter) = ClusterInfo{7,1}(t).ClusterIndices(i,1);
-        counter = counter + 1;
-    end
-end
-YWidth(t) = length(ValuesWithCenY);
+        
+        OldXWidth(t) = max(cell2mat(XDistances));
+        OldYWidth(t) = max(cell2mat(YDistances));
+        CenX = ClusterInfo{7,1}(t).ClusterCentroid(1);
+        CenY = ClusterInfo{7,1}(t).ClusterCentroid(2);
+        counter = 1;
+        
+        for i = 1:length(thisImage(t).ClusterIndices)
+            if ClusterInfo{7,1}(t).ClusterIndices(i,1) == CenX
+                ValuesWithCenX(counter) = ClusterInfo{7,1}(t).ClusterIndices(i,2);
+                counter = counter + 1;
+            end
+        end
+        
+        XWidth(t) = length(ValuesWithCenX);
+        counter = 1;
+        
+        for i = 1:length(thisImage(t).ClusterIndices)
+            if ClusterInfo{7,1}(t).ClusterIndices(i,2) == CenY
+                ValuesWithCenY(counter) = ClusterInfo{7,1}(t).ClusterIndices(i,1);
+                counter = counter + 1;
+            end
+        end
+        YWidth(t) = length(ValuesWithCenY);
 
-     [Ydimen,Xdimen] = size(I_mat{15});
-      for j = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
-         NewVesClustXpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) + (XWidth(t)+5);
-         NewVesClustYpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) + (YWidth(t)+5); 
-         if NewVesClustXpos{j} > Xdimen
-             NewVesClustXpos{j} = Xdimen;
-         elseif  NewVesClustYpos{j} > Ydimen
-             NewVesClustYpos{j} = Ydimen;
-         end
-      end
-      for j = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
-         NewVesClustXneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) - (XWidth(t)+5);
-         NewVesClustYneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) - (YWidth(t)+5);  
-         if NewVesClustXneg{j} < 1
-             NewVesClustXneg{j} = 1;
-         elseif NewVesClustYneg{j} < 1
-             NewVesClustYneg{j} = 1;
-         end
-      end
-      for k = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
-          OriginalClusterYIndices{k} = ClusterInfo{7,1}(t).ClusterIndices(k,2);
-          OriginalClusterXIndices{k} = ClusterInfo{7,1}(t).ClusterIndices(k,1);
-      end
-      
-      
-         NewVesClustIndicesPos{t} = transpose([NewVesClustXpos;NewVesClustYpos]);
-         NewVesClustIndicesNeg{t} = transpose([NewVesClustXneg;NewVesClustYneg]);
-         NewVesClustIndicesRight{t} = transpose([NewVesClustXpos;OriginalClusterYIndices]);
-         NewVesClustIndicesLeft{t} = transpose([NewVesClustXneg;OriginalClusterYIndices]);
-         clear NewVesClustXpos NewVesClustYpos NewVesClustXneg NewVesClustYneg OriginalClusterYIndices OriginalClusterXIndices
-      AdjustedVesselsPos = I_mat{7}(cell2mat(NewVesClustIndicesPos{t}(:,2)), cell2mat(NewVesClustIndicesPos{t}(:,1)));
-      AdjustedVesselsNeg = I_mat{7}(cell2mat(NewVesClustIndicesNeg{t}(:,2)), cell2mat(NewVesClustIndicesNeg{t}(:,1)));
-      AdjustedVesselsRight = I_mat{7}(cell2mat(NewVesClustIndicesRight{t}(:,2)), cell2mat(NewVesClustIndicesRight{t}(:,1)));
-      AdjustedVesselsLeft = I_mat{7}(cell2mat(NewVesClustIndicesLeft{t}(:,2)), cell2mat(NewVesClustIndicesLeft{t}(:,1)));
-      avgAdjustedVesselNeg(t) = mean2(AdjustedVesselsNeg);
-      avgAdjustedVesselPos(t) = mean2(AdjustedVesselsPos);
-      avgAdjustedVesselRight(t) = mean2(AdjustedVesselsRight);
-      avgAdjustedVesselLeft(t) = mean2(AdjustedVesselsLeft);
-      
-      VesselPDiff = avgs(7,t)*0.25;
-      if((avgAdjustedVesselPos(t) + VesselPDiff < avgs(7,t)) || (avgAdjustedVesselNeg(t)+ VesselPDiff < avgs(7,t)))
-          thisImage(t).RemoveCluster = 1;
-      end
-      if(avgAdjustedVesselRight(t) + VesselPDiff < avgs(7,t) || avgAdjustedVesselLeft(t) + VesselPDiff < avgs(7,t))
-          thisImage(t).RemoveCluster = 1;
-      end 
+        [Ydimen,Xdimen] = size(I_mat{15});
+        
+        for j = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
+            NewVesClustXpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) + (XWidth(t)+5);
+            NewVesClustYpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) + (YWidth(t)+5); 
+            if NewVesClustXpos{j} > Xdimen
+                NewVesClustXpos{j} = Xdimen;
+            elseif  NewVesClustYpos{j} > Ydimen
+                NewVesClustYpos{j} = Ydimen;
+            end
+        end
+        
+        for j = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
+            NewVesClustXneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) - (XWidth(t)+5);
+            NewVesClustYneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) - (YWidth(t)+5);  
+            if NewVesClustXneg{j} < 1
+                NewVesClustXneg{j} = 1;
+            elseif NewVesClustYneg{j} < 1
+                NewVesClustYneg{j} = 1;
+            end
+        end
+        
+        for k = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
+            OriginalClusterYIndices{k} = ClusterInfo{7,1}(t).ClusterIndices(k,2);
+            OriginalClusterXIndices{k} = ClusterInfo{7,1}(t).ClusterIndices(k,1);
+        end
+
+
+        NewVesClustIndicesPos{t} = transpose([NewVesClustXpos;NewVesClustYpos]);
+        NewVesClustIndicesNeg{t} = transpose([NewVesClustXneg;NewVesClustYneg]);
+        NewVesClustIndicesRight{t} = transpose([NewVesClustXpos;OriginalClusterYIndices]);
+        NewVesClustIndicesLeft{t} = transpose([NewVesClustXneg;OriginalClusterYIndices]);
+        
+        
+        clear NewVesClustXpos NewVesClustYpos NewVesClustXneg NewVesClustYneg OriginalClusterYIndices OriginalClusterXIndices
+        
+        AdjustedVesselsPos = I_mat{7}(cell2mat(NewVesClustIndicesPos{t}(:,2)), cell2mat(NewVesClustIndicesPos{t}(:,1)));
+        AdjustedVesselsNeg = I_mat{7}(cell2mat(NewVesClustIndicesNeg{t}(:,2)), cell2mat(NewVesClustIndicesNeg{t}(:,1)));
+        AdjustedVesselsRight = I_mat{7}(cell2mat(NewVesClustIndicesRight{t}(:,2)), cell2mat(NewVesClustIndicesRight{t}(:,1)));
+        AdjustedVesselsLeft = I_mat{7}(cell2mat(NewVesClustIndicesLeft{t}(:,2)), cell2mat(NewVesClustIndicesLeft{t}(:,1)));
+        
+        avgAdjustedVesselNeg(t) = mean2(AdjustedVesselsNeg);
+        avgAdjustedVesselPos(t) = mean2(AdjustedVesselsPos);
+        avgAdjustedVesselRight(t) = mean2(AdjustedVesselsRight);
+        avgAdjustedVesselLeft(t) = mean2(AdjustedVesselsLeft);
+
+        VesselPDiff = avgs(7,t)*0.25;
+        if((avgAdjustedVesselPos(t) + VesselPDiff < avgs(7,t)) || (avgAdjustedVesselNeg(t)+ VesselPDiff < avgs(7,t)))
+            thisImage(t).RemoveCluster = 1;
+        end
+        if(avgAdjustedVesselRight(t) + VesselPDiff < avgs(7,t) || avgAdjustedVesselLeft(t) + VesselPDiff < avgs(7,t))
+            thisImage(t).RemoveCluster = 1;
+        end 
     end 
-  end
-  ClusterInfo{o,1} = thisImage;
+end
+ClusterInfo{o,1} = thisImage;
 end 
 
 %% Plot leftover Clusters
