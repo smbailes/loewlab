@@ -4,14 +4,14 @@ clc, clearvars -except perchangebreast perchangecorr v
 
 [location, ptID,answer] = pathfinder; 
 
-    prompt = {'Enter length of square in pixels:','Enter total number of pictures:'};
-    dlgtitle = 'Input';
-    defaultans = {'12','15'};
-    numlines = 1;
-    answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
+%     prompt = {'Enter length of square in pixels:','Enter total number of pictures:'};
+%     dlgtitle = 'Input';
+%     defaultans = {'12','15'};
+%     numlines = 1;
+%     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     
     %% Image Input
-    numpics = str2double(answers{2}); % allocates number of pictures
+    numpics = 15; % allocates number of pictures
     % Read images to cell matrix I_mat
     a=0000; % set equal to the number of the first picture
     I_mat = cell(1,numpics);
@@ -29,11 +29,11 @@ clc, clearvars -except perchangebreast perchangecorr v
     end
      
 %% create grid over image and find averages
-prompt = ('Enter size of one box on grid in pixels'); % make dialog box
-dlgtitle = ('input');
-num_lines = 1;
-defaultans = {'50'};
-squareside = str2double(answers{1}); %converts ans to a number
+% prompt = ('Enter size of one box on grid in pixels'); % make dialog box
+% dlgtitle = ('input');
+% num_lines = 1;
+% defaultans = {'50'};
+squareside = 12; %converts ans to a number
 for k = 1:numpics
 I_mat{k}(squareside:squareside:end,:,:) = 10000;% converts every nth row to black
 I_mat{k}(:,squareside:squareside:end,:) = 10000;% converts every nth column to black
@@ -55,13 +55,13 @@ for j = 1:1:numcols
     end
 end
 I1 = I_mat{k}(find(I_mat{k}>0));
-figure, imshow(I_mat{k},[min(I1) max(I1)]) % displays each image at each minute
-axis on
-xticks([squareside/2:squareside:c]) %adds axes to images
-xticklabels([1:1:numcols])
-yticks([squareside/2:squareside:c])
-yticklabels([1:1:numrows])
-set(gca,'XaxisLocation','top')
+% figure, imshow(I_mat{k},[min(I1) max(I1)]) % displays each image at each minute
+% axis on
+% xticks([squareside/2:squareside:c]) %adds axes to images
+% xticklabels([1:1:numcols])
+% yticks([squareside/2:squareside:c])
+% yticklabels([1:1:numrows])
+% set(gca,'XaxisLocation','top')
 end
 
 
@@ -245,38 +245,38 @@ totsquarechange = cell2mat(totsquarechange);
 %     end
 % end
 
-[xpoints,ypoints] = meshgrid(1:numcols,1:numrows);
-zpoints = totsquarechange;
-figure
-surface(zpoints)
-view(-37,64);
-xlabel('Column')
-ylabel('Row')
-zlabel('Change in pixel value')
-title('Total Temperature Change of sectios of Breast')
-axis ij % makes axis match the figures
-zpoints = cell2mat(avesquarechange);
-figure
-surface(zpoints)
-view(-37,64);
-xlabel('Column')
-ylabel('Row')
-zlabel('Average change in pixel value')
-title('Average Temperature Change of sectios of Breast')
-axis ij
+% [xpoints,ypoints] = meshgrid(1:numcols,1:numrows);
+% zpoints = totsquarechange;
+% figure
+% surface(zpoints)
+% view(-37,64);
+% xlabel('Column')
+% ylabel('Row')
+% zlabel('Change in pixel value')
+% title('Total Temperature Change of sectios of Breast')
+% axis ij % makes axis match the figures
+% zpoints = cell2mat(avesquarechange);
+% figure
+% surface(zpoints)
+% view(-37,64);
+% xlabel('Column')
+% ylabel('Row')
+% zlabel('Average change in pixel value')
+% title('Average Temperature Change of sectios of Breast')
+% axis ij
  %% find the averages of each breast
 % answer = questdlg('Which side is the tumor on?','Tumor
 % Side','Left','Right','Left') % used to get total data accross all
 % patients
-figure(numpics)
-prompt = ('Enter middle column');
-dlgtitle = ('Middle column');
-numlines = 1;
+% figure(numpics)
+% prompt = ('Enter middle column');
+% dlgtitle = ('Middle column');
+% numlines = 1;
 
-midcol = inputdlg(prompt,dlgtitle,numlines);
+midcol = 25; %inputdlg(prompt,dlgtitle,numlines);
 
 for i = 1:numrows % Takes data from right breast
-    for j = 1:str2double(midcol{1})
+    for j = 1:midcol
         for k = 1:numpics % will have start at 1 
             Rbreastmean{i,j,k} = averages{i,j,k};
             if Rbreastmean{i,j,k} == 0
@@ -296,7 +296,7 @@ for k =1:numpics % will have to get rid of -1. Finds averages of Rbreast and std
     Rstdv{k} = nanstd(Rightstdv);
 end
 for i = 1:numrows %gets the data for the left breast
-    for j = str2double(midcol{1}):numcols
+    for j = midcol:numcols
         for k = 1:numpics % will have start at 1 
             Lbreastmean{i,j,k} = averages{i,j,k};
             if Lbreastmean{i,j,k} == 0
@@ -306,7 +306,7 @@ for i = 1:numrows %gets the data for the left breast
     end 
 end
 for i = 1:numrows %Makes all zero cells = NaN
-    for j = 1:str2double(midcol{1})-1
+    for j = 1:midcol-1
         for k = 1:numpics % will have start at 1 
             Lbreastmean{i,j,k} = NaN;
             
@@ -346,19 +346,19 @@ Rbreaststdv = cell2mat(Rstdv);
 %     normstdv(v,:) = Lbreaststdv;
 % end
 
-figure
-Rplot = errorbar(t,totRbreastmean,Rbreaststdv,'r');
-hold on % plot everything
-Lplot = errorbar(t,totLbreastmean,Lbreaststdv,'b');
-
-title('Left vs Right Change Over Time')
-legend('Right','Left')
-xlabel('Time (min)')
-ylabel('Pixel Value')
-a = Rplot.Color;
-Rplot.Color = 'r';
-b = Lplot.Color;
-Lplot.Color = 'b';
+% figure
+% Rplot = errorbar(t,totRbreastmean,Rbreaststdv,'r');
+% hold on % plot everything
+% Lplot = errorbar(t,totLbreastmean,Lbreaststdv,'b');
+% 
+% title('Left vs Right Change Over Time')
+% legend('Right','Left')
+% xlabel('Time (min)')
+% ylabel('Pixel Value')
+% a = Rplot.Color;
+% Rplot.Color = 'r';
+% b = Lplot.Color;
+% Lplot.Color = 'b';
 
 %% find average slope for each breast
 for k = 1:numpics-1 % will have to make 1
@@ -445,15 +445,15 @@ end
 for i = 1:numel(lowrow)
     lowsquarechange(i) = totsquarechange(lowrow(i),lowcol(i));
 end
-T = table(lowrow,lowcol,transpose(lowsquarechange)); % shows which squares have the least change
-T.Properties.VariableNames = {'Row','Column','Change'}
+% T = table(lowrow,lowcol,transpose(lowsquarechange)); % shows which squares have the least change
+% T.Properties.VariableNames = {'Row','Column','Change'}
 [normmaximum, normmaxidx] = maxk(relativesquarechange(:),5);
 [lownormrow, lownormcol] = ind2sub(size(relativesquarechange),maxidx);
 for i = 1:numel(lownormrow)
         lownormsquarechange(i) = relativesquarechange(lownormrow(i),lownormcol(i));
 end
-T = table(lownormrow,lownormcol,transpose(lownormsquarechange)); % shows which squares have the least change
-T.Properties.VariableNames = {'Row','Column','NormalizedChange'}
+% T = table(lownormrow,lownormcol,transpose(lownormsquarechange)); % shows which squares have the least change
+% T.Properties.VariableNames = {'Row','Column','NormalizedChange'}
 warmregionidentifier = I_mat;
 for k = 1:numpics
 for i = 1:numel(lowcol)
