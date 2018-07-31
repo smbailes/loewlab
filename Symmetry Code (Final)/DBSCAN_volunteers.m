@@ -293,8 +293,8 @@ for t = 1:numClust
             end
         end
         
-        OldXWidth(t) = max(cell2mat(XDistances));
-        OldYWidth(t) = max(cell2mat(YDistances));
+%         OldXWidth(t) = max(cell2mat(XDistances));
+%         OldYWidth(t) = max(cell2mat(YDistances));
         CenX = ClusterInfo{7,1}(t).ClusterCentroid(1);
         CenY = ClusterInfo{7,1}(t).ClusterCentroid(2);
         counter = 1;
@@ -360,11 +360,17 @@ for t = 1:numClust
         AdjustedVesselsRight = I_mat{7}(cell2mat(NewVesClustIndicesRight{t}(:,2)), cell2mat(NewVesClustIndicesRight{t}(:,1)));
         AdjustedVesselsLeft = I_mat{7}(cell2mat(NewVesClustIndicesLeft{t}(:,2)), cell2mat(NewVesClustIndicesLeft{t}(:,1)));
         
-        avgAdjustedVesselNeg(t) = mean2(AdjustedVesselsNeg);
-        avgAdjustedVesselPos(t) = mean2(AdjustedVesselsPos);
-        avgAdjustedVesselRight(t) = mean2(AdjustedVesselsRight);
-        avgAdjustedVesselLeft(t) = mean2(AdjustedVesselsLeft);
-
+         AdjVesPos = AdjustedVesselsPos(find(AdjustedVesselsPos>0));
+        AdjVesNeg = AdjustedVesselsNeg(find(AdjustedVesselsNeg>0));
+        AdjVesRight = AdjustedVesselsRight(find(AdjustedVesselsRight>0));
+        AdjVesLeft = AdjustedVesselsLeft(find(AdjustedVesselsLeft>0));
+        
+        
+        avgAdjustedVesselNeg(t) = mean2(AdjVesPos);
+        avgAdjustedVesselPos(t) = mean2(AdjVesNeg);
+        avgAdjustedVesselRight(t) = mean2(AdjVesRight);
+        avgAdjustedVesselLeft(t) = mean2(AdjVesLeft);
+        
         VesselPDiff = avgs(7,t)*0.25;
         if((avgAdjustedVesselPos(t) + VesselPDiff < avgs(7,t)) || (avgAdjustedVesselNeg(t)+ VesselPDiff < avgs(7,t)))
             thisImage(t).RemoveCluster = 1;
@@ -542,7 +548,7 @@ for z = 1:numClustersLeft
     %outlier
     if(ClusterDifference(z) > 0 || abs(ClusterDifference(z)) > 3000 || clusterDifferenceData(z)>0)
         counter = counter+1;
-        NumberOfRemoval(counter) = z
+        NumberOfRemoval(counter) = z;
     end
 end 
 
