@@ -324,7 +324,8 @@ for t = 1:numClust
             NewVesClustYpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) + (YWidth(t)+5); 
             if NewVesClustXpos{j} > Xdimen
                 NewVesClustXpos{j} = Xdimen;
-            elseif  NewVesClustYpos{j} > Ydimen
+            end
+            if  NewVesClustYpos{j} > Ydimen
                 NewVesClustYpos{j} = Ydimen;
             end
         end
@@ -334,7 +335,8 @@ for t = 1:numClust
             NewVesClustYneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) - (YWidth(t)+5);  
             if NewVesClustXneg{j} < 1
                 NewVesClustXneg{j} = 1;
-            elseif NewVesClustYneg{j} < 1
+            end
+            if NewVesClustYneg{j} < 1
                 NewVesClustYneg{j} = 1;
             end
         end
@@ -534,6 +536,7 @@ counter = 0;
 ClusterDifference1 = ClusterDifference(find(ClusterDifference<3000));
 cutoff = std2(ClusterDifference1);
 
+NumberOfRemoval = [];
 for z = 1:numClustersLeft
     %If the cluster changes more than the corresponding region or it is an
     %outlier

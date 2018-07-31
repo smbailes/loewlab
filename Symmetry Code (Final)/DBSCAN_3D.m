@@ -553,7 +553,8 @@ for t = 1:numClust
             NewVesClustYpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) + (OldYWidth(t)+5); 
             if NewVesClustXpos{j} > Xdimen
                 NewVesClustXpos{j} = Xdimen;
-            elseif  NewVesClustYpos{j} > Ydimen
+            end
+            if  NewVesClustYpos{j} > Ydimen
                 NewVesClustYpos{j} = Ydimen;
             end
         end
@@ -563,7 +564,8 @@ for t = 1:numClust
             NewVesClustYneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) - (OldYWidth(t)+5);  
             if NewVesClustXneg{j} < 1
                 NewVesClustXneg{j} = 1;
-            elseif NewVesClustYneg{j} < 1
+            end
+            if NewVesClustYneg{j} < 1
                 NewVesClustYneg{j} = 1;
             end
         end
