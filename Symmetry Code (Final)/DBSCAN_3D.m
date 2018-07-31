@@ -642,39 +642,35 @@ end
 
  %% Corresponding Nipple check: Get coordinates of nipples
 
-figure('Name','Select nipple (w/o Tumor)'), 
+% figure('Name','Select Right nipple'), 
  for i = 1:15
     I1 = I_mat{i}(find(I_mat{i}>0));
     imshow(I_mat{i}, [min(I1) max(I1)])
     hold on
-    if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
-        xlabel('<--')
-    else
-        xlabel('-->')
-    end % gets coordinates of nipple
-    [X_corrNip{i},Y_corrNip{i}] = ginput(1);
+            xlabel('<--')
+ 
+    [X_RightNip{i},Y_RightNip{i}] = ginput(1);
  end
 close
 questdlg('Switch sides','Switch sides','Ok','Sure','Ok')
 
-figure('Name','Select nipple (w/ Tumor)'), 
+figure('Name','Select Left Nipple'), 
 for i =1:15
     I1 = I_mat{i}(find(I_mat{i}>0));
     imshow(I_mat{i}, [min(I1) max(I1)]) % gets coordinates of nipple
-    hold on,
-    if strcmp(sideString,'Left') == 1                   % Direct user to tumor side
-        xlabel('-->')
-    else
-        xlabel('<--')
-    end 
-    [X_tumNip{i},Y_tumNip{i}] = ginput(1);
+    hold on,               
+        xlabel('-->') 
+    [X_LeftNip{i},Y_LeftNip{i}] = ginput(1);
 end
 close
 %% Track clusters over time
 % numClust = length(ClustStruct);
+figure('Name','Select Middle'), imshow(I_mat{7},[min(pic_adj) max(pic_adj)]), xlabel('Select Middle')
+[middle,~] = ginput(1);
+close
 clear ClustInfoCell RemoveCluster NumClust JustClust Indices XClusterIndices YClusterIndices...
-    Xtumchange Ytumchange Xcorrchange Ycorrchange AdjustedClustStruct Values Xnip2tum Ynip2tum...
-    XCorrIndices YCorrIndices
+    XLeftchange YLeftchange XRightchange YRightchange AdjustedClustStruct Values Xnip2Clust Ynip2Clust...
+    XCorrIndices YCorrIndices RemainingClust XCorrIndice YCorrIndice
 ClustInfoCell = struct2cell(ClusterInfo{7,1}); %converts data into cell array
 RemoveCluster = cell2mat(ClustInfoCell(7,:,:)); %separates the data indicating to remove clusters
 counter = 0;
@@ -684,7 +680,7 @@ for i = 1:length(ClustInfoCell)
         JustClust{counter} = ClustInfoCell(:,:,i);
     end
 end
-   NumClust = numel(JustClust); %finds number of clusters
+   RemainingClust = numel(JustClust); %finds number of clusters
    clear d
 for i =1:length(JustClust)
     d{i} = i;
@@ -700,72 +696,96 @@ for i = 1:length(JustClust)
 end
 
 for i = 1:15
-    Xtumchange{i} = X_tumNip{i} - X_tumNip{7};
-    Ytumchange{i} = Y_tumNip{i} - Y_tumNip{7};
-    Xcorrchange{i} = X_corrNip{i} - X_corrNip{7};
-    Ycorrchange{i} = Y_corrNip{i} - Y_corrNip{7};
+    XLeftchange{i} = X_LeftNip{i} - X_LeftNip{7};
+    YLeftchange{i} = Y_LeftNip{i} - Y_LeftNip{7};
+    XRightchange{i} = X_RightNip{i} - X_RightNip{7};
+    YRightchange{i} = Y_RightNip{i} - Y_RightNip{7};
 end
 
 AdjustedClustStruct = struct('ClusterNumber',d,'TumorBreastClustorXPoints',XClusterIndices,'TumorBreastClustorYPoints',YClusterIndices);
-NewTumXPoints = cell(15,NumClust);
-NewTumYPoints = cell(15,NumClust);
-[rtum,ctum] = size(I_mat{7});
 
-for i = 1:NumClust
-    for j = 1:15
-        NewTumXPoints{j,i} = XClusterIndices{i} + cell2mat(Xtumchange(j)); % adjusts indices by the change in the nipple relative to time 7
-        NewTumYPoints{j,i} = YClusterIndices{i} + cell2mat(Ytumchange(j));
-    end % New Xpoints. i = number cluster and j = points at time
+NewClustXPoints = cell(15,RemainingClust);
+NewClustYPoints = cell(15,RemainingClust);
+[totRow,totCol] = size(I_mat{7});
+
+for i = 1:RemainingClust
+    if mean2(XClusterIndices{i}) <= middle
+        for j = 1:15
+        NewClustXPoints{j,i} = XClusterIndices{i} + cell2mat(XRightchange(j)); % adjusts indices by the change in the nipple relative to time 7
+        NewClustYPoints{j,i} = YClusterIndices{i} + cell2mat(YRightchange(j));
+        end % New Xpoints. i = number cluster and j = points at time
+    else
+        for j = 1:15
+        NewClustXPoints{j,i} = XClusterIndices{i} + cell2mat(XLeftchange(j));
+        NewClustYPoints{j,i} = YClusterIndices{i} + cell2mat(YLeftchange(j));
+        end
+    end
 end
-[r,c] = size(NewTumXPoints);
-for i = 1:c %cluster  
-Xnip2tum{i} = X_tumNip{7} - XClusterIndices{i};
-Ynip2tum{i} = Y_tumNip{7} - YClusterIndices{i};
+[r,c] = size(NewClustXPoints);
+for i = 1:RemainingClust
+    if mean2(XClusterIndices{i}) <= middle
+        for j = 1:15
+         Xnip2Clust{j,i} = X_RightNip{7} - NewClustXPoints{j,i};
+         Ynip2Clust{j,i} = Y_RightNip{7} - NewClustYPoints{j,i};
+        end
+    else
+        for j = 1:15
+         Xnip2Clust{j,i} = X_LeftNip{7} - NewClustXPoints{j,i};
+         Ynip2Clust{j,i} = Y_LeftNip{7} - NewClustYPoints{j,i};
+        end
+    end
 end
-for i = 1:NumClust
-    for j = 1:15
-       XCorrIndices{j,i} = X_corrNip{j} + Xnip2tum{i};
-       YCorrIndices{j,i} = Y_corrNip{j} + Ynip2tum{i};
+for i = 1:RemainingClust
+    if mean2(XClusterIndices{i}) <= middle
+        for j = 1:15 % 
+            XCorrIndices{j,i} = X_LeftNip{j} + Xnip2Clust{j,i};
+            YCorrIndices{j,i} = Y_LeftNip{j} + Ynip2Clust{j,i};
+        end
+    else
+        for j = 1:15
+            XCorrIndices{j,i} = X_RightNip{j} + Xnip2Clust{j,i};
+            YCorrIndices{j,i} = Y_RightNip{j} + Ynip2Clust{j,i};
+        end
     end
 end
 for j = 1:c % cluster
     for i = 1:r % time
-    XTumIndice = cell2mat(NewTumXPoints(i,j)); %Creates the points for the cluster at this time
-    YTumIndice = cell2mat(NewTumYPoints(i,j));
+    XClustIndice = cell2mat(NewClustXPoints(i,j)); %Creates the points for the cluster at this time
+    YClustIndice = cell2mat(NewClustYPoints(i,j));
     XCorrIndice = cell2mat(XCorrIndices(i,j));
     YCorrIndice = cell2mat(YCorrIndices(i,j));
-    L = length(XTumIndice);
+    L = length(XClustIndice);
       for k = 1:L % pixel
-          if XTumIndice(k) <1 % adjusts indices if exceed image
-              XTumIndice(k) = 1;              
-          elseif XTumIndice(k) > ctum
-              XTumIndice(k) = ctum;  
+          if XClustIndice(k) <1 % adjusts indices if exceed image
+              XClustIndice(k) = 1;              
+          elseif XClustIndice(k) > totCol
+              XClustIndice(k) = totCol;  
           end
           if XCorrIndice(k) <1
               XCorrIndice(k) = 1;
-          elseif XCorrIndice(k) > ctum
-              XCorrIndice(k) = ctum;
+          elseif XCorrIndice(k) > totCol
+              XCorrIndice(k) = totCol;
           end
-          if YTumIndice(k) <1
-              YTumIndice(k) = 1;
-          elseif YTumIndice(k) > rtum
-              YTumIndice(k) = rtum;
+          if YClustIndice(k) <1
+              YClustIndice(k) = 1;
+          elseif YClustIndice(k) > totRow
+              YClustIndice(k) = totRow;
           end
           if YCorrIndice(k) <1
               YCorrIndice(k) = 1;
-          elseif YCorrIndice(k) > rtum
-              YCorrIndice(k) = rtum;
+          elseif YCorrIndice(k) > totRow
+              YCorrIndice(k) = totRow;
           end
           
-          TumValues{k} = I_mat{i}(floor(YTumIndice(k)),floor(XTumIndice(k))); %Records the value at each time
+          ClustValues{k} = I_mat{i}(floor(YClustIndice(k)),floor(XClustIndice(k))); %Records the value at each time
           CorrValues{k} = I_mat{i}(floor(YCorrIndice(k)),floor(XCorrIndice(k)));
       end
       
-      TimeClusterData{i,j} = mean(cell2mat(TumValues)); % Records the average cluster value at each time
+      TimeClusterData{i,j} = mean(cell2mat(ClustValues)); % Records the average cluster value at each time
       CorrData{i,j} = mean(cell2mat(CorrValues)); %Records average cluster value for region opposite cluster at each time
       
 
-      clear TumValues CorrValues
+      clear ClustValues CorrValues
     end
 end
       
