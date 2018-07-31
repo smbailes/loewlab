@@ -71,7 +71,7 @@ end
 if range(1) > 3000
     s = sqrt(4/3);
 elseif (range(1) <= 3000 && range(1) > 2700)
-    s = sqrt(10/8.5);
+    s = sqrt(10/8);
 elseif range(1) <= 2700
     s = 1;
 end     
@@ -87,7 +87,7 @@ end
 % minPts = str2double(answer{2});                 
 % percent = str2num(answer{3});
 % s = str2num(answer{4});
-% scaling = 1/(s^2);
+scaling = 1/(s^2);
 fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,scaling);
 
     % Convert Clock Hour to Angle (in rad) 
@@ -549,8 +549,8 @@ for t = 1:numClust
         [Ydimen,Xdimen] = size(I_mat{15});
         
         for j = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
-            NewVesClustXpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) + (XWidth(t)+5);
-            NewVesClustYpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) + (YWidth(t)+5); 
+            NewVesClustXpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) + (OldXWidth(t)+5);
+            NewVesClustYpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) + (OldYWidth(t)+5); 
             if NewVesClustXpos{j} > Xdimen
                 NewVesClustXpos{j} = Xdimen;
             elseif  NewVesClustYpos{j} > Ydimen
@@ -559,8 +559,8 @@ for t = 1:numClust
         end
         
         for j = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
-            NewVesClustXneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) - (XWidth(t)+5);
-            NewVesClustYneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) - (YWidth(t)+5);  
+            NewVesClustXneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) - (OldXWidth(t)+5);
+            NewVesClustYneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) - (OldYWidth(t)+5);  
             if NewVesClustXneg{j} < 1
                 NewVesClustXneg{j} = 1;
             elseif NewVesClustYneg{j} < 1
@@ -596,9 +596,9 @@ for t = 1:numClust
         if((avgAdjustedVesselPos(t) + VesselPDiff < avgs(7,t)) || (avgAdjustedVesselNeg(t)+ VesselPDiff < avgs(7,t)))
             thisImage(t).RemoveCluster = 1;
         end
-        if(avgAdjustedVesselRight(t) + VesselPDiff < avgs(7,t) || avgAdjustedVesselLeft(t) + VesselPDiff < avgs(7,t))
-            thisImage(t).RemoveCluster = 1;
-        end 
+%         if(avgAdjustedVesselRight(t) + VesselPDiff < avgs(7,t) || avgAdjustedVesselLeft(t) + VesselPDiff < avgs(7,t))
+%             thisImage(t).RemoveCluster = 1;
+%         end 
     end 
 end
 ClusterInfo{o,1} = thisImage;

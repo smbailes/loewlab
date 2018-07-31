@@ -367,9 +367,9 @@ for t = 1:numClust
         if((avgAdjustedVesselPos(t) + VesselPDiff < avgs(7,t)) || (avgAdjustedVesselNeg(t)+ VesselPDiff < avgs(7,t)))
             thisImage(t).RemoveCluster = 1;
         end
-        if(avgAdjustedVesselRight(t) + VesselPDiff < avgs(7,t) || avgAdjustedVesselLeft(t) + VesselPDiff < avgs(7,t))
-            thisImage(t).RemoveCluster = 1;
-        end 
+%         if(avgAdjustedVesselRight(t) + VesselPDiff < avgs(7,t) || avgAdjustedVesselLeft(t) + VesselPDiff < avgs(7,t))
+%             thisImage(t).RemoveCluster = 1;
+%         end 
     end 
 end
 ClusterInfo{o,1} = thisImage;
