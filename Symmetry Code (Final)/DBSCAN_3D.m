@@ -28,6 +28,25 @@ close all;
         a=a+120;            % Go to next image (for cropped)
     end
 
+%% Get statistics 
+
+[r c] = size(I_mat{1}); 
+for i = 1:15
+    I1 = I_mat{i}(find(I_mat{i}>0));
+    
+    highcol = max(I1);
+    high(i) = max(highcol);
+    
+    lowcol = min(I1);
+    low(i) = min(lowcol);
+    
+    range(i) = high(i) - low(i);
+    
+    average(i) = mean2(I1);
+    stdev(i) = std2(I1);
+   
+end 
+
 %% Import Truth Data from Excel file
     [num,txt,raw] = xlsread('TruthData');   % Put TruthData into 3 cell arrays
     index = find(ismember(txt,ptID));       % Select row where patient data is
@@ -40,19 +59,35 @@ close all;
     celldisp(notes);   
     
 %% DBSCAN Parameters
-    
-prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
-    'Enter MinPts:','Enter Desired %:','Enter desired scaling factor'};  
-dlg_title = 'DBSCAN Parameters';                                         % box title
-num_lines = 1;                                                          % lines per answer
-defaultans = {'6.25','10','80','sqrt(4/3)'};          % default inputs
-options.Resize = 'on';                                                  % allows for resizing of box
-answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
-epsilon = str2double(answer{1});                
-minPts = str2double(answer{2});                 
-percent = str2num(answer{3});
-s = str2num(answer{4});
-scaling = 1/(s^2);
+minPts = 10; percent = 80; 
+if stdev(1) < 225
+    epsilon = 6;
+elseif(stdev < 300 && stdev >= 225)
+    epsilon = 6.25;
+elseif stdev > 300 
+    epsilon = 6.5;
+end 
+
+if range(1) > 3000
+    s = sqrt(4/3);
+elseif (range(1) < 3000 && range(1) > 2700)
+    s = sqrt(10/8.5);
+elseif range(1) < 2700
+    s = 1;
+end 
+
+% prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
+%     'Enter MinPts:','Enter Desired %:','Enter desired scaling factor'};  
+% dlg_title = 'DBSCAN Parameters';                                         % box title
+% num_lines = 1;                                                          % lines per answer
+% defaultans = {'6.25','10','80','sqrt(4/3)'};          % default inputs
+% options.Resize = 'on';                                                  % allows for resizing of box
+% answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
+% epsilon = str2double(answer{1});                
+% minPts = str2double(answer{2});                 
+% percent = str2num(answer{3});
+% s = str2num(answer{4});
+% scaling = 1/(s^2);
 fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,scaling);
 
     % Convert Clock Hour to Angle (in rad) 

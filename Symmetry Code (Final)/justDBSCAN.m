@@ -107,7 +107,7 @@ for n = 7:7                  % Iterate through cell matrix for each minute
 end    
 
 fprintf('Finished Clustering\n');
-
+%{
 %% Try thresholding
 
 thisImage = ClusterInfo{7,1};
@@ -174,4 +174,5 @@ for g = 7:7
 %     
     ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
+%}
 
