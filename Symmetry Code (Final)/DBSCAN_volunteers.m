@@ -42,17 +42,17 @@ end
 minPts = 10; percent = 80; 
 if stdev(1) < 225
     epsilon = 6;
-elseif(stdev < 300 && stdev >= 225)
+elseif(stdev(1) < 300 && stdev(1) >= 225)
     epsilon = 6.25;
-elseif stdev > 300 
+elseif stdev(1) >= 300 
     epsilon = 6.5;
 end 
 
 if range(1) > 3000
     s = sqrt(4/3);
-elseif (range(1) < 3000 && range(1) > 2700)
+elseif (range(1) <= 3000 && range(1) > 2700)
     s = sqrt(10/8.5);
-elseif range(1) < 2700
+elseif range(1) <= 2700
     s = 1;
 end     
 % prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
@@ -254,6 +254,156 @@ for g = 7:7
   
     ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
+
+%% Vessel Check
+for o = 7:7 
+    thisImage = ClusterInfo{o,1}; %Get Current Image Info
+
+    numClusters = length(thisImage);
+    
+    counter = 0;
+for t = 1:numClust
+
+    if thisImage(t).RemoveCluster == 0
+        indices = thisImage(t).ClusterIndices;
+        xind = indices(:,1);
+        yind = indices(:,2);
+
+        ymax = max(yind);
+        ymin = min(yind);
+        ylength = ymax-ymin;
+
+        xmax = max(xind);
+        xmin = min(xind);
+        xlength = xmax-xmin;
+
+        DiagnolLength = sqrt(xlength^2 + ylength^2);
+        ClusterSlope = ylength/xlength;
+        ClusterPerpSlope = -1/ClusterSlope;
+        YIntercept = (-ClusterPerpSlope*thisImage(t).ClusterCentroid(1)) + thisImage(t).ClusterCentroid(2);
+        counter = 1;
+        
+        for i = 1:length(thisImage(t).ClusterIndices)
+            v = floor(thisImage(t).ClusterIndices(i,2) - (ClusterPerpSlope*thisImage(t).ClusterIndices(i,1) + YIntercept));
+            ClusterLineIndices{i,t} = v;
+            if v == 0
+                XDistances{counter}= abs((ClusterInfo{7,1}(t).ClusterIndices(i,1) - ClusterInfo{7,1}(t).ClusterCentroid(1))*2);
+                YDistances{counter} = abs((ClusterInfo{7,1}(t).ClusterIndices(i,2) - ClusterInfo{7,1}(t).ClusterCentroid(2))*2);
+                counter = counter + 1;  
+            end
+        end
+        
+        OldXWidth(t) = max(cell2mat(XDistances));
+        OldYWidth(t) = max(cell2mat(YDistances));
+        CenX = ClusterInfo{7,1}(t).ClusterCentroid(1);
+        CenY = ClusterInfo{7,1}(t).ClusterCentroid(2);
+        counter = 1;
+        
+        for i = 1:length(thisImage(t).ClusterIndices)
+            if ClusterInfo{7,1}(t).ClusterIndices(i,1) == CenX
+                ValuesWithCenX(counter) = ClusterInfo{7,1}(t).ClusterIndices(i,2);
+                counter = counter + 1;
+            end
+        end
+        
+        XWidth(t) = length(ValuesWithCenX);
+        counter = 1;
+        
+        for i = 1:length(thisImage(t).ClusterIndices)
+            if ClusterInfo{7,1}(t).ClusterIndices(i,2) == CenY
+                ValuesWithCenY(counter) = ClusterInfo{7,1}(t).ClusterIndices(i,1);
+                counter = counter + 1;
+            end
+        end
+        YWidth(t) = length(ValuesWithCenY);
+
+        [Ydimen,Xdimen] = size(I_mat{15});
+        
+        for j = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
+            NewVesClustXpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) + (XWidth(t)+5);
+            NewVesClustYpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) + (YWidth(t)+5); 
+            if NewVesClustXpos{j} > Xdimen
+                NewVesClustXpos{j} = Xdimen;
+            elseif  NewVesClustYpos{j} > Ydimen
+                NewVesClustYpos{j} = Ydimen;
+            end
+        end
+        
+        for j = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
+            NewVesClustXneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) - (XWidth(t)+5);
+            NewVesClustYneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) - (YWidth(t)+5);  
+            if NewVesClustXneg{j} < 1
+                NewVesClustXneg{j} = 1;
+            elseif NewVesClustYneg{j} < 1
+                NewVesClustYneg{j} = 1;
+            end
+        end
+        
+        for k = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
+            OriginalClusterYIndices{k} = ClusterInfo{7,1}(t).ClusterIndices(k,2);
+            OriginalClusterXIndices{k} = ClusterInfo{7,1}(t).ClusterIndices(k,1);
+        end
+
+
+        NewVesClustIndicesPos{t} = transpose([NewVesClustXpos;NewVesClustYpos]);
+        NewVesClustIndicesNeg{t} = transpose([NewVesClustXneg;NewVesClustYneg]);
+        NewVesClustIndicesRight{t} = transpose([NewVesClustXpos;OriginalClusterYIndices]);
+        NewVesClustIndicesLeft{t} = transpose([NewVesClustXneg;OriginalClusterYIndices]);
+        
+        
+        clear NewVesClustXpos NewVesClustYpos NewVesClustXneg NewVesClustYneg OriginalClusterYIndices OriginalClusterXIndices
+        
+        AdjustedVesselsPos = I_mat{7}(cell2mat(NewVesClustIndicesPos{t}(:,2)), cell2mat(NewVesClustIndicesPos{t}(:,1)));
+        AdjustedVesselsNeg = I_mat{7}(cell2mat(NewVesClustIndicesNeg{t}(:,2)), cell2mat(NewVesClustIndicesNeg{t}(:,1)));
+        AdjustedVesselsRight = I_mat{7}(cell2mat(NewVesClustIndicesRight{t}(:,2)), cell2mat(NewVesClustIndicesRight{t}(:,1)));
+        AdjustedVesselsLeft = I_mat{7}(cell2mat(NewVesClustIndicesLeft{t}(:,2)), cell2mat(NewVesClustIndicesLeft{t}(:,1)));
+        
+        avgAdjustedVesselNeg(t) = mean2(AdjustedVesselsNeg);
+        avgAdjustedVesselPos(t) = mean2(AdjustedVesselsPos);
+        avgAdjustedVesselRight(t) = mean2(AdjustedVesselsRight);
+        avgAdjustedVesselLeft(t) = mean2(AdjustedVesselsLeft);
+
+        VesselPDiff = avgs(7,t)*0.25;
+        if((avgAdjustedVesselPos(t) + VesselPDiff < avgs(7,t)) || (avgAdjustedVesselNeg(t)+ VesselPDiff < avgs(7,t)))
+            thisImage(t).RemoveCluster = 1;
+        end
+        if(avgAdjustedVesselRight(t) + VesselPDiff < avgs(7,t) || avgAdjustedVesselLeft(t) + VesselPDiff < avgs(7,t))
+            thisImage(t).RemoveCluster = 1;
+        end 
+    end 
+end
+ClusterInfo{o,1} = thisImage;
+end 
+
+%% Plot leftover Clusters
+for g = 7:7 
+    
+    thisImage = ClusterInfo{g,1}; %Get Current Image Info
+    numClusters = length(thisImage);
+    clustData = ClusterInfo{g,3}; %Copy Cluster Data 
+
+    for m = 1:numClusters %Sort through clusters for image
+        if thisImage(m).RemoveCluster == 1 %Remove Indices from Marked Clusters from Cluster Data copy
+            rows = find(clustData(:,3) == m);
+            clustData(rows,:) = [];
+        end     
+    end 
+    
+    hrEnd = clustData(:,(1:2)); %Cluster Indices of remaining Clusters
+    clEnd = clustData(:,3); %Cluster Number for remaining clusters
+    
+    picture = ClusterInfo{g,2};
+    pic_adj = picture(find(picture>0));
+    
+    figure('Name','Remaining Clusters 3.0'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
+    hold on
+    PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
+    title(sprintf('%s - Post Vessel Check',ptID));
+%     plot(xunit, yunit);
+    
+    ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
+end
+
 %% Corresponding Nipple check: Get coordinates of nipples
 figure('Name','Select nipple (w/o Tumor)'), 
  for i = 1:15
@@ -392,15 +542,7 @@ for z = 1:numClustersLeft
         NumberOfRemoval(counter) = z
     end
 end 
-counter1 = 0;
-for z = 1:numClustersLeft
-    for y = 1:15
-        if TimeClusterData{y,z} > CorrData{y,z}
-            counter1 = counter1+1;
-            NumberOfRemoval2(counter1) = z
-        end 
-    end 
-end
+
 
 %% Remove Clusters based on corresponding region change
 thisImage = ClusterInfo{7,1};
@@ -418,19 +560,6 @@ for i = 1:length(thisImage);
    end
 end
 
-ClusterCounter = 1;
-RemoveClusterCounter = 1;
-for i = 1:length(thisImage);
-   if thisImage(i).RemoveCluster == 0
-       if RemoveClusterCounter < length(NumberOfRemoval2)
-          if ClusterCounter == NumberOfRemoval2(RemoveClusterCounter)
-            RemoveClusterCounter = RemoveClusterCounter + 1;
-            thisImage(i).RemoveCluster = 1; %Mark Cluster for Removal
-          end
-      end
-       ClusterCounter = ClusterCounter+1;
-   end
-end
 %%     
 for g = 7:7 
     
@@ -454,7 +583,7 @@ for g = 7:7
     figure('Name','Remaining Clusters'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
     hold on
     PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
-    title(sprintf('%s - Post Symmetrical Cluster Analysis',ptID));
+    title(sprintf('%s - Final Clusters',ptID));
     hold on 
     
     %%PLOT MIDLINE IMAGE

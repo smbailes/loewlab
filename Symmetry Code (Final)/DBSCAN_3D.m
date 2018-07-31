@@ -62,19 +62,19 @@ end
 minPts = 10; percent = 80; 
 if stdev(1) < 225
     epsilon = 6;
-elseif(stdev < 300 && stdev >= 225)
+elseif(stdev(1) < 300 && stdev(1) >= 225)
     epsilon = 6.25;
-elseif stdev > 300 
+elseif stdev(1) >= 300 
     epsilon = 6.5;
 end 
 
 if range(1) > 3000
     s = sqrt(4/3);
-elseif (range(1) < 3000 && range(1) > 2700)
+elseif (range(1) <= 3000 && range(1) > 2700)
     s = sqrt(10/8.5);
-elseif range(1) < 2700
+elseif range(1) <= 2700
     s = 1;
-end 
+end     
 
 % prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
 %     'Enter MinPts:','Enter Desired %:','Enter desired scaling factor'};  
@@ -297,7 +297,7 @@ for c = 7:7
             end 
         end 
     end
-    fprintf('Removed vessels\n');
+    fprintf('Removed vessels by shape\n');
     
     ClusterInfo{c,1} = thisImage; %Save Info to ClusterInfo
 end  
@@ -637,8 +637,6 @@ for g = 7:7
     
     ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
-
-
 
  %% Corresponding Nipple check: Get coordinates of nipples
 
