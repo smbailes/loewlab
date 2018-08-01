@@ -47,7 +47,7 @@ end
 bnds = [colr coll];
 rowbnd = max(bnds);
 biggest(rowbnd:rconn, :) = 0; 
-biggest = connectDots(biggest,25);
+%biggest = connectDots(biggest,25);
 
 figure, imshow(I,[]), title('Thick Under Curve')
 %blue on top on figure
@@ -207,7 +207,6 @@ figure, imshow(I,[]), title('Final Crop')
     hold off 
     %Use our diff1 as the AlphaData for the solid red image. 
     set(displ, 'AlphaData', connectedtop)
-    
 
 
 %% 

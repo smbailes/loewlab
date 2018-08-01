@@ -277,7 +277,8 @@ set(displ, 'AlphaData', total)
 %newboundaries = connectDots(total,100);
 [totalnew colr coll] = connectPixels(total,img_y,img_x, I);
 %connectPixels;
-newboundaries = connectDots(totalnew,50);
+%newboundaries = connectDots(totalnew,50);
+newboundaries = totalnew;
 
 
 % CC = bwconncomp(gett);

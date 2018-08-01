@@ -203,6 +203,8 @@ total1 = total;
 %             yPts(find(xPts==0)) = [];
 %             total1(xPts,yPts) = 1; %sets pixels from above to one 
 %         end
+        closelocx
+        closelocy
     end
 %    hold off;
 %end
