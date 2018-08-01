@@ -1,4 +1,4 @@
-close all
+% close all
 clc, clearvars -except perchangebreast perchangecorr v
 %v = v+1
 

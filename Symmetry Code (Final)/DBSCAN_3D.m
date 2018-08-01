@@ -10,11 +10,10 @@
 
 
 clear all;
-close all;
+% close all;
 
 %% Call to ChangeOverTime
 Changeovertime;
-close all;
 
 %% Patient Selection
 %     [location, ptID] = pathfinder; 
@@ -291,6 +290,10 @@ for c = 7:7
             if(ylength > 30 || xlength > 30 || DiagnolLength > 20)
                 thisImage(t).RemoveCluster = 1;
             end
+            
+            if(ylength < 5 || xlength < 5)
+                thisImage(t).RemoveCluster = 1;
+            end
 
             if(ylength >= xlength*5 || xlength>= ylength*5)
                 thisImage(t).RemoveCluster = 1;
@@ -549,24 +552,40 @@ for t = 1:numClust
         [Ydimen,Xdimen] = size(I_mat{15});
         
         for j = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
-            NewVesClustXpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) + (OldXWidth(t)+5);
-            NewVesClustYpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) + (OldYWidth(t)+5); 
-            if NewVesClustXpos{j} > Xdimen
+            NewVesClustXpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) + (XWidth(t)+5);
+            NewVesClustYpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) + (YWidth(t)+5); 
+            OldNewVesClustXpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) + (OldXWidth(t)+5);
+            OldNewVesClustYpos{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) + (OldYWidth(t)+5);
+            if  NewVesClustXpos{j} > Xdimen
                 NewVesClustXpos{j} = Xdimen;
+            end
+            if  OldNewVesClustXpos{j} > Xdimen
+                OldNewVesClustXpos{j} = Xdimen;
             end
             if  NewVesClustYpos{j} > Ydimen
                 NewVesClustYpos{j} = Ydimen;
             end
+            if  OldNewVesClustYpos{j} > Ydimen
+                OldNewVesClustYpos{j} = Ydimen;
+            end
         end
         
         for j = 1:length(ClusterInfo{7,1}(t).ClusterIndices(:,1))
-            NewVesClustXneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) - (OldXWidth(t)+5);
-            NewVesClustYneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) - (OldYWidth(t)+5);  
+            NewVesClustXneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) - (XWidth(t)+5);
+            NewVesClustYneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) - (YWidth(t)+5);
+            OldNewVesClustXneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,1) - (OldXWidth(t)+5);
+            OldNewVesClustYneg{j} = ClusterInfo{7,1}(t).ClusterIndices(j,2) - (OldYWidth(t)+5);
             if NewVesClustXneg{j} < 1
                 NewVesClustXneg{j} = 1;
             end
+            if OldNewVesClustXneg{j} < 1
+                OldNewVesClustXneg{j} = 1;
+            end
             if NewVesClustYneg{j} < 1
                 NewVesClustYneg{j} = 1;
+            end
+            if OldNewVesClustYneg{j} < 1
+                OldNewVesClustYneg{j} = 1;
             end
         end
         
@@ -580,24 +599,57 @@ for t = 1:numClust
         NewVesClustIndicesNeg{t} = transpose([NewVesClustXneg;NewVesClustYneg]);
         NewVesClustIndicesRight{t} = transpose([NewVesClustXpos;OriginalClusterYIndices]);
         NewVesClustIndicesLeft{t} = transpose([NewVesClustXneg;OriginalClusterYIndices]);
+        OldNewVesClustIndicesPos{t} = transpose([OldNewVesClustXpos; OldNewVesClustYpos]);
+        OldNewVesClustIndicesNeg{t} = transpose([OldNewVesClustXneg; OldNewVesClustYneg]);
         
         
-        clear NewVesClustXpos NewVesClustYpos NewVesClustXneg NewVesClustYneg OriginalClusterYIndices OriginalClusterXIndices
+        clear NewVesClustXpos OldNewVesClustXpos NewVesClustYpos OldNewVesClustYpos ...
+            NewVesClustXneg OldNewVesClustXneg NewVesClustYneg OldNewVesClustYneg ...
+            OriginalClusterYIndices OriginalClusterXIndices
         
         AdjustedVesselsPos = I_mat{7}(cell2mat(NewVesClustIndicesPos{t}(:,2)), cell2mat(NewVesClustIndicesPos{t}(:,1)));
         AdjustedVesselsNeg = I_mat{7}(cell2mat(NewVesClustIndicesNeg{t}(:,2)), cell2mat(NewVesClustIndicesNeg{t}(:,1)));
         AdjustedVesselsRight = I_mat{7}(cell2mat(NewVesClustIndicesRight{t}(:,2)), cell2mat(NewVesClustIndicesRight{t}(:,1)));
         AdjustedVesselsLeft = I_mat{7}(cell2mat(NewVesClustIndicesLeft{t}(:,2)), cell2mat(NewVesClustIndicesLeft{t}(:,1)));
-        
-        avgAdjustedVesselNeg(t) = mean2(AdjustedVesselsNeg);
-        avgAdjustedVesselPos(t) = mean2(AdjustedVesselsPos);
-        avgAdjustedVesselRight(t) = mean2(AdjustedVesselsRight);
-        avgAdjustedVesselLeft(t) = mean2(AdjustedVesselsLeft);
+        OldAdjustedVesselsPos = I_mat{7}(cell2mat(OldNewVesClustIndicesPos{t}(:,2)), cell2mat(OldNewVesClustIndicesPos{t}(:,1)));
+        OldAdjustedVesselsNeg = I_mat{7}(cell2mat(OldNewVesClustIndicesNeg{t}(:,2)), cell2mat(OldNewVesClustIndicesNeg{t}(:,1)));
 
-        VesselPDiff = avgs(7,t)*0.25;
-        if((avgAdjustedVesselPos(t) + VesselPDiff < avgs(7,t)) || (avgAdjustedVesselNeg(t)+ VesselPDiff < avgs(7,t)))
+        AdjVesPos = AdjustedVesselsPos(find(AdjustedVesselsPos>0));
+        AdjVesNeg = AdjustedVesselsNeg(find(AdjustedVesselsNeg>0));
+        AdjVesRight = AdjustedVesselsRight(find(AdjustedVesselsRight>0));
+        AdjVesLeft = AdjustedVesselsLeft(find(AdjustedVesselsLeft>0));
+        OldAdjVesPos = OldAdjustedVesselsPos(find(OldAdjustedVesselsPos>0));
+        OldAdjVesNeg = OldAdjustedVesselsNeg(find(OldAdjustedVesselsNeg>0));
+
+
+        avgAdjustedVesselPos(t) = mean2(AdjVesPos);
+        avgAdjustedVesselNeg(t) = mean2(AdjVesNeg);
+        avgAdjustedVesselRight(t) = mean2(AdjVesRight);
+        avgAdjustedVesselLeft(t) = mean2(AdjVesLeft);
+        OldAvgAdjustedVesselPos(t) = mean2(OldAdjVesPos);
+        OldAvgAdjustedVesselNeg(t) = mean2(OldAdjVesNeg);
+        
+        stdAdjustedVesselPos(t) = std2(AdjVesPos);
+        stdAdjustedVesselNeg(t) = std2(AdjVesNeg);
+        stdAdjustedVesselRight(t) = std2(AdjVesRight);
+        stdAdjustedVesselLeft(t) = std2(AdjVesLeft);
+        OldStdAdjustedVesselPos(t) = std2(OldAdjVesPos);
+        OldStdAdjustedVesselNeg(t) = std2(OldAdjVesNeg);
+        
+
+        VesselPDiff = avgs(7,t)*0.03
+%         if(avgAdjustedVesselPos(t) + VesselPDiff < avgs(7,t) && stdAdjustedVesselPos(t) < 100)
+%             thisImage(t).RemoveCluster = 1;
+%         end
+%         if (avgAdjustedVesselNeg(t)+ VesselPDiff < avgs(7,t) && stdAdjustedVesselNeg(t) < 100)
+%             thisImage(t).RemoveCluster = 1;
+%         end        
+        if ((OldAvgAdjustedVesselPos(t) + VesselPDiff < avgs(7,t)) && OldStdAdjustedVesselPos(t) < 100)
             thisImage(t).RemoveCluster = 1;
         end
+        if (OldAvgAdjustedVesselNeg(t) + VesselPDiff < avgs(7,t) && OldStdAdjustedVesselNeg(t) < 100)
+            thisImage(t).RemoveCluster = 1;
+        end 
 %         if(avgAdjustedVesselRight(t) + VesselPDiff < avgs(7,t) || avgAdjustedVesselLeft(t) + VesselPDiff < avgs(7,t))
 %             thisImage(t).RemoveCluster = 1;
 %         end 
@@ -642,7 +694,7 @@ end
 
  %% Corresponding Nipple check: Get coordinates of nipples
 
-% figure('Name','Select Right nipple'), 
+figure('Name','Select Right nipple'), 
  for i = 1:15
     I1 = I_mat{i}(find(I_mat{i}>0));
     imshow(I_mat{i}, [min(I1) max(I1)])
@@ -725,13 +777,13 @@ end
 for i = 1:RemainingClust
     if mean2(XClusterIndices{i}) <= middle
         for j = 1:15
-         Xnip2Clust{j,i} = X_RightNip{7} - NewClustXPoints{j,i};
-         Ynip2Clust{j,i} = Y_RightNip{7} - NewClustYPoints{j,i};
+         Xnip2Clust{j,i} = X_RightNip{j} - NewClustXPoints{j,i};
+         Ynip2Clust{j,i} = Y_RightNip{j} - NewClustYPoints{j,i};
         end
     else
         for j = 1:15
-         Xnip2Clust{j,i} = X_LeftNip{7} - NewClustXPoints{j,i};
-         Ynip2Clust{j,i} = Y_LeftNip{7} - NewClustYPoints{j,i};
+         Xnip2Clust{j,i} = X_LeftNip{j} - NewClustXPoints{j,i};
+         Ynip2Clust{j,i} = Y_LeftNip{j} - NewClustYPoints{j,i};
         end
     end
 end
@@ -781,8 +833,11 @@ for j = 1:c % cluster
           CorrValues{k} = I_mat{i}(floor(YCorrIndice(k)),floor(XCorrIndice(k)));
       end
       
-      TimeClusterData{i,j} = mean(cell2mat(ClustValues)); % Records the average cluster value at each time
-      CorrData{i,j} = mean(cell2mat(CorrValues)); %Records average cluster value for region opposite cluster at each time
+      ClustValues = cell2mat(ClustValues);
+      CorrValues = cell2mat(CorrValues); 
+      
+      TimeClusterData{i,j} = mean(ClustValues(find(ClustValues>0))); % Records the average cluster value at each time
+      CorrData{i,j} = mean(CorrValues(find(CorrValues>0))); %Records average cluster value for region opposite cluster at each time
       
 
       clear ClustValues CorrValues
@@ -835,7 +890,7 @@ ClusterCounter = 1;
 RemoveClusterCounter = 1;
 for i = 1:length(thisImage);
    if thisImage(i).RemoveCluster == 0
-       if RemoveClusterCounter < length(NumberOfRemoval)
+       if RemoveClusterCounter <= length(NumberOfRemoval)
           if ClusterCounter == NumberOfRemoval(RemoveClusterCounter)
             RemoveClusterCounter = RemoveClusterCounter + 1;
             thisImage(i).RemoveCluster = 1; %Mark Cluster for Removal
