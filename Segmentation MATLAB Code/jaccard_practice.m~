@@ -32,7 +32,7 @@ title('Snakes') %or connectPixels
 %figure
 %imshow(BW)
 %title('Active Contour')
-M = imread('Cropped_0000_P8.tif');
+M = imread('Cropped_0000_8a.tif');
 BW_groundTruth=logical(M)
 figure
 imshow(BW_groundTruth);
@@ -41,4 +41,4 @@ similarity = jaccard(JJ, BW_groundTruth);
 figure
 imshowpair(JJ, BW_groundTruth)
 j=similarity*100
-fprintf('Jaccard Comparison for snakes and Truth. JIP= %2.2d',j)
+fprintf('Jaccard Comparison for snakes and Truth.JIP= %d',j)
