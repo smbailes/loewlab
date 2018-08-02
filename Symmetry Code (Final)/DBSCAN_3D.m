@@ -32,18 +32,13 @@ Changeovertime;
 [r c] = size(I_mat{1}); 
 for i = 1:15
     I1 = I_mat{i}(find(I_mat{i}>0));
-    
     highcol = max(I1);
-    high(i) = max(highcol);
-    
+    high(i) = max(highcol); 
     lowcol = min(I1);
     low(i) = min(lowcol);
-    
     range(i) = high(i) - low(i);
-    
     average(i) = mean2(I1);
     stdev(i) = std2(I1);
-   
 end 
 
 %% Import Truth Data from Excel file
@@ -169,74 +164,7 @@ for n = 7:7                  % Iterate through cell matrix for each minute
 end    
 
 fprintf('Finished Clustering\n');
-%{
-%% Try thresholding
 
-thisImage = ClusterInfo{7,1};
-numClust = length(thisImage);
-
-for i = 1:numClust
-    clusterIntensities(i) = thisImage(i).ClusterMeanIntensity; 
-end 
-
-percent = 0.8;
-percent2 = 0.005;
-clusterSort = sort(clusterIntensities);       % Arrange Image Hist in Order Low -> High
-percent_ind_low = round(percent * numel(clusterSort));   % Find the index number for the User Input Percentage
-percent_val_low = clusterSort(end - percent_ind_low)        % Find Intensity for the Percentage Number
-percent_ind_high = round(percent2 * numel(clusterSort));
-percent_val_high = clusterSort(end - percent_ind_high)
-
-for j = 1:numClust
-    if(clusterIntensities(j) < percent_val_low || clusterIntensities(j) > percent_val_high)
-        thisImage(j).RemoveCluster = 1;
-    end 
-end
-
-ClusterInfo{7,1} = thisImage;
-
-%% Plot left over clusters
-for g = 7:7 
-    
-    thisImage = ClusterInfo{g,1}; %Get Current Image Info
-    numClusters = length(thisImage);
-    clustData = ClusterInfo{g,3}; %Copy Cluster Data 
-
-    for m = 1:numClusters %Sort through clusters for image
-        if thisImage(m).RemoveCluster == 1 %Remove Indices from Marked Clusters from Cluster Data copy
-            rows = find(clustData(:,3) == m);
-            clustData(rows,:) = [];
-        end     
-    end 
-    
-    hrEnd = clustData(:,(1:2)); %Cluster Indices of remaining Clusters
-    clEnd = clustData(:,3); %Cluster Number for remaining clusters
-    
-    picture = ClusterInfo{g,2};
-    pic_adj = picture(find(picture>0));
-    
-    figure('Name','Remaining Clusters'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
-    hold on
-    PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
-    title(sprintf('%s - Post Threshold',ptID));
-%     plot(xunit, yunit);plot([c1(1 ) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
-    plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
-    plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
-    plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
-    hold on 
-    
-    %%PLOT MIDLINE IMAGE
-
-%     figure, imshow(picture, [min(pic_adj), max(pic_adj)]);
-%     hold on
-%     y1=get(gca,'ylim');
-%     plot([xcent xcent],y1);
-%         
-%     title(sprintf('%s - Mirror Midline Isolation',ptID));
-%     
-    ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
-end
-%}
 %% Cluster Checks
 for c = 7:7
    thisImage = ClusterInfo{c,1};
@@ -303,48 +231,7 @@ for c = 7:7
     fprintf('Removed vessels by shape\n');
     
     ClusterInfo{c,1} = thisImage; %Save Info to ClusterInfo
-end  
-
-%% Remove Cluster Data
-%{
-for e = 7:7
-    thisImage = ClusterInfo{e,1}; %Get Current Image Info
-    clustData = ClusterInfo{e,3}; %Copy Cluster Data     
-    numClusters = length(thisImage);
-    
-    for i = 1:numClusters %Sort through clusters for image
-        if thisImage(i).RemoveCluster == 1 %Remove Indices from Marked Clusters from Cluster Data copy
-            thisImage(i).ClusterMeanIntensity = 0;
-        end     
-    end    
-     ClusterInfo{e,1} = thisImage;
-end 
-fprintf('Finished Removing Cluster Mean Intensity Data\n');
-
-%% Keep certain % of clusters
-% for f = 1:14:15
-%     
-%     thisImage = ClusterInfo{f,1}; %Get Current Image Info
-%     numClusters = length(thisImage);
-%     for a = 1:numClusters
-%         CI(a) = thisImage(a).ClusterMeanIntensity;
-%     end
-%     
-%     CI_nonzero = CI(find(CI>0));
-%     CI_sorted = sort(CI_nonzero);
-%     percent1 = percent/100;
-%     percent_ind1 = round(percent1*numel(CI_sorted));
-%     percent_val = CI_sorted(end-percent_ind1);
-%     
-%     for k = 1:numClusters
-%         if thisImage(k).ClusterMeanIntensity < percent_val
-%             thisImage(k).RemoveCluster = 1;
-%         end
-%     end
-%  ClusterInfo{f,1} = thisImage;
-% end 
-% fprintf('Finished Removing Clusters Below Threshold\n');
-%} 
+end   
 
 %% Plot left over clusters
 for g = 7:7 
@@ -405,20 +292,70 @@ fprintf('Tumor Truth Data: %s\n', sideString{1});
 lowchange = mean2(lowsquarechange);
 lowsquarechange = lowavesquarechange(topx);
 
+ %% Corresponding Nipple check: Get coordinates of nipples
+
+figure('Name','Select Right nipple'), 
+ for i = 1:15
+    I1 = I_mat{i}(find(I_mat{i}>0));
+    imshow(I_mat{i}, [min(I1) max(I1)])
+    hold on
+            xlabel('<--')
+ 
+    [X_RightNip{i},Y_RightNip{i}] = ginput(1);
+ end
+close
+questdlg('Switch sides','Switch sides','Ok','Sure','Ok')
+
+figure('Name','Select Left Nipple'), 
+for i =1:15
+    I1 = I_mat{i}(find(I_mat{i}>0));
+    imshow(I_mat{i}, [min(I1) max(I1)]) % gets coordinates of nipple
+    hold on,               
+        xlabel('-->') 
+    [X_LeftNip{i},Y_LeftNip{i}] = ginput(1);
+end
+close
+%Movement of nipple at each minute
+%Should be 0 for all at i = 7
+for i = 1:15
+    XLeftchange{i} = X_LeftNip{i} - X_LeftNip{7};
+    YLeftchange{i} = Y_LeftNip{i} - Y_LeftNip{7};
+    XRightchange{i} = X_RightNip{i} - X_RightNip{7};
+    YRightchange{i} = Y_RightNip{i} - Y_RightNip{7};
+end
+
+figure('Name','Select Middle'), imshow(I_mat{7},[min(pic_adj) max(pic_adj)]), xlabel('Select Middle')
+[middle,~] = ginput(1);
+close
+
 %% Look at clusters over time
 
 for o = 7:7
     thisImage = ClusterInfo{o,1}; %Get Current Image Info
-    
     numClusters = length(thisImage);
     
     for p = 1:numClusters
         if thisImage(p).RemoveCluster == 0
             clusterIndices = thisImage(p).ClusterIndices;
+            clusterX = cell(15,1);
+            clusterY = cell(15,1);
+            clusterX{7} = clusterIndices(:,2);
+            clusterY{7} = clusterIndices(:,1);
+            if clusterX{7}(1) <= middle
+                for i = 1:15
+                    clusterX{i} = floor(clusterX{7} + XRightchange{i});
+                    clusterY{i} = floor(clusterY{7} + YRightchange{i});
+                end 
+            else 
+                for i = 1:15
+                    clusterX{i} = floor(clusterX{7} + XLeftchange{i});
+                    clusterY{i} = floor(clusterY{7} + YLeftchange{i});
+                end 
+            end 
             for q = 1:15
                 I1 = I_mat{q};
                 %averages of same cluster over time
-                avgs(q,p) = mean2(I1(clusterIndices(:,2),clusterIndices(:,1)));
+                avgs(q,p) = mean2(I1(clusterX{i},clusterY{i}));
             end 
            totalChange(:,p) = avgs(1,p) - avgs(15,p);
 
@@ -692,34 +629,10 @@ for g = 7:7
     ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
 
- %% Corresponding Nipple check: Get coordinates of nipples
 
-figure('Name','Select Right nipple'), 
- for i = 1:15
-    I1 = I_mat{i}(find(I_mat{i}>0));
-    imshow(I_mat{i}, [min(I1) max(I1)])
-    hold on
-            xlabel('<--')
- 
-    [X_RightNip{i},Y_RightNip{i}] = ginput(1);
- end
-close
-questdlg('Switch sides','Switch sides','Ok','Sure','Ok')
-
-figure('Name','Select Left Nipple'), 
-for i =1:15
-    I1 = I_mat{i}(find(I_mat{i}>0));
-    imshow(I_mat{i}, [min(I1) max(I1)]) % gets coordinates of nipple
-    hold on,               
-        xlabel('-->') 
-    [X_LeftNip{i},Y_LeftNip{i}] = ginput(1);
-end
-close
 %% Track clusters over time
 % numClust = length(ClustStruct);
-figure('Name','Select Middle'), imshow(I_mat{7},[min(pic_adj) max(pic_adj)]), xlabel('Select Middle')
-[middle,~] = ginput(1);
-close
+
 clear ClustInfoCell RemoveCluster NumClust JustClust Indices XClusterIndices YClusterIndices...
     XLeftchange YLeftchange XRightchange YRightchange AdjustedClustStruct Values Xnip2Clust Ynip2Clust...
     XCorrIndices YCorrIndices RemainingClust XCorrIndice YCorrIndice
