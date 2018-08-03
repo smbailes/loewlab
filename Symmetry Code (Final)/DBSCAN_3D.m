@@ -352,18 +352,20 @@ for o = 7:7
                     clusterY{i} = floor(clusterY{7} + YLeftchange{i});
                 end 
             end 
-            for j = 1:length(clusterX)
-                if clusterX(j) < 1
-                    clusterX(j) = 1;
-                end 
-                if clusterX(j) > xmax
-                    clusterX(j) = xmax;
-                end 
-                if clusterY(j) < 1
-                    clusterY(j) = 1;
-                end
-                if clusterY(j) > ymax
-                    clusterY(j) = ymax;
+            for t = 1:15
+                for j = 1:length(clusterX{t})
+                    if clusterX{t}(j) < 1
+                        clusterX{t}(j) = 1;
+                    end 
+                    if clusterX{t}(j) > xmax
+                        clusterX{t}(j) = xmax;
+                    end 
+                    if clusterY{t}(j) < 1
+                        clusterY{t}(j) = 1;
+                    end
+                    if clusterY{t}(j) > ymax
+                        clusterY{t}(j) = ymax;
+                    end 
                 end 
             end 
             for q = 1:15
