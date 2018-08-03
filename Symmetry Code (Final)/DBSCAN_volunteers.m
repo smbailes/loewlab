@@ -1,9 +1,7 @@
 %DBSCAN for volunteers 
-
-
 clear all;
 close all;
-
+tic
 %% Call to ChangeOverTime
 Changeovertime;
 
@@ -606,4 +604,4 @@ for g = 7:7
 %     
     ClusterInfo{c,3} = clustData; %Save updated Cluster Info to Array
 end
-
+fprintf('DBSCAN_volunteers took %04f seconds to run\n',toc)

@@ -11,7 +11,7 @@
 
 clear all;
 % close all;
-
+tic
 %% Call to ChangeOverTime
 Changeovertime;
 
@@ -333,7 +333,7 @@ close
 for o = 7:7
     thisImage = ClusterInfo{o,1}; %Get Current Image Info
     numClusters = length(thisImage);
-    
+    [ymax xmax] = size(I_mat{7});
     for p = 1:numClusters
         if thisImage(p).RemoveCluster == 0
             clusterIndices = thisImage(p).ClusterIndices;
@@ -345,11 +345,25 @@ for o = 7:7
                 for i = 1:15
                     clusterX{i} = floor(clusterX{7} + XRightchange{i});
                     clusterY{i} = floor(clusterY{7} + YRightchange{i});
-                end 
+                end     
             else 
                 for i = 1:15
                     clusterX{i} = floor(clusterX{7} + XLeftchange{i});
                     clusterY{i} = floor(clusterY{7} + YLeftchange{i});
+                end 
+            end 
+            for j = 1:length(clusterX)
+                if clusterX(j) < 1
+                    clusterX(j) = 1;
+                end 
+                if clusterX(j) > xmax
+                    clusterX(j) = xmax;
+                end 
+                if clusterY(j) < 1
+                    clusterY(j) = 1;
+                end
+                if clusterY(j) > ymax
+                    clusterY(j) = ymax;
                 end 
             end 
             for q = 1:15
@@ -872,4 +886,5 @@ for g = 7:7
     ClusterInfo{7,1} = thisImage;
     ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
+fprintf('DBSCAN_3D took %04f seconds to run\n',toc)
 
