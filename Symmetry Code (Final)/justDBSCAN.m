@@ -1,6 +1,5 @@
 clear all;
-
-
+tic
 %% Patient Selection
     [location, ptID] = pathfinder; 
 
@@ -23,20 +22,47 @@ clear all;
     sideString = txt(index,2);              % Get side from txt file
     notes = txt(index,7);                   % Get any notes from txt file
     celldisp(notes);   
-    
+%% Get statistics 
+
+[r c] = size(I_mat{1}); 
+for i = 1:15
+    I1 = I_mat{i}(find(I_mat{i}>0));
+    highcol = max(I1);
+    high(i) = max(highcol); 
+    lowcol = min(I1);
+    low(i) = min(lowcol);
+    range(i) = high(i) - low(i);
+    average(i) = mean2(I1);
+    stdev(i) = std2(I1);
+end     
 %% DBSCAN Parameters
-    
-prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
-    'Enter MinPts:','Enter Desired %:','Enter desired scaling factor'};  
-dlg_title = 'DBSCAN Parameters';                                         % box title
-num_lines = 1;                                                          % lines per answer
-defaultans = {'6.25','10','80','sqrt(4/3)'};          % default inputs
-options.Resize = 'on';                                                  % allows for resizing of box
-answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
-epsilon = str2double(answer{1});                
-minPts = str2double(answer{2});                 
-percent = str2num(answer{3});
-s = str2num(answer{4});
+minPts = 10; percent = 80; 
+if stdev(1) < 225
+    epsilon = 6;
+elseif(stdev(1) < 300 && stdev(1) >= 225)
+    epsilon = 6.25;
+elseif stdev(1) >= 300 
+    epsilon = 6.5;
+end 
+
+if range(1) > 3000
+    s = sqrt(4/3);
+elseif (range(1) <= 3000 && range(1) > 2700)
+    s = sqrt(10/8);
+elseif range(1) <= 2700
+    s = 1;
+end     
+% prompt = {'Epsilon Value Measures Cluster Closeness. Enter Epsilon Value:',...
+%     'Enter MinPts:','Enter Desired %:','Enter desired scaling factor'};  
+% dlg_title = 'DBSCAN Parameters';                                         % box title
+% num_lines = 1;                                                          % lines per answer
+% defaultans = {'6.25','10','80','sqrt(4/3)'};          % default inputs
+% options.Resize = 'on';                                                  % allows for resizing of box
+% answer = inputdlg(prompt, dlg_title, [1 50], defaultans, options);      % creates box
+% epsilon = str2double(answer{1});                
+% minPts = str2double(answer{2});                 
+% percent = str2num(answer{3});
+% s = str2num(answer{4});
 scaling = 1/(s^2);
 fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,scaling);
 
@@ -91,7 +117,7 @@ fprintf('Epsilon: %d \nminPts: %d \nScaling Factor: %d\n', epsilon, minPts,scali
 
 %% Plot Image with Clusters using DBSCAN
 %     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID);
-for n = 7:7                  % Iterate through cell matrix for each minute
+for n = 1:15                % Iterate through cell matrix for each minute
     I = I_mat{n};               % Get Image
     [ClustStruct, ClustData] = symmetry_cluster1(I, epsilon, minPts, ptID, s, percent);
     plot([c1(1 ) c2(1)],[c1(2) c2(2)],'b');                      % Create red box region on Image Display
@@ -176,3 +202,4 @@ for g = 7:7
 end
 %}
 
+fprintf('justDBSCAN took %04f seconds to run\n',toc)
