@@ -44,8 +44,8 @@ leftColumn = min(x);
 rightColumn = max(x);
 topLine = min(y);
 bottomLine = max(y);
-width = rightColumn - leftColumn + 1;
-height = bottomLine - topLine + 1;    
+width = rightColumn - leftColumn + 5;
+height = bottomLine - topLine + 5;    
 
 newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
 close;
