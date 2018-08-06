@@ -168,9 +168,9 @@ for cntr = 2:length(thinpts)-1          % use on all points except for first and
     m_mag(cntr) = sqrt((x2-x1)^2+(y2-y1)^2);    % calculate magnitude of slope
 end
 
-figure;
-plot(m);
-title('Slope m');
+% figure;
+% plot(m);
+% title('Slope m');
 
 % find unit tangent vector
 t = zeros(1,length(thinpts));
@@ -178,9 +178,9 @@ for val = 2:length(thinpts)-1
     t(val) = m(val)./m_mag(val);
 end
 
-figure;
-plot(t);
-title('Unit Tangent Vector t(t)');
+% figure;
+% plot(t);
+% title('Unit Tangent Vector t(t)');
 
 % find psi
 psi = zeros(1,length(thinpts));
@@ -205,9 +205,9 @@ for cntr2 = 2:length(thinpts)-1
     len(cntr2) = sqrt((x2-x1)^2 + (y2-y1)^2);       % calculate length
 end
 
-figure;
-plot(len);
-title('Length');
+% figure;
+% plot(len);
+% title('Length');
 
 % find change in lengths
 dlen = diff(len);
@@ -223,11 +223,11 @@ for kcount = 2:length(thinpts)-1
 end
 kk = find(kappa~=0);
 kappa2 = kappa(kk);
-figure;
-plot(kappa2);
-title('Curvature');
-xlabel('Pixel Position');
-ylabel('Curvature');
+% figure;
+% plot(kappa2);
+% title('Curvature');
+% xlabel('Pixel Position');
+% ylabel('Curvature');
 
 %% Part 3: Continue curvature
 
@@ -235,11 +235,11 @@ ylabel('Curvature');
 kappa_new = kappa2(1:min_kind);
 kappa_new = [kappa_new fliplr(kappa_new)];
 
-figure;
-plot(kappa_new);
-title('Curvature continued');
-xlabel('Pixel Position');
-ylabel('Curvature');
+% figure;
+% plot(kappa_new);
+% title('Curvature continued');
+% xlabel('Pixel Position');
+% ylabel('Curvature');
 
 zm_85_topline;
 

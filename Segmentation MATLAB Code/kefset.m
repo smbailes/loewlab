@@ -355,7 +355,7 @@ title('Hot Pixel');
 
 if in == 's'
      kefsmall1
-elseif in == 'l'
+else % in == 'l'
      keflarge1
 end
 

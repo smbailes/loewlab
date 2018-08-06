@@ -126,7 +126,7 @@ total1 = total;
 %loop through pixels and find closest pixels 
 %while pixx~=maxx %runs until it hits pixel at row of breast lower boundary
 %figure, imshow(total), hold on;
-    for xx = maxxloc+1:midxx %runs thru each pixel
+    for xx = maxxloc+1:midy(1,1) %runs thru each pixel
          pixx = xlocs(xx,1); %x location of pixel
          pixy = ylocs(xx,1); %y location of pixel
          theta = pi: pi/100 : 2*pi; %angles of lower half circle
@@ -149,15 +149,21 @@ total1 = total;
                 if bound2y<1, bound2y = 1; end
                 if bound2y>480, bound2y = 480; end
  %           [xfoundnew yfoundnew] = find(total(bound1y, bound2x:bound1x)==1); %find where there is a pixel on line between first and second bounds 
-            rowsearch = bound1y;
-            for colsearch = bound2x:bound1x
-                if total(rowsearch, colsearch)==1
-                    xfoundnew = rowsearch;
-                    yfoundnew = colsearch;
-                    xfound = [xfound,xfoundnew];
-                    yfound = [yfound,yfoundnew];
-                end
+% % %             rowsearch = bound1y;
+            [yfoundnew] = find(total(bound1y, bound2x:bound1x)==1); %find where there is a pixel on line between first and second bounds 
+            [xfoundnew] = ones(1,length(yfoundnew))*(bound1y);
+            if yfoundnew 
+                xfound = [xfound,xfoundnew];
+                yfound = [yfound,yfoundnew];
             end
+% % %             for colsearch = bound2x:bound1x
+% % %                 if total(rowsearch, colsearch)==1
+% % %                     xfoundnew = rowsearch;
+% % %                     yfoundnew = colsearch;
+% % %                     xfound = [xfound,xfoundnew];
+% % %                     yfound = [yfound,yfoundnew];
+% % %                 end
+% % %             end
 %             [xfoundnew] = [];
 %             [xfoundnew] = ones(1,length(yfoundnew))*(bound1y);
             %if yfoundnew>=pixy 
@@ -175,12 +181,12 @@ total1 = total;
 
         
 %         yrem = find(yfound==pixy);
-%         for j = 1:length(yrem)
-%             if xfound(yrem)==pixx
-%                 yfound(yrem) = [];
-%                 xfound(yrem) = []; 
-%             end
-%         end
+        for j = 1:length(yrem)
+            if xfound(yrem)==pixx
+                yfound(yrem) = [];
+                xfound(yrem) = []; 
+            end
+        end
         dist = zeros(length(xfound),3);
 %       if xfound
             for i = 1:length(xfound) %calculates distance of pixels found in radius from initial pixel
@@ -213,7 +219,7 @@ total1 = total;
 %loop through pixels and find closest pixels 
 %while pixx~=maxx %runs until it hits pixel at row of breast lower boundary
 %figure, imshow(total), hold on;
-    for xx = midxx+1:maxxloc2 %runs thru each pixel
+    for xx = midy(1,1):maxxloc2 %runs thru each pixel
          pixx = xlocs(xx,1); %x location of pixel
          pixy = ylocs(xx,1); %y location of pixel
          theta = 0: pi/100 : pi; %angles of lower half circle
