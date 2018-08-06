@@ -430,7 +430,7 @@ end
 
 %% Finds data for tumor and corresponding region
 if answer == "Patient"
-topx = round(.5*(numel(totsquarechange)));
+topx = round(.3*(numel(totsquarechange)));
 [maximum, maxidx] = maxk(totsquarechange(:),topx);
 [lowrow, lowcol] = ind2sub(size(totsquarechange),maxidx);
 

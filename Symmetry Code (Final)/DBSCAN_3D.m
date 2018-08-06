@@ -10,7 +10,7 @@
 
 
 clear all;
-% close all;
+close all;
 tic
 %% Call to ChangeOverTime
 Changeovertime;
@@ -38,7 +38,7 @@ for i = 1:15
     low(i) = min(lowcol);
     range(i) = high(i) - low(i);
     average(i) = mean2(I1);
-    stdev(i) = std2(I1);
+    stdev(i) = std2 (I1);
 end 
 
 %% Import Truth Data from Excel file
@@ -54,9 +54,9 @@ end
     
 %% DBSCAN Parameters
 minPts = 10; percent = 80; 
-if stdev(1) < 225
-    epsilon = 6.25;
-elseif(stdev(1) < 300 && stdev(1) >= 225)
+if stdev(1) < 215
+    epsilon = 6;
+elseif(stdev(1) < 300 && stdev(1) >= 215)
     epsilon = 6.5;
 elseif stdev(1) >= 300 
     epsilon = 6.75;
@@ -290,7 +290,7 @@ else
 end
 fprintf('Tumor Truth Data: %s\n', sideString{1});
 
-lowchange = mean2(lowsquarechange(find(lowsquarechange<0)));
+lowchange = lowsquarechange(topx);
 lowsquarechange1 = lowavesquarechange(topx);
 
  %% Corresponding Nipple check: Get coordinates of nipples
@@ -394,13 +394,13 @@ for o = 7:7
     end
     for l = 1:numClusters
         if thisImage(l).RemoveCluster == 0
-            if(totalChange(l) > abs(lowchange)) %If the total change of a cluster is too high
+            if(totalChange(l) > abs(lowchange) && totalChange(l) > 0) %If the total change of a cluster is too high
                 thisImage(l).RemoveCluster = 1;
             end
             if(abs(avgStepChange(l)) > abs(lowsquarechange1)) %If the average change is too high
                 thisImage(l).RemoveCluster = 1;
             end
-            if(abs(totalChange(l)) < 75)
+            if(totalChange(l) < 75 && totalChange(l) > 0)
                 thisImage(l).RemoveCluster = 1;
             end
         end
@@ -628,9 +628,9 @@ for t = 1:numClust
         if(avgAdjustedVesselRight(t) + VesselPDiff < avgs(7,t) || avgAdjustedVesselLeft(t) + VesselPDiff < avgs(7,t))
             thisImage(t).RemoveCluster = 1;
         end 
-        if(avgAdjustedVesselUp(t) + VesselPDiff < avgs(7,t) || avgAdjustedVesselDown(t) + VesselPDiff < avgs(7,t))
-            thisImage(t).RemoveCluster = 1;
-        end 
+%         if(avgAdjustedVesselUp(t) + VesselPDiff < avgs(7,t) || avgAdjustedVesselDown(t) + VesselPDiff < avgs(7,t))
+%             thisImage(t).RemoveCluster = 1;
+%         end 
         
     end 
 end
