@@ -50,7 +50,7 @@ height = bottomLine - topLine + 5;
 newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
 close;
 
-newLocation = strcat(location, 'Cropped (NEW)\');
+newLocation = strcat(location, 'Cropped (NEW1)\');
 mkdir(newLocation);
 cd(newLocation);
 

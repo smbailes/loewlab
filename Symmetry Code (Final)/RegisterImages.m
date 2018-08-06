@@ -72,7 +72,7 @@ end
 
 for p = 1:15
     figure
-    imshow(I_mat{p}, [l h]);
+    imshow(I_reg{p}, [l h]);
 end
 pause 
 close all;

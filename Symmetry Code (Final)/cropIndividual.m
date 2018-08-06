@@ -1,3 +1,4 @@
+clear all;
 path = uigetfile('.tif');
 
 I = imread(path);
