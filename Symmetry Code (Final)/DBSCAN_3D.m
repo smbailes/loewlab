@@ -633,12 +633,12 @@ for t = 1:numClust
 %         if (avgAdjustedVesselLeft(t) + VesselPDiff < avgs(7,t) && stdAdjustedVesselLeft(t) < 100)
 %             thisImage(t).RemoveCluster = 1;
 %         end 
-        if(avgAdjustedVesselUp(t) + VesselPDiff < avgs(7,t) && stdAdjustedVesselUp(t) < 100)
-            thisImage(t).RemoveCluster = 1;
-        end 
-        if (avgAdjustedVesselDown(t) + VesselPDiff < avgs(7,t) && stdAdjustedVesselDown(t) < 100)
-            thisImage(t).RemoveCluster = 1;
-        end 
+%         if(avgAdjustedVesselUp(t) + VesselPDiff < avgs(7,t) && stdAdjustedVesselUp(t) < 100)
+%             thisImage(t).RemoveCluster = 1;
+%         end 
+%         if (avgAdjustedVesselDown(t) + VesselPDiff < avgs(7,t) && stdAdjustedVesselDown(t) < 100)
+%             thisImage(t).RemoveCluster = 1;
+%         end 
         
     end 
 end
