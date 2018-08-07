@@ -10,7 +10,7 @@
 
 
 clear all;
-% close all;
+close all;
 tic
 %% Call to ChangeOverTime
 Changeovertime;
@@ -54,9 +54,9 @@ end
     
 %% DBSCAN Parameters
 minPts = 10; percent = 80; 
-if stdev(1) < 225
-    epsilon = 6.25;
-elseif(stdev(1) < 300 && stdev(1) >= 225)
+if stdev(1) < 215
+    epsilon = 6;
+elseif(stdev(1) < 300 && stdev(1) >= 215)
     epsilon = 6.5;
 elseif stdev(1) >= 300 
     epsilon = 6.75;
@@ -290,7 +290,7 @@ else
 end
 fprintf('Tumor Truth Data: %s\n', sideString{1});
 
-lowchange = mean2(lowsquarechange(find(lowsquarechange<0)));
+lowchange = lowsquarechange(topx);
 lowsquarechange1 = lowavesquarechange(topx);
 
  %% Corresponding Nipple check: Get coordinates of nipples
@@ -340,45 +340,45 @@ for o = 7:7
     for p = 1:numClusters
         if thisImage(p).RemoveCluster == 0
             clusterIndices = thisImage(p).ClusterIndices;
-            clusterY{7,p} = clusterIndices(:,2);
-            clusterX{7,p} = clusterIndices(:,1);
-            if clusterX{7,p}(1) <= middle
-                for i = 1:15
-                    clusterX{i,p} = floor(clusterIndices(:,1) + XRightchange{i});
-                    clusterY{i,p} = floor(clusterIndices(:,2) + YRightchange{i});
-                end     
-            else 
-                for i = 1:15
-                    clusterX{i,p} = floor(clusterIndices(:,1) + XLeftchange{i});
-                    clusterY{i,p} = floor(clusterIndices(:,2) + YLeftchange{i});
-                end 
-            end 
-            for t = 1:15
-                for j = 1:length(clusterX{t,p})
-                    if clusterX{t,p}(j) < 1
-                        clusterX{t,p}(j) = 1;
-                    end 
-                    if clusterX{t,p}(j) > xmax
-                        clusterX{t,p}(j) = xmax;
-                    end 
-                    if clusterY{t,p}(j) < 1
-                        clusterY{t,p}(j) = 1;
-                    end
-                    if clusterY{t,p}(j) > ymax
-                        clusterY{t,p}(j) = ymax;
-                    end 
-                end 
-            end 
+%             clusterY{7,p} = clusterIndices(:,2);
+%             clusterX{7,p} = clusterIndices(:,1);
+%             if clusterX{7,p}(1) <= middle
+%                 for i = 1:15
+%                     clusterX{i,p} = floor(clusterIndices(:,1) + XRightchange{i});
+%                     clusterY{i,p} = floor(clusterIndices(:,2) + YRightchange{i});
+%                 end     
+%             else 
+%                 for i = 1:15
+%                     clusterX{i,p} = floor(clusterIndices(:,1) + XLeftchange{i});
+%                     clusterY{i,p} = floor(clusterIndices(:,2) + YLeftchange{i});
+%                 end 
+%             end 
+%             for t = 1:15
+%                 for j = 1:length(clusterX{t,p})
+%                     if clusterX{t,p}(j) < 1
+%                         clusterX{t,p}(j) = 1;
+%                     end 
+%                     if clusterX{t,p}(j) > xmax
+%                         clusterX{t,p}(j) = xmax;
+%                     end 
+%                     if clusterY{t,p}(j) < 1
+%                         clusterY{t,p}(j) = 1;
+%                     end
+%                     if clusterY{t,p}(j) > ymax
+%                         clusterY{t,p}(j) = ymax;
+%                     end 
+%                 end 
+%             end 
             for q = 1:15
                 I1 = I_mat{q};
-                for j =1:length(clusterY{q,p})
-                    I2(j) = I1(clusterY{q,p}(j),clusterX{q,p}(j));
-                end
-                I3 = I2(find(I2>0));
+%                 for j =1:length(clusterY{q,p})
+%                     I2(j) = I1(clusterY{q,p}(j),clusterX{q,p}(j));
+%                 end
+%                 I3 = I2(find(I2>0));
                 %averages of same cluster over time
-                avgs(q,p) = mean2(I3);
+%                 avgs(q,p) = mean2(I3);
 %                 clear I2 I3;
-%                 avgs(q,p) = mean2(I1(clusterIndices(:,2), clusterIndices(:,1)));
+                avgs(q,p) = mean2(I1(clusterIndices(:,2), clusterIndices(:,1)));
             end 
            totalChange(:,p) = avgs(1,p) - avgs(15,p);
 
@@ -400,7 +400,7 @@ for o = 7:7
             if(abs(avgStepChange(l)) > abs(lowsquarechange1)) %If the average change is too high
                 thisImage(l).RemoveCluster = 1;
             end
-            if(abs(totalChange(l)) < 75)
+            if(abs(totalChange(l)) < 75 && totalChange(l) > 0)
                 thisImage(l).RemoveCluster = 1;
             end
         end
@@ -610,9 +610,11 @@ for t = 1:numClust
         stdAdjustedVesselLeft(t) = std2(AdjVesLeft);
         OldStdAdjustedVesselPos(t) = std2(OldAdjVesPos);
         OldStdAdjustedVesselNeg(t) = std2(OldAdjVesNeg);
+        stdAdjustedVesselUp(t) = std2(AdjVesUp);
+        stdAdjustedVesselDown(t) = std2(AdjVesDown);
         
 
-        VesselPDiff = avgs(7,t)*0.01
+        VesselPDiff = avgs(7,t)*0.015
 %         if(avgAdjustedVesselPos(t) + VesselPDiff < avgs(7,t) && stdAdjustedVesselPos(t) < 100)
 %             thisImage(t).RemoveCluster = 1;
 %         end
@@ -625,10 +627,16 @@ for t = 1:numClust
         if (OldAvgAdjustedVesselNeg(t) + VesselPDiff < avgs(7,t) && OldStdAdjustedVesselNeg(t) < 100)
             thisImage(t).RemoveCluster = 1;
         end 
-        if(avgAdjustedVesselRight(t) + VesselPDiff < avgs(7,t) || avgAdjustedVesselLeft(t) + VesselPDiff < avgs(7,t))
+%         if(avgAdjustedVesselRight(t) + VesselPDiff < avgs(7,t) && stdAdjustedVesselRight(t) < 100)
+%             thisImage(t).RemoveCluster = 1;
+%         end 
+%         if (avgAdjustedVesselLeft(t) + VesselPDiff < avgs(7,t) && stdAdjustedVesselLeft(t) < 100)
+%             thisImage(t).RemoveCluster = 1;
+%         end 
+        if(avgAdjustedVesselUp(t) + VesselPDiff < avgs(7,t) && stdAdjustedVesselUp(t) < 100)
             thisImage(t).RemoveCluster = 1;
         end 
-        if(avgAdjustedVesselUp(t) + VesselPDiff < avgs(7,t) || avgAdjustedVesselDown(t) + VesselPDiff < avgs(7,t))
+        if (avgAdjustedVesselDown(t) + VesselPDiff < avgs(7,t) && stdAdjustedVesselDown(t) < 100)
             thisImage(t).RemoveCluster = 1;
         end 
         
@@ -915,4 +923,4 @@ for g = 7:7
     ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
 fprintf('DBSCAN_3D took %04f seconds to run\n',toc)
-
+%%
