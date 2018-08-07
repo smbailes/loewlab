@@ -16,14 +16,14 @@ title('Snakes Image')
 %% Input Points and Setup Values
 
 [yp,xp] = getpts;
-Cur_We = 1 ;
-Con_We = 1 ;
-Gra_We = 1 ;
+Cur_We = 0.7 ;
+Con_We = 0.9 ;
+Gra_We = 0.3 ;
 cur_Tresh = 0.8 ;
 %con_Tresh = handles.metricdata.Con_Th ;
 ws = 3 ;
 max_iter = 100 ;
-Stop_Cr = 0.0001 ;
+Stop_Cr = 0.03 ;
 
 Cur_We = Cur_We/(Cur_We + Con_We + Gra_We) ;
 Con_We = Con_We/(Cur_We + Con_We + Gra_We) ;
@@ -268,7 +268,7 @@ dir = uigetdir;
 I = imread([dir '/' ptID]); 
 
 figure, imshow(I,[]) %to help decide if it should be cropped or not
-title('Segmented Patient 10')
+title('Segmented Patient 1')
 line(lix, liy,'Color',[1 0 0],'linewidth',1)
 
 %% Crop Outside of Lines
