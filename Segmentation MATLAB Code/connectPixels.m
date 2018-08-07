@@ -11,9 +11,20 @@ mid_col(:,img_x/2) = 1;
 
 %find x and y locations of pixels (1s) in logical matrix
 [xlocs ylocs] = find(total == 1);
-[midxx midyy] = find(ylocs == midy(1,1));
+%%[midxx midyy] = find(ylocs == midy(1,1));
 
 
+[~,c2mid] = min(abs(ylocs-midy(1,1)));
+closest = ylocs(c2mid);
+if closest>midy(1,1)
+    maxxloc2 = max(find(ylocs==closest));
+    maxxloc = maxxloc2-1;
+else
+    maxxloc2 = max(find(ylocs==closest));
+    maxxloc = maxxloc2+1;
+end
+%maxxloc = max(find(ylocs==cr));
+%maxxloc2 = max(find(ylocs==cl));
 %% from col 1 to midline col, finds x and y location of lowest pixel
 
  r = 100;
@@ -149,21 +160,21 @@ total1 = total;
                 if bound2y<1, bound2y = 1; end
                 if bound2y>480, bound2y = 480; end
  %           [xfoundnew yfoundnew] = find(total(bound1y, bound2x:bound1x)==1); %find where there is a pixel on line between first and second bounds 
-% % %             rowsearch = bound1y;
-            [yfoundnew] = find(total(bound1y, bound2x:bound1x)==1); %find where there is a pixel on line between first and second bounds 
-            [xfoundnew] = ones(1,length(yfoundnew))*(bound1y);
-            if yfoundnew 
-                xfound = [xfound,xfoundnew];
-                yfound = [yfound,yfoundnew];
+            rowsearch = bound1y;
+%             [yfoundnew] = find(total(bound1y, bound2x:bound1x)==1); %find where there is a pixel on line between first and second bounds 
+%             [xfoundnew] = ones(1,length(yfoundnew))*(bound1y);
+%             if yfoundnew 
+%                 xfound = [xfound,xfoundnew];
+%                 yfound = [yfound,yfoundnew];
+%             end
+            for colsearch = bound2x:bound1x
+                if total(rowsearch, colsearch)==1
+                    xfoundnew = rowsearch;
+                    yfoundnew = colsearch;
+                    xfound = [xfound,xfoundnew];
+                    yfound = [yfound,yfoundnew];
+                end
             end
-% % %             for colsearch = bound2x:bound1x
-% % %                 if total(rowsearch, colsearch)==1
-% % %                     xfoundnew = rowsearch;
-% % %                     yfoundnew = colsearch;
-% % %                     xfound = [xfound,xfoundnew];
-% % %                     yfound = [yfound,yfoundnew];
-% % %                 end
-% % %             end
 %             [xfoundnew] = [];
 %             [xfoundnew] = ones(1,length(yfoundnew))*(bound1y);
             %if yfoundnew>=pixy 
@@ -181,12 +192,12 @@ total1 = total;
 
         
 %         yrem = find(yfound==pixy);
-        for j = 1:length(yrem)
-            if xfound(yrem)==pixx
-                yfound(yrem) = [];
-                xfound(yrem) = []; 
-            end
-        end
+%         for j = 1:length(yrem)
+%             if xfound(yrem)==pixx
+%                 yfound(yrem) = [];
+%                 xfound(yrem) = []; 
+%             end
+%         end
         dist = zeros(length(xfound),3);
 %       if xfound
             for i = 1:length(xfound) %calculates distance of pixels found in radius from initial pixel
@@ -209,8 +220,8 @@ total1 = total;
 %             yPts(find(xPts==0)) = [];
 %             total1(xPts,yPts) = 1; %sets pixels from above to one 
 %         end
-        closelocx
-        closelocy
+%         closelocx
+%         closelocy
     end
 %    hold off;
 %end
@@ -263,8 +274,8 @@ total1 = total;
         xfound(find(xfound==0)) = [];
         yfound(find(xfound==0)) = [];
         
-        xfound
-        yfound
+%         xfound
+%         yfound
         
 %         xfound(find(yfound<pixy)) = [];
 %         yfound(find(yfound<pixy)) = [];

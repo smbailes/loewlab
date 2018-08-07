@@ -276,9 +276,27 @@ set(displ, 'AlphaData', total)
 
 %newboundaries = connectDots(total,100);
 [totalnew colr coll] = connectPixels(total,img_y,img_x, I);
+[totalnew colr coll] = connectPixels(totalnew,img_y,img_x, I);
 %connectPixels;
 %newboundaries = connectDots(totalnew,50);
 newboundaries = totalnew;
+
+[ro co] = size(newboundaries); 
+
+    shapeInserter = vision.ShapeInserter('Shape', 'Lines', 'BorderColor', 'White','LineWidth',1);
+    
+    xxnew = []; yynew = [];
+    [xxnew yynew] = find(newboundaries(:,1:(co/2)-1)==1); 
+    yy1 = max(yynew);
+    xx1 = xxnew(max(find(yynew == yy1))); 
+
+    xxnew = []; yynew = [];
+    [xxnew yynew] = find(newboundaries(:,(co/2):co)==1); 
+    yy2 = min(yynew);
+    xx2 = xxnew(max(find(yynew == yy2))); 
+    yy2 = min(yynew)+(co/2);
+
+    newboundaries = step(shapeInserter, newboundaries, uint16([yy1 xx1  yy2 xx2]));
 
 
 % CC = bwconncomp(gett);
