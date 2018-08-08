@@ -11,6 +11,9 @@ dir = uigetdir;
 I = imread([dir '/' snakeID]); 
 
 figure, imshow(I,[]) %to help decide if it should be cropped or not
+
+%HEYYYYYYY WASSUP
+%[x,y] = getpts
 title('Snakes Image')
 
 %% Input Points and Setup Values
@@ -268,7 +271,7 @@ dir = uigetdir;
 I = imread([dir '/' ptID]); 
 
 figure, imshow(I,[]) %to help decide if it should be cropped or not
-title('Segmented Patient 1')
+title('Segmented Volunteer')
 line(lix, liy,'Color',[1 0 0],'linewidth',1)
 
 %% Crop Outside of Lines
