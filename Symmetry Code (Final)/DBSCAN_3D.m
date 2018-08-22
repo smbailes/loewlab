@@ -171,9 +171,9 @@ end
 fprintf('Finished Clustering\n');
 
 %% Cluster Checks
-for c = 7:7
-   thisImage = ClusterInfo{c,1};
-   pic = ClusterInfo{c,2}; %pic = I
+for d = 7:7
+   thisImage = ClusterInfo{d,1};
+   pic = ClusterInfo{d,2}; %pic = I
    
    numClust = length(thisImage);
 
@@ -235,7 +235,7 @@ for c = 7:7
     end
     fprintf('Removed vessels by shape\n');
     
-    ClusterInfo{c,1} = thisImage; %Save Info to ClusterInfo
+    ClusterInfo{d,1} = thisImage; %Save Info to ClusterInfo
 end   
 
 %% Plot left over clusters
@@ -692,203 +692,105 @@ for g = 7:7
 end
 
 
-%% Track clusters over time
-% numClust = length(ClustStruct);
-
-clear ClustInfoCell RemoveCluster NumClust JustClust Indices XClusterIndices YClusterIndices...
-    XLeftchange YLeftchange XRightchange YRightchange AdjustedClustStruct Values Xnip2Clust Ynip2Clust...
-    XCorrIndices YCorrIndices RemainingClust XCorrIndice YCorrIndice
-ClustInfoCell = struct2cell(ClusterInfo{7,1}); %converts data into cell array
-RemoveCluster = cell2mat(ClustInfoCell(7,:,:)); %separates the data indicating to remove clusters
-counter = 0;
-for i = 1:length(ClustInfoCell)
-    if RemoveCluster(i) == 0
-        counter = counter+1;
-        JustClust{counter} = ClustInfoCell(:,:,i);
-    end
-end
-   RemainingClust = numel(JustClust); %finds number of clusters
-   clear d
-for i =1:length(JustClust)
-    d{i} = i;
-end
-
-for i = 1:length(JustClust)
-    Indices{i} = JustClust{i}(2,1);
-end
-
-for i = 1:length(JustClust)
-    XClusterIndices{i} = Indices{1,i}{1,1}(:,1);
-    YClusterIndices{i} = Indices{1,i}{1,1}(:,2);
-end
-
-for i = 1:15
-    XLeftchange{i} = X_LeftNip{i} - X_LeftNip{7};
-    YLeftchange{i} = Y_LeftNip{i} - Y_LeftNip{7};
-    XRightchange{i} = X_RightNip{i} - X_RightNip{7};
-    YRightchange{i} = Y_RightNip{i} - Y_RightNip{7};
-end
-
-AdjustedClustStruct = struct('ClusterNumber',d,'TumorBreastClustorXPoints',XClusterIndices,'TumorBreastClustorYPoints',YClusterIndices);
-
-NewClustXPoints = cell(15,RemainingClust);
-NewClustYPoints = cell(15,RemainingClust);
-
-for i = 1:RemainingClust
-    if mean2(XClusterIndices{i}) <= middle
-        for j = 1:15
-        NewClustXPoints{j,i} = XClusterIndices{i} + cell2mat(XRightchange(j)); % adjusts indices by the change in the nipple relative to time 7
-        NewClustYPoints{j,i} = YClusterIndices{i} + cell2mat(YRightchange(j));
-        end % New Xpoints. i = number cluster and j = points at time
-    else
-        for j = 1:15
-        NewClustXPoints{j,i} = XClusterIndices{i} + cell2mat(XLeftchange(j));
-        NewClustYPoints{j,i} = YClusterIndices{i} + cell2mat(YLeftchange(j));
+%% Track Clusters over time
+for o = 7:7
+    thisImage = ClusterInfo{o,1};
+    numClust = length(thisImage);
+    
+    for i = 1:numClust
+        if thisImage(i).RemoveCluster == 0
+            indices = thisImage(i).ClusterIndices;
+            clusterXIndices{i} = indices(:,1);
+            clusterYIndices{i} = indices(:,2);
+            numPoints = length(clusterXIndices{i});
+            
+            %Track movement of cluster 
+            %Also find distance from cluster points to reference nipple
+            if clusterXIndices{i}(1) <= middle
+                for j = 1:15
+                    shiftedXIndices{j,i} = clusterXIndices{i} + cell2mat(XRightchange(j));
+                    shiftedYIndices{j,i} = clusterYIndices{i} + cell2mat(YRightchange(j));
+                    nip2ClustX{j,i} = X_RightNip{j} - shiftedXIndices{j,i};
+                    nip2ClustY{j,i} = Y_RightNip{j} - shiftedYIndices{j,i};
+                end
+            else
+                for j = 1:15
+                    shiftedXIndices{j,i} = clusterXIndices{i} + cell2mat(XLeftchange(j));
+                    shiftedYIndices{j,i} = clusterYIndices{i} + cell2mat(YLeftchange(j));
+                    nip2ClustX{j,i} = X_RightNip{j} - shiftedXIndices{j,i};
+                    nip2ClustY{j,i} = Y_RightNip{j} - shiftedYIndices{j,i};
+                end
+            end
+            
+            %Map to corresponding region
+            if clusterXIndices{i}(1) > middle %if cluster was on left; cooresponding region on right
+                for j = 1:15
+                    corrXIndices{j,i} = X_RightNip{j} + nip2ClustX{j,i};
+                    corrYIndices{j,i} = Y_RightNip{j} + nip2ClustX{j,i};
+                end
+            else 
+                for j = 1:15
+                    corrXIndices{j,i} = X_LeftNip{j} + nip2ClustX{j,i};
+                    corrYIndices{j,i} = Y_LeftNip{j} + nip2ClustX{j,i};
+                end
+            end
+            
+            
+            for j = 1:15
+                for x = 1:numPoints
+                    if shiftedXIndices{j,i}(x) < 1
+                        shiftedXIndices{j,i}(x) = 1;
+                    end
+                    if shiftedXIndices{j,i}(x) > c 
+                        shiftedXIndices{j,i}(x) = c;
+                    end 
+                    if shiftedYIndices{j,i}(x) < 1
+                        shiftedYIndices{j,i}(x) = 1;
+                    end
+                    if shiftedYIndices{j,i}(x) > r 
+                        shiftedYIndices{j,i}(x) = r;
+                    end
+                    if corrXIndices{j,i}(x) < 1
+                        corrXIndices{j,i}(x) = 1;
+                    end
+                    if corrXIndices{j,i}(x) > c
+                        corrXIndices{j,i}(x) = c;
+                    end 
+                    if corrYIndices{j,i}(x) < 1
+                        corrYIndices{j,i}(x) = 1;
+                    end
+                    if corrYIndices{j,i}(x) > r 
+                        corrYIndices{j,i}(x) = r;
+                    end
+                end
+                clustIntensities(x) = I_mat{j}(floor(shiftedYIndices{j,i}(x)),floor(shiftedXIndices{j,i}(x)));
+                corrIntensities(x)= I_mat{j}(floor(corrYIndices{j,i}(x)),floor(corrXIndices{j,i}(x)));
+                
+                clustAverageTracked{i,j} = mean2(clustIntensities);
+                corrAverageTracked{i,j} = mean2(corrIntensities);
+            end
+            
+            clusterChangeTotal(i) = clustAverageTracked{i,15} - clustAverageTracked{i,1};
+            corrChangeTotal(i) = corrAverageTracked{i,15} - corrAverageTracked{i,1};
+            for y = 1:14
+                clusterChangeStep(i,y) = clustAverageTracked{i,y+1} - clustAverageTracked{i,y};
+                corrChangeStep(i,y) = corrAverageTracked{i,y+1} - corrAverageTracked{i,y};
+            end 
+            clusterAvgStepChange(i) = mean2(clusterChangeStep(i,:));
+            corrAvgStepChange(i) = mean2(corrChangeStep(i,:));
+            
+            if abs(clusterChangeTotal(i)) > abs(corrChangeTotal(i))+75 && clusterChangeTotal(i) < 8000
+                thisImage(i).RemoveCluster = 1;
+            end 
+            if clusterChangeTotal(i) > 0 && clusterChangeTotal(i) < 8000
+                thisImage(i).RemoveCluster = 1;
+            end
+            
         end
-    end
-end
-[time,cluster] = size(NewClustXPoints);
-for i = 1:RemainingClust
-    if mean2(XClusterIndices{i}) <= middle
-        for j = 1:15
-         Xnip2Clust{j,i} = X_RightNip{j} - NewClustXPoints{j,i};
-         Ynip2Clust{j,i} = Y_RightNip{j} - NewClustYPoints{j,i};
-        end
-    else
-        for j = 1:15
-         Xnip2Clust{j,i} = X_LeftNip{j} - NewClustXPoints{j,i};
-         Ynip2Clust{j,i} = Y_LeftNip{j} - NewClustYPoints{j,i};
-        end
-    end
-end
-for i = 1:RemainingClust
-    if mean2(XClusterIndices{i}) <= middle
-        for j = 1:15 % 
-            XCorrIndices{j,i} = X_LeftNip{j} + Xnip2Clust{j,i};
-            YCorrIndices{j,i} = Y_LeftNip{j} + Ynip2Clust{j,i};
-        end
-    else
-        for j = 1:15
-            XCorrIndices{j,i} = X_RightNip{j} + Xnip2Clust{j,i};
-            YCorrIndices{j,i} = Y_RightNip{j} + Ynip2Clust{j,i};
-        end
-    end
-end
-for j = 1:cluster % cluster
-    for i = 1:15 % time
-    XClustIndice = cell2mat(NewClustXPoints(i,j)); %Creates the points for the cluster at this time
-    YClustIndice = cell2mat(NewClustYPoints(i,j));
-    XCorrIndice = cell2mat(XCorrIndices(i,j));
-    YCorrIndice = cell2mat(YCorrIndices(i,j));
-    L = length(XClustIndice);
-      for k = 1:L % pixel
-          if XClustIndice(k) <1 % adjusts indices if exceed image
-              XClustIndice(k) = 1;              
-          elseif XClustIndice(k) > c
-              XClustIndice(k) = c;  
-          end
-          if XCorrIndice(k) <1
-              XCorrIndice(k) = 1;
-          elseif XCorrIndice(k) > c
-              XCorrIndice(k) = c;
-          end
-          if YClustIndice(k) <1
-              YClustIndice(k) = 1;
-          elseif YClustIndice(k) > r
-              YClustIndice(k) = r;
-          end
-          if YCorrIndice(k) <1
-              YCorrIndice(k) = 1;
-          elseif YCorrIndice(k) > r
-              YCorrIndice(k) = r;
-          end
-          
-          ClustValues{k} = I_mat{i}(floor(YClustIndice(k)),floor(XClustIndice(k))); %Records the value at each time
-          CorrValues{k} = I_mat{i}(floor(YCorrIndice(k)),floor(XCorrIndice(k)));
-      end
-      
-      ClustValues = cell2mat(ClustValues);
-      CorrValues = cell2mat(CorrValues); 
-      
-      TimeClusterData{i,j} = mean(ClustValues(find(ClustValues>0))); % Records the average cluster value at each time
-      CorrData{i,j} = mean(CorrValues(find(CorrValues>0))); %Records average cluster value for region opposite cluster at each time
-      
-
-      clear ClustValues CorrValues
-    end
-end
-      
-%% Check: Compare cluster info to region on opposite breast
-
-numClustersLeft = length(TimeClusterData(2,:));
-for y = 1:numClustersLeft
-    clusterDifferenceData(y) = TimeClusterData{15,y} - TimeClusterData{1,y};
-    corrRegionDifference(y) = CorrData{15,y} - CorrData{1,y};
-    ClusterDifference(y) = abs(clusterDifferenceData(y))-abs(corrRegionDifference(y));
-end 
-counter = 0;
-ClusterDifference1 = ClusterDifference(find(ClusterDifference<3000));
-cutoff = std2(ClusterDifference1);
-
-for x = 1:numClustersLeft
-    for v = 1:14
-        stepChangeCluster(x,v) = TimeClusterData{v+1,x} - TimeClusterData{v,x};
-        stepChangeCorr(x,v) = CorrData{v+1,x} - CorrData{v,x};
-    end
-    aveStepChangeCluster(x) = mean2(stepChangeCluster(x,:));
-    aveStepChangeCorr(x) = mean2(stepChangeCorr(x,:));
-    stepChangeDifference(x) = abs(aveStepChangeCluster(x)) - abs(aveStepChangeCorr(x));
-end
-
-NumberOfRemoval = [];
-for z = 1:numClustersLeft
-    %If the cluster changes more than the corresponding region or it is an
-    %outlier
-    if((ClusterDifference(z) > 75 && clusterDifferenceData(z) < 8000) || (clusterDifferenceData(z)>0 && clusterDifferenceData(z) < 8000))
-        counter = counter+1;
-        NumberOfRemoval(counter) = z;
-    end
+    end 
 end 
 
-% counter1 = 0;
-% for z = 1:numClustersLeft
-%     if abs(aveStepChangeCluster(z)) > abs(aveStepChangeCorr(z))
-%         counter1 = counter1+1;
-%         NumberOfRemoval2(counter1) = z;
-%     end 
-% end
-
-%% Remove Clusters based on corresponding region change
-thisImage = ClusterInfo{7,1};
-ClusterCounter = 1;
-RemoveClusterCounter = 1;
-for i = 1:length(thisImage);
-   if thisImage(i).RemoveCluster == 0
-       if RemoveClusterCounter <= length(NumberOfRemoval)
-          if ClusterCounter == NumberOfRemoval(RemoveClusterCounter)
-            RemoveClusterCounter = RemoveClusterCounter + 1;
-            thisImage(i).RemoveCluster = 1; %Mark Cluster for Removal
-          end
-      end
-       ClusterCounter = ClusterCounter+1;
-   end
-end
-
-% ClusterCounter = 1;
-% RemoveClusterCounter = 1;
-% for i = 1:length(thisImage);
-%    if thisImage(i).RemoveCluster == 0
-%        if RemoveClusterCounter < length(NumberOfRemoval2)
-%           if ClusterCounter == NumberOfRemoval2(RemoveClusterCounter)
-%             RemoveClusterCounter = RemoveClusterCounter + 1;
-%             thisImage(i).RemoveCluster = 1; %Mark Cluster for Removal
-%           end
-%       end
-%        ClusterCounter = ClusterCounter+1;
-%    end
-% end
-
-
+ClusterInfo{o,1} = thisImage;
 
 %%     
 for g = 7:7 
