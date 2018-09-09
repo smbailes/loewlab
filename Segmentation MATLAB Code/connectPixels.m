@@ -16,15 +16,8 @@ mid_col(:,img_x/2) = 1;
 
 [~,c2mid] = min(abs(ylocs-midy(1,1)));
 closest = ylocs(c2mid);
-if closest>midy(1,1)
-    maxxloc2 = max(find(ylocs==closest));
-    maxxloc = maxxloc2-1;
-else
-    maxxloc2 = max(find(ylocs==closest));
-    maxxloc = maxxloc2+1;
-end
-%maxxloc = max(find(ylocs==cr));
-%maxxloc2 = max(find(ylocs==cl));
+midxx = max(find(ylocs==closest));
+
 %% from col 1 to midline col, finds x and y location of lowest pixel
 
  r = 100;
@@ -137,7 +130,7 @@ total1 = total;
 %loop through pixels and find closest pixels 
 %while pixx~=maxx %runs until it hits pixel at row of breast lower boundary
 %figure, imshow(total), hold on;
-    for xx = maxxloc+1:midy(1,1) %runs thru each pixel
+    for xx = maxxloc+1:midxx %runs thru each pixel
          pixx = xlocs(xx,1); %x location of pixel
          pixy = ylocs(xx,1); %y location of pixel
          theta = pi: pi/100 : 2*pi; %angles of lower half circle
@@ -230,7 +223,7 @@ total1 = total;
 %loop through pixels and find closest pixels 
 %while pixx~=maxx %runs until it hits pixel at row of breast lower boundary
 %figure, imshow(total), hold on;
-    for xx = midy(1,1):maxxloc2 %runs thru each pixel
+    for xx = midxx:maxxloc2 %runs thru each pixel
          pixx = xlocs(xx,1); %x location of pixel
          pixy = ylocs(xx,1); %y location of pixel
          theta = 0: pi/100 : pi; %angles of lower half circle
