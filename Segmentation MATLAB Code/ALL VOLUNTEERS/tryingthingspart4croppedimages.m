@@ -16,14 +16,13 @@ miny=min(y)
 %     y=0;
 %     c+1;
 % end
-r=1;
-for r=1:miny
-    I(r,:)=0;
-    r+1;
-end
+%r=1;
+%for r=1:miny
+    %I(r,:)=0;
+    %r+1;
+%end
 %I(0:miny,:)
-%imshow(I(miny:480,:), [])
+imshow(I(miny:480,:), [])
 %imshow(I, [])
-imshow(I)
-imwrite(I,'Patient12wMask.tif')
-
+%imshow(I)
+%imwrite(I,'Patient12wMask.tif')

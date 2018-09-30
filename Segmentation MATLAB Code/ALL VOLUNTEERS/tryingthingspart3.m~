@@ -23,7 +23,6 @@ for r=1:miny
 end
 %I(0:miny,:)
 %imshow(I(miny:480,:), [])
-%imshow(I, [])
-imshow(I)
-imwrite(I,'Patient12wMask.tif')
+imshow(I, [])
+save
 
