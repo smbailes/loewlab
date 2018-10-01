@@ -16,15 +16,21 @@
 % figure
 % imshowpair(BW, BW_groundTruth)
 % title(['Jaccard Index = ' num2str(similarity)])
-J = imread('SnakesP1C.tif');
+J = imread('SnakesP16C.tif');
 [x,y,z]=size(J) %necessary for snakes to run
 J(:,:,1)=[]; %neccessary for snakes to run
-J(:,:,2)=[]; %neccessary for snakes to run
-J(:,641,:)=[]; %necessary if snakes file is bigger than 640
+%J(:,:,2)=[]; %neccessary for snakes to run
+%J(:,:,3)=[]; %neccessary for snakes to run
+%J(:,:,4)=[]; %neccessary for snakes to run
+% J(:,641,:)=[]; %necessary if snakes file is bigger than 640
 
-JJ=logical(J)
+JJ=logical(J);
+% [a,b,c]=size(JJ);
+JJ(:,:,1)=[];
+JJ(:,:,2)=[];
 figure
-imshow(JJ)
+%imshow(JJ)
+
 title('Snakes') %or connectPixels
 %mask = false(size(J));
 %mask(25:end-25,25:end-25) = true;
@@ -32,7 +38,7 @@ title('Snakes') %or connectPixels
 %figure
 %imshow(BW)
 %title('Active Contour')
-M = imread('0000 - P1C.tif');
+M = imread('Manual_0000_P16C.tif');
 BW_groundTruth=logical(M)
 figure
 imshow(BW_groundTruth);
@@ -41,4 +47,4 @@ similarity = jaccard(JJ, BW_groundTruth);
 figure
 imshowpair(JJ, BW_groundTruth)
 j=similarity*100
-fprintf('Jaccard Comparison for snakes and Truth. JIP= %2.2d',j)
+fprintf('Jaccard Comparison for snakes and Truth. JIP= %f',j)
