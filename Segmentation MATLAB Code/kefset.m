@@ -241,7 +241,7 @@ title('Hot Pixel');
 if in == 's'
     kefsmall1
 elseif in == 'l'
-    keflarge1
+    keflarge_emilie
 end
 
 
