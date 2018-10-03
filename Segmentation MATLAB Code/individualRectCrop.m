@@ -7,7 +7,7 @@ strt=12
 i=strt
     I_mat{i} = imread([location sprintf('originalncontrast%d.tif',strt)]);    % Read each image into I_mat %,strt
     
-    newLocation = strcat(location, '/', 'OriginalwContrast (individual)');
+    newLocation = strcat(location, '/', '0000 - V5C');
     mkdir(newLocation);
     
     image = I_mat{i};
