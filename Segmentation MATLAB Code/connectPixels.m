@@ -399,6 +399,7 @@ len = length(xlocs);
             end
 %    hold off;
     end
+    total1 = connectDots(total1,25);
 %% Images
 
 figure, imshow(I,[]), title('Total Original')

@@ -155,7 +155,7 @@ connectedtop = bibi;
     figure, imshow(I, []), title('Select Top Line')
     [Xtop,Ytop] = ginput(1);
     connectedtop(Ytop,:)=1;
-
+    connectedtop(1:(Ytop-1),:)=0;
     
     figure, imshow(I,[]), title('Connect Tops')
     %blue on top on figure
