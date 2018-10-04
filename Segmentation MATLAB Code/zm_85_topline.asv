@@ -71,7 +71,7 @@ lemmon=bibi;
 
 % % [r,c]=find(bibi == 1);
 
-connectedtop = bibi; 
+connectop = bibi; 
 
 %makes a matrix with the columns in the first column and the rows in the
 %second
@@ -154,7 +154,6 @@ connectedtop = bibi;
 % % else
     figure, imshow(I, []), title('Select Top Line')
     [Xtop,Ytop] = ginput(1);
-    connectedtop(Ytop,:)=1;
 
     
     figure, imshow(I,[]), title('Connect Tops')
