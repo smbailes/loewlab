@@ -274,23 +274,24 @@ figure, imshow(I,[]) %to help decide if it should be cropped or not
 title('Segmented Volunteer')
 line(lix, liy,'Color',[1 0 0],'linewidth',1)
 
+
 %% Crop Outside of Lines
 %feed in lix and liy as points for which it can crop outside of
 %look up MatLab cropping
-cropimg = zeros(size(I));
+cropimg = I; %zeros(size(I))
 for i = 1:length(x_connect)
-    index_x = round(x_connect(i));
-    index_y = round(y_connect(i));
-    for k = 1:640
-        for m = 1:480
+     index_x = round(x_connect(i));
+     index_y = round(y_connect(i));
+    for k = 1:img_x
+        for m = 1:img_y
             if k == index_x & m == index_y
-                cropimg(m,k) = 1;
+                cropimg(m,k) = 0;
             end
         end
     end
 end
 
-figure, imshow(cropimg);
+figure, imshow(I, []);
 hold on;
 fill(x_connect,y_connect,'w');
 hold off;
