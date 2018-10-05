@@ -55,7 +55,7 @@ end
     celldisp(notes);   
     
 %% DBSCAN Parameters
-minPts = 10; percent = 30; 
+minPts = 10; percent = 90; 
 
 if stdev(1) < 215
     epsilon = 6;
