@@ -244,6 +244,39 @@ for i = 1:15
     end
 end
 
+close all
+%% Plot them together
+figure, 
+% subplot(2,1,1),
+% title('Tumor Region')
+imshow(I,[min(I_adj1) max(I_adj1)]);               % Display with contrast
+hold on;
+p1 = plot([cT1(1) cT2(1)],[cT1(2) cT2(2)],'b');                      % Create red box region on Image Display
+p2 = plot([cT2(1) cT3(1)],[cT2(2) cT3(2)],'b');
+p3 = plot([cT3(1) cT4(1)],[cT3(2) cT4(2)],'b');
+p4 = plot([cT4(1) cT1(1)],[cT4(2) cT1(2)],'b');
+
+subplot(2,1,2),
+title('Corresponding Region')
+imshow(I,[min(I_adj1) max(I_adj1)]);               % Display with contrast
+hold on;
+p5 = plot([c1(1 ) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
+p6 = plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
+p7 = plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
+p8 = plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
     
 
+
+%% Plot temperature changes
     
+for i = 1:15
+    tumorAverage(i) = TumAve{i};
+    corrAverage(i) = CorrAve{i};
+end 
+
+figure, plot(1:15, tumorAverage,'o-')
+hold on
+plot(1:15, corrAverage,'o-')
+legend('Tumor Region','Corresponding Region')
+xlabel('Time (minutes)')
+ylabel('Temperature (Digital Counts)')
