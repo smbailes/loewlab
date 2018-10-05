@@ -1,5 +1,5 @@
 
-function [total1 colright colleft] =  connectPixels(total, img_y, img_x, I)
+function [total1] =  connectPixels(total, img_y, img_x, I)
 
 % split image in half
 mid_col = zeros(img_y,img_x);
