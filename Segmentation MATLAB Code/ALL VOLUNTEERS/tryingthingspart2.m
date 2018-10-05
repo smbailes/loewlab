@@ -25,7 +25,7 @@ Gra_We = 0.3 ;
 cur_Tresh = 0.8 ;
 %con_Tresh = handles.metricdata.Con_Th ;
 ws = 3 ;
-max_iter = 100 ;
+max_iter = 20 ;
 Stop_Cr = 0.03 ;
 
 Cur_We = Cur_We/(Cur_We + Con_We + Gra_We) ;
@@ -278,20 +278,21 @@ line(lix, liy,'Color',[1 0 0],'linewidth',1)
 %% Crop Outside of Lines
 %feed in lix and liy as points for which it can crop outside of
 %look up MatLab cropping
-cropimg = I; %zeros(size(I))
+cropimg = zeros(size(I))
 for i = 1:length(x_connect)
      index_x = round(x_connect(i));
      index_y = round(y_connect(i));
     for k = 1:img_x
         for m = 1:img_y
             if k == index_x & m == index_y
-                cropimg(m,k) = 0;
+                cropimg(m,k) = 1;
             end
         end
     end
 end
 
-figure, imshow(I, []);
+%figure, imshow(I, []);
+figure, imshow (cropimg)
 hold on;
 fill(x_connect,y_connect,'w');
 hold off;

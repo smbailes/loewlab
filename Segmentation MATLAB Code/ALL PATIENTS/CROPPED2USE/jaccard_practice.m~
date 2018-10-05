@@ -47,5 +47,5 @@ similarity = jaccard(JJ, BW_groundTruth);
 figure
 imshowpair(JJ, BW_groundTruth)
 j=similarity*100
-title('Jaccard Comparison for Snakes and Truth. JSI=0.97012 JIP=97.012%')
+title('Jaccard Comparison for Snakes and Truth. JSI=0.966857 JIP=96.6857')
 
