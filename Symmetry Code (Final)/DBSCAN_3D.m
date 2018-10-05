@@ -55,8 +55,10 @@ end
     celldisp(notes);   
     
 %% DBSCAN Parameters
-minPts = 10; percent = 90; 
+minPts = 10; percent = 95; 
 
+% epsilon = 6.25;
+% s = sqrt(10/8); 
 if stdev(1) < 215
     epsilon = 6;
 elseif(stdev(1) < 300 && stdev(1) >= 215)
@@ -446,7 +448,7 @@ for g = 7:7
     figure('Name','Remaining Clusters 2.0'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
     hold on
     PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
-    title(sprintf('%s - Post Cluster Intensity Analysis',ptID));
+    title(sprintf('%s - Post Temporal Analysis',ptID));
 %     plot(xunit, yunit);
     plot([c1(1) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
     plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
@@ -815,7 +817,7 @@ for g = 7:7
     figure('Name','Remaining Clusters 4.0'), imshow(picture,[min(pic_adj),max(pic_adj)]); %Show Image
     hold on
     PlotClusterinResult(hrEnd,clEnd); %Display remaining clusters
-    title(sprintf('%s - Final Clusters',ptID));
+    title(sprintf('%s - Post Corresponding Region Check',ptID));
 %     plot(xunit, yunit);
     plot([c1(1 ) c2(1)],[c1(2) c2(2)],'r');                      % Create red box region on Image Display
     plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
