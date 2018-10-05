@@ -187,7 +187,7 @@ set(displ, 'AlphaData', total)
 % hold off 
 % set(displ, 'AlphaData', total)
 
-imshow(total);
+
 %% Part 2: Cleaning using average intensity comparison
 
 % gett = total;
@@ -283,23 +283,18 @@ imshow(total)
 
 %% 
 
+
 fprintf('Select left bound. \n');
 figure, imshow(I, [])
 [collb,~] = ginput(1);
 fprintf('%i \n', collb);
-total(:, collb:xb) = 0;
-imshow(total)
-
-%% 
+total(collb:xb, :) = 0;
 
 fprintf('Select right bound. \n');
 figure, imshow(I, [])
 [colrb,~] = ginput(1);
 fprintf('%i \n', colrb);
-total(:, 1:colrb) = 0;
-imshow(total)
-%% 
-
+total(1:colrb, :) = 0;
 
 figure, imshow(I,[]), title('Total Cleaned')
 % blue on top on figure
@@ -312,8 +307,8 @@ set(displ, 'AlphaData', total)
 %% Part 3, Connect
 
 %newboundaries = connectDots(total,100);
-[totalnew] = connectPixels(total,img_y,img_x, I);
-[totalnew] = connectPixels(totalnew,img_y,img_x, I);
+[totalnew colr coll] = connectPixels(total,img_y,img_x, I);
+[totalnew colr coll] = connectPixels(totalnew,img_y,img_x, I);
 %connectPixels;
 %newboundaries = connectDots(totalnew,50);
 newboundaries = totalnew;

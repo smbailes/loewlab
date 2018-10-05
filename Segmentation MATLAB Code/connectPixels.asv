@@ -1,5 +1,5 @@
 
-function [total1] =  connectPixels(total, img_y, img_x, I)
+function [total1 colright colleft] =  connectPixels(total, img_y, img_x, I)
 
 % split image in half
 mid_col = zeros(img_y,img_x);
@@ -53,9 +53,38 @@ maxxloc = max(find(ylocs==cr));
 maxxloc2 = max(find(ylocs==cl));
 
 
+%% 
+% total1 = total; 
+% [rb,cb] = size(total1);
+% if rowleft>rowright
+%     total1(:,rowleft:rb) = 0;
+% else
+%     total1(:,rowright:rb) = 0;
+% end
+% 
+% fprintf('Select left bound. \n');
+% figure, imshow(I, [])
+% [collb, ~] = ginput(1);
+% fprintf('%i \n', collb);
+% 
+% fprintf('Select right bound. \n');
+% figure, imshow(I, [])
+% [colrb, ~] = ginput(1);
+% fprintf('%i \n', colrb);
+% 
+% total1(1:colrb, :) = 0;
+% total1(collb:cb, :) = 0;
+% 
+% figure, imshow(I,[]), title('Total Cleaned')
+% % blue on top on figure
+% blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
+% hold on 
+% displ = imshow(blue); 
+% hold off 
+% set(displ, 'AlphaData', total1)
+
 %% Section 1
 
-total1 = total;
 %loop through pixels and find closest pixels 
 %while pixx~=maxx %runs until it hits pixel at row of breast lower boundary
 %figure, imshow(total), hold on;
@@ -398,7 +427,7 @@ len = length(xlocs);
             end
 %    hold off;
     end
-    total1 = connectDots(total1,50);
+    total1 = connectDots(total1,25);
 %% Images
 
 figure, imshow(I,[]), title('Total Original')
