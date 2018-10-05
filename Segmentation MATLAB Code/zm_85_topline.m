@@ -18,7 +18,7 @@ count = 2;
 while abs(maxbig-minbig) < ((3/4)*co)
     biggest = bwareafilt(connected2,count,'largest');
     [bigarrayx bigarrayy] = find(biggest==1);
-    maxbig = max(bigarrayy); minbig = min(bigarrayy); s
+    maxbig = max(bigarrayy); minbig = min(bigarrayy); 
     count = count+1;
 end
 
@@ -68,7 +68,6 @@ hold off
 set(displ, 'AlphaData', bibi)
 lemmon=bibi;
 
-<<<<<<< HEAD
 % %% Part 6, the Top Line
 % 
 % [r,c]=find(bibi == 1);
@@ -171,7 +170,6 @@ connected2(coltop, :) = 1;
 connectedtop = connected2;
 
 figure, imshow(I,[]), title('Connect Tops')
-=======
 %% Part 6, the Top Line
 
 % % [r,c]=find(bibi == 1);
@@ -263,7 +261,6 @@ connectedtop = bibi;
     connectedtop(1:(Xtop-1),:)=0;
     
     figure, imshow(I,[]), title('Connect Tops')
->>>>>>> a389ec8799fceb16a19cd7f74aff14a3bbe03338
     %blue on top on figure
     blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
     hold on 
@@ -271,10 +268,7 @@ connectedtop = bibi;
     hold off 
     %Use our diff1 as the AlphaData for the solid red image. 
     set(displ, 'AlphaData', connectedtop)
-<<<<<<< HEAD
-=======
 % % end
->>>>>>> a389ec8799fceb16a19cd7f74aff14a3bbe03338
 %% Finding Enclosed Area
 % [rowc colc] = size(connectedtop);
 % i = 1;
@@ -324,7 +318,7 @@ figure, imshow(I,[]), title('Final Crop')
     %Use our diff1 as the AlphaData for the solid red image. 
     set(displ, 'AlphaData', connectedtop)
 
-imwrite(connectedtop, '0000 - V307M.tif'); 
+imwrite(connectedtop, '0000 - V306M.tif'); 
 
 %% 
 
