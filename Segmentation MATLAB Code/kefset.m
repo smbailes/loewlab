@@ -3,7 +3,7 @@ close all;
 clear all;
 clc;
 
-%% Part 1 Intial Loading of Images
+%% Part 1 Initial Loading of Images
 
 ptID = input('Enter image name you want to open: ','s'); %Request patient image name
 ptID = strcat(ptID,'.tif'); 
@@ -322,6 +322,7 @@ title('Hot Pixel');
 %% Adjustments of Canny Edges for Point System
 
 % %if in == 'l'
+%     Im = I; 
 %     mini = min(min(I));
 %     maxi = max(max(I));
 % 
@@ -337,13 +338,13 @@ title('Hot Pixel');
 %     pts(pts2==1)= [];
 %     threshold = max(pts);
 %     if threshold>1000
-%         I(I<threshold*.95) = 0; 
+%         Im(I<threshold*.89) = 0; 
 %     else 
-%         I(I<edges(2)*.95) = 0; 
+%         Im(I<edges(2)*.89) = 0; 
 %     end
-    
+%     
     edgecanny3 = edge(I,'canny');
-    edgecanny3=bwareaopen(edgecanny3,20); %removes very small edge lines
+    edgecanny3=bwareaopen(edgecanny3,10); %removes very small edge lines
 
     figure,imshow(edgecanny3)
     title('Canny edges for Point System');

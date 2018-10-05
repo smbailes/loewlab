@@ -58,6 +58,7 @@ hold off
 set(displ, 'AlphaData', biggest)
 
 bibi=bwmorph(biggest,'skel',Inf);
+bibi(rlb:yb, :)=0;
 figure, imshow(I,[]), title('Thin Under Curve')
 %blue on top on figure
 blue = cat(3, zeros(size(I)), zeros(size(I)), ones(size(I))); %blue has RGB value 0 0 1
@@ -153,9 +154,9 @@ connectedtop = bibi;
 % % 
 % % else
     figure, imshow(I, []), title('Select Top Line')
-    [Xtop,Ytop] = ginput(1);
-    connectedtop(Ytop,:)=1;
-    connectedtop(1:(Ytop-1),:)=0;
+    [Ytop,Xtop] = ginput(1);
+    connectedtop(Xtop,:)=1;
+    connectedtop(1:(Xtop-1),:)=0;
     
     figure, imshow(I,[]), title('Connect Tops')
     %blue on top on figure
@@ -215,6 +216,7 @@ figure, imshow(I,[]), title('Final Crop')
     %Use our diff1 as the AlphaData for the solid red image. 
     set(displ, 'AlphaData', connectedtop)
 
+imwrite(connectedtop, '0000 - V307M.tif'); 
 
 %% 
 
