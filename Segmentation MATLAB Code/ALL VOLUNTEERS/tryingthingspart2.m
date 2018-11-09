@@ -25,7 +25,7 @@ Gra_We = 0.3 ;
 cur_Tresh = 0.8 ;
 %con_Tresh = handles.metricdata.Con_Th ;
 ws = 3 ;
-max_iter = 20 ;
+max_iter = 10 ;
 Stop_Cr = 0.03 ;
 
 Cur_We = Cur_We/(Cur_We + Con_We + Gra_We) ;
@@ -289,6 +289,7 @@ for i = 1:length(x_connect)
             end
         end
     end
+    
 end
 
 %figure, imshow(I, []);

@@ -16,9 +16,9 @@
 % figure
 % imshowpair(BW, BW_groundTruth)
 % title(['Jaccard Index = ' num2str(similarity)])
-J = imread('SnakesP12.tif');
+J = imread('0000 - P13M.tif');
 [x,y,z]=size(J) %necessary for snakes to run
-J(:,:,1)=[]; %neccessary for snakes to run
+%J(:,:,1)=[]; %neccessary for snakes to run
 %J(:,:,2)=[]; %neccessary for snakes to run
 %J(:,:,3)=[]; %neccessary for snakes to run
 %J(:,:,4)=[]; %neccessary for snakes to run
@@ -26,8 +26,8 @@ J(:,:,1)=[]; %neccessary for snakes to run
 
 JJ=logical(J);
 % [a,b,c]=size(JJ);
-JJ(:,:,1)=[];
-JJ(:,:,2)=[];
+%JJ(:,:,1)=[];
+%JJ(:,:,2)=[];
 figure
 %imshow(JJ)
 
@@ -38,7 +38,7 @@ title('Snakes') %or connectPixels
 %figure
 %imshow(BW)
 %title('Active Contour')
-M = imread('Manual_0000_P12C.tif');
+M = imread('Manual_0000_P13C.tif');
 BW_groundTruth=logical(M)
 figure
 imshow(BW_groundTruth);
@@ -47,5 +47,5 @@ similarity = jaccard(JJ, BW_groundTruth);
 figure
 imshowpair(JJ, BW_groundTruth)
 j=similarity*100
-title('Jaccard Comparison for Snakes and Truth. JSI=0.97012 JIP=97.012%')
+title('Jaccard Comparison for Snakes and Truth. JSI=0.9597 JIP=95.97%')
 

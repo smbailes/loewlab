@@ -32,5 +32,11 @@ newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
 close;
 
 
+<<<<<<< HEAD
 imwrite(blackMaskedImage, sprintf('EManual_0000_P12C.tif'));  
+=======
+ 
+
+imwrite(blackMaskedImage, sprintf('manC.tif'));  
+>>>>>>> eb4cdbb1a96da2785b8fb6411f67988372d72795
 

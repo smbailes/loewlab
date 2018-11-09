@@ -5,9 +5,9 @@ location = strcat(path, '/');
         
 strt=12
 i=strt
-    I_mat{i} = imread([location sprintf('originalncontrast%d.tif',strt)]);    % Read each image into I_mat %,strt
+    I_mat{i} = imread([location sprintf('0000 - P11',strt)]);    % Read each image into I_mat %,strt
     
-    newLocation = strcat(location, '/', '0000 - V5C');
+    newLocation = strcat(location, '/', '0000 - P11');
     mkdir(newLocation);
     
     image = I_mat{i};
@@ -26,6 +26,6 @@ i=strt
     newCrop = imcrop(image, xy);
     
     cd(newLocation)    
-    imwrite(newCrop, sprintf('P%d_CroppedContrast.tif',strt));  
+    imwrite(newCrop, sprintf('Pat.tif',strt));  
     strt=strt+1;            % Go to next image (for cropped), HAS TO BE CHANGED TO INCREMENT BY 1
 close all

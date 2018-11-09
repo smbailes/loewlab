@@ -31,8 +31,8 @@ height = bottomLine - topLine + 1;
 newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
 close;
 
-%<<<<<<< HEAD:Segmentation MATLAB Code/cropIndividual.m
-imwrite(blackMaskedImage, sprintf('Cropped_0000_V307.tif'));  
 
-%imwrite(blackMaskedImage, sprintf('Manual_0000_V307.tif'));  
-%>>>>>>> b2371d2b41a76d1674f5c5e82e93bef95e067d0b:Segmentation MATLAB Code/ALL VOLUNTEERS/cropIndividual.m
+ 
+
+imwrite(blackMaskedImage, sprintf('manC.tif'));  
+
