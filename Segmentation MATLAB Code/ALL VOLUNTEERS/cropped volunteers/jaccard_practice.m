@@ -16,7 +16,7 @@
 % figure
 % imshowpair(BW, BW_groundTruth)
 % title(['Jaccard Index = ' num2str(similarity)])
-J = imread('SnakesV3.tif');
+J = imread('0000 - CPP1.tif');
 [x,y,z]=size(J) %necessary for snakes to run
 J(:,:,1)=[]; %neccessary for snakes to run
 %J(:,:,2)=[]; %neccessary for snakes to run
@@ -38,7 +38,7 @@ title('Snakes') %or connectPixels
 %figure
 %imshow(BW)
 %title('Active Contour')
-M = imread('Manual_0000_V3C.tif');
+M = imread('Manual_0000_P1C.tif');
 BW_groundTruth=logical(M)
 figure
 imshow(BW_groundTruth);
