@@ -76,6 +76,7 @@ BreastLeftInfo(1:1) = struct('Side','Left','Average',averageLeft,'StandardDeviat
 
 
 
+%% Look at variation between breasts and overall 
 
 
 
