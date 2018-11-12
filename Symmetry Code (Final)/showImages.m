@@ -1,4 +1,4 @@
-% close all
+close all
 
 newLocation = uigetdir;
 %Find max and min for contrast 
