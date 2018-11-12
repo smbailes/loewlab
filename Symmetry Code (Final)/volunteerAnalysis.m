@@ -28,13 +28,53 @@ end
 
 BreastInfo(1:1) = struct('Volunteer',ptID,'Average',average,'StandardDeviation',stdev,'Range',range,'HighValue',high,'LowValue',low)
 
-%% Find stats for each side
+%% Split into right and left breast 
 image = I_mat{8};
 I = image(find(image>0));
 h = max(I);
 l = min(I);
 figure, imshow(I_mat{8},[l h]);
-[x,y] = ginput(1);
+title('Select Patients Right Breast')
+
+rect = imrect();
+binaryImage = rect.createMask();
+rightBW = uint16(binaryImage);
+leftBW = 1-rightBW;
+
+for i = 1:15
+    rightBreast{i} = I_mat{i}.*rightBW;
+    leftBreast{i} = I_mat{i}.*leftBW;
+end 
+
+%% Find statistics for right and left
+
+for i = 1:15
+    I1 = rightBreast{i}(find(rightBreast{i}>0));
+    highcolRight = max(I1);
+    highRight(i) = max(highcolRight); 
+    lowcolRight = min(I1);
+    lowRight(i) = min(lowcolRight);
+    rangeRight(i) = highRight(i) - lowRight(i);
+    averageRight(i) = mean2(I1);
+    stdevRight(i) = std2(I1);
+end 
+
+
+for i = 1:15
+    I1 = leftBreast{i}(find(leftBreast{i}>0));
+    highcolLeft = max(I1);
+    highLeft(i) = max(highcolLeft); 
+    lowcolLeft = min(I1);
+    lowLeft(i) = min(lowcolLeft);
+    rangeLeft(i) = highLeft(i) - lowLeft(i);
+    averageLeft(i) = mean2(I1);
+    stdevLeft(i) = std2(I1);
+end 
+
+BreastRightInfo(1:1) = struct('Side','Right','Average',averageRight,'StandardDeviation',stdevRight,'Range',rangeRight,'HighValue',highRight,'LowValue',lowRight)
+BreastLeftInfo(1:1) = struct('Side','Left','Average',averageLeft,'StandardDeviation',stdevLeft,'Range',rangeLeft,'HighValue',highLeft,'LowValue',lowLeft)
+
+
 
 
 
