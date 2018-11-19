@@ -75,7 +75,26 @@ BreastRightInfo(1:1) = struct('Side','Right','Average',averageRight,'StandardDev
 BreastLeftInfo(1:1) = struct('Side','Left','Average',averageLeft,'StandardDeviation',stdevLeft,'Range',rangeLeft,'HighValue',highLeft,'LowValue',lowLeft)
 
 
+%% Look at histogram across vessel
+figure, subplot(2,1,1), imshow(I_mat{8},[l h]);
+title('Select rectangle going across a vessel')
+rect = imrect();
+binaryImage = rect.createMask();
+acrossVessel = I_mat{8}.*(uint16(binaryImage));
+nonzero = acrossVessel(find(acrossVessel>0));
+subplot(2,1,2), plot(nonzero,'-o')
 
+again = questdlg('Try again?', 'Yes', 'No');
 
+while strcmp(again,'Yes') == 1
+    
+    figure, subplot(2,1,1), imshow(I_mat{8},[l h]);
+    title('Select rectangle going across a vessel')
+    rect = imrect();
+    binaryImage = rect.createMask();
+    acrossVessel = I_mat{8}.*(uint16(binaryImage));
+    nonzero = acrossVessel(find(acrossVessel>0));
+    subplot(2,1,2), plot(nonzero,'-o')
 
-
+    again = questdlg('Try again?','Yes','No');
+end 
