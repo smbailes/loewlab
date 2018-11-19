@@ -86,7 +86,6 @@ subplot(2,1,2), plot(nonzero,'-o')
 
 again = questdlg('Try again?', 'Yes', 'No');
 
-%% Look at variation between breasts and overall 
 
 while strcmp(again,'Yes') == 1
     
