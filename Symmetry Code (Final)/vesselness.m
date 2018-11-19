@@ -11,8 +11,8 @@ clear all, close all
         a=a+120;            % Go to next image (for cropped)
     end
     
-%% Test fibermetric 
-close all
+%% Test fibermetric (compare fibermetric to original image)
+
 n = 8;
 image = I_mat{n};
 I = image(find(image>0));
@@ -22,5 +22,17 @@ for i = 1:20
     subplot(2,1,1);
     imshow(I_mat{n},[min(I) max(I)]);
     subplot(2,1,2);
+    imshow(V)
+end
+
+%% Show all fibermetrics on one subplot
+
+n = 8;
+image = I_mat{n};
+I = image(find(image>0));
+figure
+for i = 1:20
+    V = fibermetric(I_mat{n},i,'ObjectPolarity','bright','StructureSensitivity',12);
+    subplot(5,4,i);
     imshow(V)
 end
