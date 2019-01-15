@@ -35,22 +35,19 @@ fixed = image1;
 
 
 if strcmp(in, 'a')%Affine registration
-    newFile = [location '/' sprintf('%04d.tif',1680)];
-    newImage = imread(newFile);
+
     
     [optimizer, metric] = imregconfig('monomodal');
     optimizer.MaximumStepLength = 0.04;
     optimizer.MaximumIterations = 100; %SETTING FOR NEW MATLAB
 
-    registeredImage = imregister(newImage,fixed,'affine',optimizer,metric);
+    registeredImage = imregister(image2,fixed,'affine',optimizer,metric);
     fprintf('Finished Affine Registration\n');
     
 elseif strcmp(in, 'd') %demons registration   
-        
-    imgpath = [location '\' sprintf('%04d.tif',1680)];
-    moving = imread(imgpath);
 
-    [~,registeredImage] = imregdemons(moving,fixed,[500 400 200],'AccumulatedFieldSmoothing',3);
+
+    [~,registeredImage] = imregdemons(image2,fixed,[500 400 200],'AccumulatedFieldSmoothing',3);
 
     %Bring registered image back to CPU 
     fprintf('Finished Demons Registration\n'); 
@@ -115,3 +112,4 @@ cd(newLocation);
 imwrite(cropped1, '0000.tif');
 imwrite(cropped2, '1680.tif');
 
+subtract;
