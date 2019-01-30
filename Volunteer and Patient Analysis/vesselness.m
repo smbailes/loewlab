@@ -50,10 +50,26 @@ end
 %     subplot(5,4,i);
 %     imshow(V)
 % end
+ss = input('Best Structure Sensitivity?');
+
+close all
+figure, 
+subplot(4,1,1),
+imshow(image, [min(I) max(I)]);
+title('Original')
+V = fibermetric(image,thickness,'ObjectPolarity','bright','StructureSensitivity',ss);
+subplot(4,1,2)
+imshow(V)
+title('Without CLAHE')
 
 %% Try CLAHE
-%  
-% J = adapthisteq(I_mat{1},'ClipLimit',0.02);
-% figure,
-% imshow(J,[min(min(J)) max(max(J))])
-% 
+% Use 8-bit 
+J = adapthisteq(I_mat{8},'ClipLimit',0.03,'NBins',double((max(max(image)))));
+subplot(4,1,3)
+imshow(J,[min(min(J)) max(max(J))])
+title('CLAHE Results')
+
+V1 = fibermetric(J,'ObjectPolarity','bright');
+subplot(4,1,4);
+imshow(V1)
+title('With CLAHE')
