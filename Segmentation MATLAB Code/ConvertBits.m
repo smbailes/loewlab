@@ -6,17 +6,13 @@ dir = uigetdir;
 I = imread([dir '\' ptID]);
 
 figure;
-imshow(I)
+imshow(I, [])
+pause;
 
 I(I < 8000) = 0;
 I(I == 0) = min(I(I > 0));
-img2 = (I - 8000);
-img2 = float(img2/.2000);
-img2 = int(img2*255);
+J = (I - 8000);
+J = double(J/.2000);
+J = J*.255;
 figure;
-imshow(img2)
-Img2 = imread('D:\Breast Region by DL\1234\ORG_0.png');
-Img2 = rgb2gray(Img2);
-
-figure;
-imshow(J)
+imshow(J, [])
