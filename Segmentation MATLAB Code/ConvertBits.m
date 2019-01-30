@@ -14,5 +14,7 @@ I(I == 0) = min(I(I > 0));
 J = (I - 8000);
 J = double(J/.2000);
 J = J*.255;
+
 figure;
 imshow(J, [])
+imwrite(J, sprintf('ConvertBit_0000_P1.tif'));
