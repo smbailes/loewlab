@@ -15,7 +15,7 @@ I(I == 0) = min(I(I > 0));
 J = (I - 8000);
 J = double(J/.2000);
 J = J*.255;
-imwrite(J, sprintf('ConvertBit_0000_P1.tif'));
+imwrite(J, sprintf('ConvertBit_1799_V1.tif'));
 %% Manual Crop of 8 Bit Images
 
 K = J(find(J > 0));
