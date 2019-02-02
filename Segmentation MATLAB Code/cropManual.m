@@ -9,14 +9,15 @@ imwrite(J1, sprintf('ex1.tif'));
 close all
 I = [];
 
+%% 
+
 path2 = uigetfile('.tif');
 I = imread(path2);
-I = imshow(I, []);
 J2 = imcrop(I, rect);
 
 imwrite(J2, sprintf('ex2.tif')); 
 
-
+%% 
 
 figure(1)
 imshow(J1, []);
