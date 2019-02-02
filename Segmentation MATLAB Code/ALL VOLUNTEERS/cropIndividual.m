@@ -34,5 +34,5 @@ close;
 
  
 
-imwrite(blackMaskedImage, sprintf('manC.tif'));  
+imwrite(blackMaskedImage, sprintf('manualcropcontrast.tif'));  
 
