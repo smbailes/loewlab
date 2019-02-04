@@ -62,14 +62,4 @@ subplot(4,1,2)
 imshow(V)
 title('Without CLAHE')
 
-%% Try CLAHE
-% Use 8-bit 
-J = adapthisteq(I_mat{8},'ClipLimit',0.03,'NBins',double((max(max(image)))));
-subplot(4,1,3)
-imshow(J,[min(min(J)) max(max(J))])
-title('CLAHE Results')
 
-V1 = fibermetric(J,'ObjectPolarity','bright');
-subplot(4,1,4);
-imshow(V1)
-title('With CLAHE')
