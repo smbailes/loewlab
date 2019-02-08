@@ -35,12 +35,13 @@ imshow(diff, [low high])
 diffRange = high-low;
 diffAvg = mean2(diff)
 diffStd = std2(diff)
-%{
+
 %% Fibermetric 
-V = fibermetric(diff,9,'ObjectPolarity','bright','StructureSensitivity',10);
+V = fibermetric(diff,'ObjectPolarity','dark','StructureSensitivity',50);
 figure,
 imshow(V)
 
+%{
 %Extracts indices of fibers
 [r c] = size(V)
 k = 1;

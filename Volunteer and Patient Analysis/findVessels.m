@@ -1,4 +1,5 @@
-clear all, close all
+clear all, 
+%close all
 %% Patient Selection
     [location, ptID] = pathfinder; 
 
@@ -15,7 +16,7 @@ image = I_mat{8};
 I = image(find(image>0));
 figure, imshow(image,[min(I) max(I)])
 %% Try CLAHE
-CL = 0.02;
+CL = 0.025;
 J = adapthisteq(I_mat{8},'ClipLimit',CL,'NBins',double((max(max(image)))));
 figure
 imshow(J,[min(min(J)) max(max(J))])
@@ -27,6 +28,7 @@ figure
 imshow(V1)
 
 V2 = V1>=0.2;
+figure,
 imshow(V2)
-title('Vesselness with CLAHE')
+title('Vessels with CLAHE')
 
