@@ -8,7 +8,7 @@ hold on
 numrows = 480 - r;
 J1 = padarray(J1, numrows, 0, 'pre');
 
-imwrite(J1, sprintf('0012_0000.tif')); 
+imwrite(J1, sprintf('0011_0000.tif')); 
 
 close all
 I = [];
@@ -20,7 +20,7 @@ I = imread(path2);
 J2 = imcrop(I, rect);
 J2 = padarray(J2, numrows, 0, 'pre');
 
-imwrite(J2, sprintf('0012_0900.tif')); 
+imwrite(J2, sprintf('0011_0900.tif')); 
 
 %% 
 
@@ -30,7 +30,7 @@ I = imread(path3);
 J3 = imcrop(I, rect);
 J3 = padarray(J3, numrows, 0, 'pre');
 
-imwrite(J3, sprintf('0012_1799.tif')); 
+imwrite(J3, sprintf('0011_1799.tif')); 
 %% 
 
 figure(1)
