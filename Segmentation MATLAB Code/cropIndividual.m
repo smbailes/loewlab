@@ -32,5 +32,5 @@ newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
 close;
 
 
-imwrite(blackMaskedImage, sprintf('0000 - V307C.tif'));  
+imwrite(blackMaskedImage, sprintf('Manual3_P1.tif'));  
 
