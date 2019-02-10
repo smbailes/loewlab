@@ -35,8 +35,8 @@ close;
 
 
 %<<<<<<< HEAD
-imwrite(blackMaskedImage, sprintf('Manual3_P9.tif'));  
+imwrite(blackMaskedImage, sprintf('Manual3_P8.tif'));  
 
-imwrite(blackMaskedImage, sprintf('0009_0000.tif'));  
+imwrite(blackMaskedImage, sprintf('0008_1799.tif'));  
 %>>>>>>> 5f30ff4d323d82b9121d0268000efc25b6512a4a
 
