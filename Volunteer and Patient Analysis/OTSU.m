@@ -1,7 +1,7 @@
 clc
 clear
 
-Img=imread('C:\Users\angel\Box Sync\Breast Region by DL\16 bit images\IRST003\0000.tif');   
+Img=imread('0840.tif');   
 [N,M] = size(Img);
 
 filter = fspecial('average',101);%fspecial('gaussian', [3,3],100);
@@ -24,7 +24,7 @@ Img8b = uint8(Img8b.*255);
 % Img8b(Img8b>0)=255; % for groundtruth
 imshow(Img8b)
 
-% imwrite(Img8b,'D:\Breast Region by DL\small_dataset\train\label_try\Manual3_P1C.png')
+imwrite(Img8b,'8bit.png')
 
 
 
