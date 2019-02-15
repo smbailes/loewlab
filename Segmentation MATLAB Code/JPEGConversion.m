@@ -24,3 +24,4 @@ title('Visible Image');
 
 B = rgb2gray(J);
 
+imwrite(B,'025_Vis.tif');

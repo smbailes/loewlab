@@ -1,4 +1,4 @@
-function registerEveryMinute(user, ptID) 
+%function registerEveryMinute(user, ptID) 
 
     % Takes User Input for Patient Directory and applies a Rectangular crop to
     % all images in the Patient Directory
@@ -61,7 +61,7 @@ function registerEveryMinute(user, ptID)
 
 %% Registration of JPEG
 
-imwrite(ref,'0015.jpg');
+imwrite(ref,'ref025.jpg','jpg');
 
 ref2 = imread(['0015.jpg']); %reference image
     ref1 = getMatrixOutliers(ref2);
@@ -91,4 +91,3 @@ ref2 = imread(['0015.jpg']); %reference image
         subplot(4,4,j);
         imshowpair(ref, registeredImage, 'Scaling', 'joint');
     end
-end
