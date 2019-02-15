@@ -24,3 +24,6 @@ title('Visible Image');
 
 B = rgb2gray(J);
 figure, imshow(B);
+
+imwrite(B,'025_Vis.tif');
+
