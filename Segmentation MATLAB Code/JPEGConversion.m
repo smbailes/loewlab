@@ -22,5 +22,5 @@ title('Visible Image');
 
 %% Reshaping
 
-B = reshape(J,480,640);
-
+B = rgb2gray(J);
+figure, imshow(B);
