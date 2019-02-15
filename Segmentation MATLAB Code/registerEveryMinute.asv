@@ -58,6 +58,7 @@ function registerEveryMinute(user, ptID)
         subplot(4,4,m);
         imshow(image, [low high]);
     end
+end
 
 %% Registration of JPEG
 
@@ -71,8 +72,8 @@ ref2 = imread(['0015.jpg']); %reference image
 
     cd(newLocation);
     figure, subplot(4,4,1);
-    for i = 1000:1000:4000
-        newFile = [location '-' sprintf('%04d.jpg',i)];
+    for i = 0001:1:0030
+        newFile = [location '-' sprintf('%04d.tif',i)];
         I = imread(newFile);
 %         I_outliers = getMatrixOutliers(I);
 %         figure
@@ -86,9 +87,8 @@ ref2 = imread(['0015.jpg']); %reference image
         optimizer.MaximumIterations = 150; %SETTING FOR NEW MATLAB
 
         registeredImage = imregister(I,ref,'affine',optimizer,metric);
-        imwrite(registeredImage,sprintf('%04d.jpg',i))
+        imwrite(registeredImage,sprintf('%04d.tif',i))
         j = (i/120)+1;
         subplot(4,4,j);
         imshowpair(ref, registeredImage, 'Scaling', 'joint');
     end
-end
