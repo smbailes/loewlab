@@ -1,4 +1,4 @@
-%function registerEveryMinute(user, ptID) 
+function registerEveryMinute(user, ptID) 
 
     % Takes User Input for Patient Directory and applies a Rectangular crop to
     % all images in the Patient Directory
@@ -27,7 +27,7 @@
 
     cd(newLocation);
     figure, subplot(4,4,1);
-    for i = 0001:1:0031
+    for i = 0001:1:0030
         newFile = [location '-' sprintf('%04d.tif',i)];
         I = imread(newFile);
 %         I_outliers = getMatrixOutliers(I);
@@ -51,17 +51,18 @@
 
     figure, subplot(4,4,1);
     %Show all 15 newly registeted images on subplot 
-    for k = 0001:1:0031
+    for k = 0001:1:0030
         path = [newLocation, sprintf('%04d.tif',k)];
         image = imread(path);
         m = (k/120)+1;
         subplot(4,4,m);
         imshow(image, [low high]);
     end
+end
 
 %% Registration of JPEG
 
-imwrite(ref,'ref025.jpg','jpg');
+imwrite(ref,'0015.jpg');
 
 ref2 = imread(['0015.jpg']); %reference image
     ref1 = getMatrixOutliers(ref2);
@@ -71,8 +72,8 @@ ref2 = imread(['0015.jpg']); %reference image
 
     cd(newLocation);
     figure, subplot(4,4,1);
-    for i = 1000:1000:4000
-        newFile = [location '-' sprintf('%04d.jpg',i)];
+    for i = 0001:1:0030
+        newFile = [location '-' sprintf('%04d.tif',i)];
         I = imread(newFile);
 %         I_outliers = getMatrixOutliers(I);
 %         figure
@@ -86,7 +87,7 @@ ref2 = imread(['0015.jpg']); %reference image
         optimizer.MaximumIterations = 150; %SETTING FOR NEW MATLAB
 
         registeredImage = imregister(I,ref,'affine',optimizer,metric);
-        imwrite(registeredImage,sprintf('%04d.jpg',i))
+        imwrite(registeredImage,sprintf('%04d.tif',i))
         j = (i/120)+1;
         subplot(4,4,j);
         imshowpair(ref, registeredImage, 'Scaling', 'joint');
