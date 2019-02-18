@@ -27,7 +27,7 @@
 
     cd(newLocation);
     figure, subplot(4,4,1);
-    for i = 0001:1:0031
+    for i = 0001:1:0030
         newFile = [location '-' sprintf('%04d.tif',i)];
         I = imread(newFile);
 %         I_outliers = getMatrixOutliers(I);
@@ -51,7 +51,7 @@
 
     figure, subplot(4,4,1);
     %Show all 15 newly registeted images on subplot 
-    for k = 0001:1:0031
+    for k = 0001:1:0030
         path = [newLocation, sprintf('%04d.tif',k)];
         image = imread(path);
         m = (k/120)+1;
@@ -59,35 +59,134 @@
         imshow(image, [low high]);
     end
 
-%% Registration of JPEG
+% %% Registration of JPEG
+% 
+%     ref1 = getMatrixOutliers(ref);
+%     ref_nonzero = ref1(find(ref1>0));
+%     high = max(ref_nonzero);
+%     low = min(ref_nonzero);
+% 
+%     cd(newLocation);
+%     figure, subplot(4,4,1);
+%     for i = 1000:1000:4000
+%         newFile = [location '-' sprintf('%04d.tif',i)];
+%         I = imread(newFile);
+% %         I_outliers = getMatrixOutliers(I);
+% %         figure
+% %         set(gcf,'units','inches', 'Position',[4 2 10 8])
+% %         imshow(newImage,[]);
+% %         imcontrast
+% %         figure
+% 
+%         [optimizer, metric] = imregconfig('monomodal');
+%         optimizer.MaximumStepLength = 0.05;
+%         optimizer.MaximumIterations = 150; %SETTING FOR NEW MATLAB
+% 
+%         registeredImage = imregister(I,ref,'affine',optimizer,metric);
+%         imwrite(registeredImage,sprintf('%04d.tif',i))
+%         j = (i/120)+1;
+%         subplot(4,4,j);
+%         imshowpair(ref, registeredImage, 'Scaling', 'joint');
+%     end
+    
+%% Registration of JPEG 2
 
-imwrite(ref,'ref025.jpg','jpg');
+vis = input('Enter image name you want to open: ','s'); 
+vis = strcat(vis,'.tif'); 
 
-ref2 = imread(['0015.jpg']); %reference image
-    ref1 = getMatrixOutliers(ref2);
-    ref_nonzero = ref1(find(ref1>0));
-    high = max(ref_nonzero);
-    low = min(ref_nonzero);
+dir1 = uigetdir; 
+Ivis = imread([dir1 '\' vis]); 
 
-    cd(newLocation);
-    figure, subplot(4,4,1);
-    for i = 1000:1000:4000
-        newFile = [location '-' sprintf('%04d.jpg',i)];
-        I = imread(newFile);
-%         I_outliers = getMatrixOutliers(I);
-%         figure
-%         set(gcf,'units','inches', 'Position',[4 2 10 8])
-%         imshow(newImage,[]);
-%         imcontrast
-%         figure
+ref = input('Enter image name you want to open: ','s'); 
+ref = strcat(ref,'.tif'); 
 
-        [optimizer, metric] = imregconfig('monomodal');
-        optimizer.MaximumStepLength = 0.05;
-        optimizer.MaximumIterations = 150; %SETTING FOR NEW MATLAB
+dir2 = uigetdir; 
+Iref = imread([dir2 '\' ref]); 
 
-        registeredImage = imregister(I,ref,'affine',optimizer,metric);
-        imwrite(registeredImage,sprintf('%04d.jpg',i))
-        j = (i/120)+1;
-        subplot(4,4,j);
-        imshowpair(ref, registeredImage, 'Scaling', 'joint');
-    end
+fprintf('Pick right nipple. \n');
+figure, imshow(Ivis, []), title('Right Nipple Visible')
+[X1,Y1] = ginput(1);
+
+fprintf('Pick right nipple. \n');
+figure, imshow(Iref, []), title('Right Nipple Reference')
+[X2,Y2] = ginput(1);
+
+val = mean(mean(Ivis));
+
+% Cropping
+
+hshift = round(X2 - X1);
+if hshift>0
+    Ivis = padarray(Ivis, [0 hshift], val, 'pre');
+    Ivis = imcrop(Ivis, [0 0 640 512]);
+else
+    Ivis = padarray(Ivis, [0 abs(hshift)], val, 'post');
+    [r c] = size(Ivis);
+    Ivis = imcrop(Ivis, [r c 512 640]);
+end
+
+%% 
+
+vshift = round(Y2 - Y1);
+if vshift>0
+    Ivis = padarray(Ivis, vshift, val, 'pre');
+    Ivis = imcrop(Ivis, [0 0 512 640]);
+else
+    Ivis = padarray(Ivis, abs(vshift), val, 'post');
+    [r c] = size(Ivis);
+    Ivis = imcrop(Ivis, [0 c 512 640]);
+end
+
+figure(1), imshow(Ivis, [])
+figure(2), imshow(Iref, [])
+%% Scaling Down
+% 
+% fprintf('Pick right nipple. \n');
+% figure, imshow(Ivis, []), title('Right Nipple Visible')
+% [Xr1,Yr1] = ginput(1);
+% 
+% fprintf('Pick right nipple. \n');
+% figure, imshow(Iref, []), title('Right Nipple Reference')
+% [Xr2,Yr2] = ginput(1);
+% 
+% fprintf('Pick left nipple. \n');
+% figure, imshow(Ivis, []), title('Left Nipple Visible')
+% [Xl1,Yl1] = ginput(1);
+% 
+% fprintf('Pick left nipple. \n');
+% figure, imshow(Iref, []), title('Left Nipple Reference')
+% [Xl2,Yl2] = ginput(1);
+%  
+
+% visdist = sqrt((Xr1^2)-(Xl1^2));
+% refdist = sqrt((Xr2^2)-(Xl2^2));
+% 
+% if visdist > refdist
+%     ratio = refdist/visdist;
+%     Ivis = imresize(Ivis, ratio);
+% else 
+%     ratio = refdist/visdist;
+%     Ivis = imresize(Ivis, ratio);
+%     Ivis = imcrop(Ivis, [0 0 640 512]);
+% end 
+
+
+%% Compare
+
+II = imshowpair(Ivis,Iref)
+%% 
+% 
+% hold on
+% % Save the handle for later use 
+% h = imshow(Ivis); 
+% hold off
+% 
+% [M,N] = size(Ivis); 
+% block_size = 100; 
+% P = ceil(M / block_size); 
+% Q = ceil(N / block_size); 
+% alpha = checkerboard(block_size, P, Q) > 0; 
+% alpha = alpha(1:M, 1:N); 
+% set(h, 'AlphaData', alpha);
+
+
