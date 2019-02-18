@@ -27,7 +27,7 @@ function registerEveryMinute(user, ptID)
 
     cd(newLocation);
     figure, subplot(4,4,1);
-    for i = 0001:1:0030
+    for i = 0001:1:0031
         newFile = [location '-' sprintf('%04d.tif',i)];
         I = imread(newFile);
 %         I_outliers = getMatrixOutliers(I);
@@ -51,7 +51,7 @@ function registerEveryMinute(user, ptID)
 
     figure, subplot(4,4,1);
     %Show all 15 newly registeted images on subplot 
-    for k = 0001:1:0030
+    for k = 0001:1:0031
         path = [newLocation, sprintf('%04d.tif',k)];
         image = imread(path);
         m = (k/120)+1;
