@@ -1,0 +1,67 @@
+% if visdist > refdist
+%     ratio = refdist/visdist;
+%     Ivis = imresize(Ivis, ratio);
+% else 
+%     ratio = refdist/visdist;
+%     Ivis = imresize(Ivis, ratio);
+%     Ivis = imcrop(Ivis, [0 0 640 512]);
+% end 
+
+
+%% Compare
+
+II = imshowpair(Iref, Ivis)
+%% 
+% 
+% hold on
+% % Save the handle for later use 
+% h = imshow(Ivis); 
+% hold off
+% 
+% [M,N] = size(Ivis); 
+% block_size = 100; 
+% P = ceil(M / block_size); 
+% Q = ceil(N / block_size); 
+% alpha = checkerboard(block_size, P, Q) > 0; 
+% alpha = alpha(1:M, 1:N); 
+% set(h, 'AlphaData', alpha);
+
+%% Manual Segmentation 
+
+imshow(Ivis, []);
+hold on
+hFH = imfreehand();
+binaryImage = hFH.createMask();
+xy = hFH.getPosition;
+
+% Get coordinates of the boundary of the freehand drawn region.
+structBoundaries = bwboundaries(binaryImage);
+xy=structBoundaries{1}; % Get n by 2 array of x,y coordinates.
+x = xy(:, 2);   % Columns.
+y = xy(:, 1);   % Rows.
+% Mask the image outside the mask, and display it.
+
+% Will keep only the part of the image that's inside the mask, zero outside mask.
+
+blackMaskedImageR = Iref;
+blackMaskedImageR(~binaryImage) = 0;
+
+% Now crop the image.
+leftColumn = min(x);
+rightColumn = max(x);
+topLine = min(y);
+bottomLine = max(y);
+width = rightColumn - leftColumn + 1;
+height = bottomLine - topLine + 1;    
+
+newCropV = imcrop(blackMaskedImageV, [leftColumn, topLine, width, height]);
+close;
+newCropR = imcrop(blackMaskedImageR, [leftColumn, topLine, width, height]);
+close; 
+%% 
+
+newfile = strcat(reff, '_reg.tif');
+imwrite(blackMaskedImageR, sprintf(newfile));  
+
+
+
