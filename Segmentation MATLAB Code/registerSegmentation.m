@@ -106,6 +106,8 @@ figure(2), imshow(Iref, [])
 % Compare
 
 II = imshowpair(Iref, Ivis)
+%% 
+
 
 % Manual Segmentation 
 
@@ -128,6 +130,7 @@ blackMaskedImageR = Iref;
 blackMaskedImageR(~binaryImage) = 0;
 
 % Now crop the image.
+
 leftColumn = min(x);
 rightColumn = max(x);
 topLine = min(y);
@@ -135,7 +138,7 @@ bottomLine = max(y);
 width = rightColumn - leftColumn + 1;
 height = bottomLine - topLine + 1;    
 
-newCropV = imcrop(blackMaskedImageV, [leftColumn, topLine, width, height]);
+%newCropV = imcrop(blackMaskedImageV, [leftColumn, topLine, width, height]);
 close;
 newCropR = imcrop(blackMaskedImageR, [leftColumn, topLine, width, height]);
 close; 
