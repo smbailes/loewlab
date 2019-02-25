@@ -84,7 +84,7 @@
 
         registeredImage = imregister(I,ref,'affine',optimizer,metric);
         imwrite(registeredImage,sprintf('%04d.tif',i))
-        j = (i/120)+1;
-        subplot(4,4,j);
-        imshowpair(ref, registeredImage, 'Scaling', 'joint');
+        %j = (i/120)+1;
+        %subplot(4,4,j);
+        %imshowpair(ref, registeredImage, 'Scaling', 'joint');
     end

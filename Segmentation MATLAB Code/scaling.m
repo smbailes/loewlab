@@ -4,14 +4,24 @@ ptIDref = strcat(ptIDref,'.tif');
 dir1 = uigetdir; 
 Iref = imread([dir1 '\' ptIDref]); 
 
-ptIDvis = input('Enter image name you want to open: ','s'); 
-ptIDvis = strcat(ptIDvis,'.tif'); 
+%% 
 
-dir2 = uigetdir; 
-Ivis = imread([dir2 '\' ptIDvis]); 
+ptID = input('Enter patient: ','s'); 
 
-figure(1), imshow(Iref,[]) 
-title('Original Image')
+for i = 1000:1000:4000
+    
+    ptIDvis = strcat(ptID, '-', num2str(i), '.jpg'); 
 
-figure(2), imshow(Ivis,[])
-title('Original Image')
+    dir2 = uigetdir; 
+    I = imread([dir2 '\' ptIDvis]); 
+
+    Ivis = rgb2gray(I);
+    filename = strcat('IRVT025-', num2str(i), '.tif');
+    imwrite(Ivis, filename);
+end
+
+% figure(1), imshow(Iref,[]) 
+% title('Original Image')
+% 
+% figure(2), imshow(Ivis,[])
+% title('Original Image')
