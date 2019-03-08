@@ -106,6 +106,7 @@ figure(2), imshow(Iref, [])
 % Compare
 
 II = imshowpair(Iref, Ivis)
+imwrite(Ivis, 'V025_1000R.tif');
 %% 
 
 
