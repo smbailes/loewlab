@@ -14,7 +14,7 @@ dir = uigetdir;
 newImage = imread([dir '\' JID]);
     
 [optimizer, metric] = imregconfig('multimodal');
-optimizer.MaximumStepLength = 0.04;
+%optimizer.MaximumStepLength = 0.04;
 optimizer.MaximumIterations = 100; %SETTING FOR NEW MATLAB
 
 registeredImage = imregister(newImage,fixed,'affine',optimizer,metric);
