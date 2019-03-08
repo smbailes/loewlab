@@ -12,44 +12,6 @@ JID = strcat(JID,'.tif');
 dir = uigetdir;
 newImage = imread([dir '/' JID]);
 
-%% Resize Images
-
-fprintf('Pick right nipple. \n');
-figure, imshow(newImage, []), title('Right Nipple Visible')
-[X1,Y1] = ginput(1);
-
-fprintf('Pick right nipple. \n');
-figure, imshow(I, []), title('Right Nipple Reference')
-[X2,Y2] = ginput(1);
-
-val = mean(mean(newImage));
-
-% Cropping
-
-hshift = round(X2 - X1);
-if hshift>0
-    newImage = padarray(newImage, [0 abs(hshift)], val, 'pre');
-    newImage = imcrop(newImage, [0 0 640 512]);
-else
-    newImage = padarray(newImage, [0 abs(hshift)], val, 'post');
-    [r c] = size(newImage);
-    newImage = imcrop(newImage, [(c-640) (512-r) (c) (r)]);
-end
-
-vshift = round(Y2 - Y1);
-if vshift>0
-    newImage = padarray(newImage, abs(vshift), val, 'pre');
-    newImage = imcrop(newImage, [0 0 640 512]);
-else
-    newImage = padarray(newImage, abs(vshift), val, 'post');
-    [r c] = size(newImage);
-    newImage = imcrop(newImage, [(640-c) (r-511) c r]); 
-end
-
-figure(1), imshow(newImage)
-figure(2), imshow(I, [])
-
-
 %% Affine Registration
 
 [optimizer, metric] = imregconfig('multimodal');
