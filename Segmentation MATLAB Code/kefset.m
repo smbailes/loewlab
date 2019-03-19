@@ -8,7 +8,7 @@ clc;
 ptID = input('Enter image name you want to open: ','s'); %Request patient image name
 ptID = strcat(ptID,'.tif'); 
 dir = uigetdir; 
-I = imread([dir '\' ptID]); 
+I = imread([dir '/' ptID]); 
 
 figure, imshow(I,[]) %to help decide if it should be cropped or not
 title('Original Image')

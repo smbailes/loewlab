@@ -1,6 +1,7 @@
-path = uigetfile('.tif');
-
-I = imread(path);
+ptID = input('Enter image name you want to open: ','s'); %Request patient image name
+ptID = strcat(ptID,'.tif'); 
+dir = uigetdir; 
+I = imread([dir '\' ptID]);
 
 I1 = I(find(I>0));
 imshow(I, []);

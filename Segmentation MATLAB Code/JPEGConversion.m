@@ -15,10 +15,10 @@ imID1 = input('Enter image name you want to open: ','s');
 imID = strcat(imID1,'.jpg');
 
 dir = uigetdir;
-J = imread([dir '\' imID]);
+J = imread([dir '/' imID]);
 
-figure, imshow(J);
-title('Visible Image');
+%figure, imshow(J);
+%title('Visible Image');
 
 
 %% Reshaping

@@ -165,7 +165,10 @@ lemmon=bibi;
 
 fprintf('Pick the top line of breast region. \n');
 figure, imshow(I, [])
+
+
 [rowtop coltop] = ginput(1);
+coltop = round(coltop);
 connected2(coltop, :) = 1; 
 connectedtop = connected2;
 
@@ -257,6 +260,7 @@ connectedtop = bibi;
 % % else
     figure, imshow(I, []), title('Select Top Line')
     [Ytop,Xtop] = ginput(1);
+    Xtop = round(Xtop);
     connectedtop(Xtop,:)=1;
     connectedtop(1:(Xtop-1),:)=0;
     
@@ -318,7 +322,7 @@ figure, imshow(I,[]), title('Final Crop')
     %Use our diff1 as the AlphaData for the solid red image. 
     set(displ, 'AlphaData', connectedtop)
 
-imwrite(connectedtop, '0000 - V306M.tif'); 
+imwrite(connectedtop, 'IRVT026-0015-CP.tif'); 
 
 %% 
 

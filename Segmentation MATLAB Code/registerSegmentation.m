@@ -1,26 +1,26 @@
-%% Loading JPEG Image
-
-imID1 = input('Enter image name you want to open: ','s');
-imID = strcat(imID1,'.jpg');
-
-dir = uigetdir;
-J = imread([dir '\' imID]);
-
-figure, imshow(J);
-title('Visible Image');
-
-% Reshaping
-
-B = rgb2gray(J);
-figure, imshow(B);
-title('Visible TIFF Image');
-
-B = imresize(B, [512 640]); 
-figure, imshow(B);
-title('Resized Image');
-
-filename = strcat(imID1, '.tif');
-imwrite(B,filename);
+% %% Loading JPEG Image
+% 
+% imID1 = input('Enter image name you want to open: ','s');
+% imID = strcat(imID1,'.jpg');
+% 
+% dir = uigetdir;
+% J = imread([dir '\' imID]);
+% 
+% figure, imshow(J);
+% title('Visible Image');
+% 
+% % Reshaping
+% 
+% B = rgb2gray(J);
+% figure, imshow(B);
+% title('Visible TIFF Image');
+% 
+% B = imresize(B, [512 640]); 
+% figure, imshow(B);
+% title('Resized Image');
+% 
+% filename = strcat(imID1, '.tif');
+% imwrite(B,filename);
 
 %% Registration of JPEG 
 
@@ -106,6 +106,7 @@ figure(2), imshow(Iref, [])
 % Compare
 
 II = imshowpair(Iref, Ivis)
+imwrite(Ivis, 'V025_1000R.tif');
 %% 
 
 
