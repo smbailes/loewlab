@@ -29,18 +29,16 @@ blackMaskedImage = I; %makes blackMaskedImage thats equal to the original image
 blackMaskedImage(~binaryImage) = 0; %this sets what was not in the traced region to 0 
 
 % Now crop the image.
-leftColumn = min(x); %this crops the image so that the left column in the minimum x value (for the traced region)
-rightColumn = max(x); %this crops the image so that the right column in the maximum x value (for the traced region)
-topLine = min(y); %this crops the image so that the top row is the minimum y value (for the traced region)
-bottomLine = max(y); %this crops the image so that the top row is the maximum y value (for the traced region)
-width = rightColumn - leftColumn + 1; %sets the width for the traced region 
-height = bottomLine - topLine + 1;  %sets the height for the traced region   
+leftColumn = min(x); %this crops the image so that the left column in the minimum x value (f
+rightColumn = max(x); %this crops the image so that the right column in the maximum x value
+topLine = min(y); %this crops the image so that the top row is the minimum y value
+bottomLine = max(y); %this crops the image so that the top row is the maximum y value
+width = rightColumn - leftColumn + 1; %sets the width 
+height = bottomLine - topLine + 1;    
 
-newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]); %this crops teh blackmasked image to this size 
-close; 
+newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]);
+close;
 
 
 
-imwrite(blackMaskedImage, sprintf('hi_Manual3_P11.tif'));  %CHANGE THIS
-% ^ change to PatientNumber_ImageNumberM.tif (ex: for Patient 1 0000:
-% P1_0000M
+imwrite(blackMaskedImage, sprintf('hi_Manual3_P11.tif'));  

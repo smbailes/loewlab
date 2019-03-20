@@ -11,7 +11,7 @@ hold on
 %J1 = padarray(J1, numrows, 0, 'pre');
 
 
-imwrite(J1, sprintf('0013_0000.tif')); 
+imwrite(J1, sprintf('practice_0013_0000.tif')); 
 
 
 close all
@@ -24,7 +24,7 @@ I = imread(path2);
 J2 = imcrop(I, rect);
 %J2 = padarray(J2, numrows, 0, 'pre');
 
-imwrite(J2, sprintf('0013_0900.tif')); 
+imwrite(J2, sprintf('practice_0013_0900.tif')); 
 
 %% 
 
@@ -37,7 +37,7 @@ J3 = imcrop(I, rect);
 %J3 = padarray(J3, numrows, 0, 'pre');
 
 
-imwrite(J3, sprintf('0013_1799.tif')); 
+imwrite(J3, sprintf('practice_0013_1799.tif')); 
 %% 
 
 figure(1)
