@@ -1,8 +1,9 @@
 close all
-
+ptID = 'IRST019';
+i = 0;
 newLocation = uigetdir;
 %Find max and min for contrast 
-path = [newLocation '\' sprintf('%04d.tif',840)];
+path = [newLocation '\' sprintf('%s-%04d.tif',ptID,i)];
 image = imread(path);
 % I = getMatrixOutliers(image);
 I_nonzero = image(find(image>0));

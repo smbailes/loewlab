@@ -1,4 +1,3 @@
-OTSU
 
 clear all, 
 close all
@@ -6,7 +5,7 @@ close all
 %Clip Limit
 %Theshold for vessels 
 CL = 0.025;
-thresh = 0.3; 
+thresh = 0.2; 
 %% Image Input
     
     % Read 14 images to cell matrix I_mat
@@ -36,16 +35,18 @@ V8_1 = V8>=thresh;
 
 %% Show images for comparison 
 figure,
-subplot(4,1,1)
 imshow(image,[min(I) max(I)])
-title('Original 16-bit image')
-subplot(4,1,2)
+title('Original image')
+
+figure
 imshow(J,[min(min(J)) max(max(J))])
-title('CLAHE Results for 16-bit image')
-subplot(4,1,3)
+title('CLAHE Results ')
+
+figure,
 imshow(V1)
-title('Vesselness for 16-bit CLAHE Result')
-subplot(4,1,4)
+title('Vesselness Output')
+
+figure,
 imshow(V2)
 title('Thresholded Vessels')
 
@@ -62,3 +63,16 @@ title('Vesselness for 8-bit CLAHE Result')
 subplot(4,1,4)
 imshow(V8_1)
 title('Thresholded Vessels')
+
+% %% Show histograms
+% figure,
+% [N, edges] = histcounts(I, 500);
+% plot(edges(1:500), N)
+% hold on
+% 
+% %% Show image with vessels removed
+% V2_1 = uint16(V2);
+% BW = V2_1 .* image;
+% BW = BW(find(BW>0));
+% 
+% histogram(BW, 500) 

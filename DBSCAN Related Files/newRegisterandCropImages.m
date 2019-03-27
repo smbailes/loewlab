@@ -55,18 +55,18 @@ if strcmp(in, 'a')%Affine registration
 %     fprintf('Finished Affine Registration\n');
 elseif strcmp(in, 'd') %demons registration
     
-    fixedGPU = gpuArray(fixed); %Create gpuArray
-    for i = 0:120:1680
-        imgpath = [location '\' sprintf('%04d.tif',i)];
-        moving = imread(imgpath);
-        movingGPU = gpuArray(moving); %Create gpuArray
+    %fixedGPU = gpuArray(fixed); %Create gpuArray
+    for i = 1:15
+        %imgpath = [location sprintf('%04d.tif',i)];
+        %moving = imread(imgpath);
+        %movingGPU = gpuArray(moving); %Create gpuArray
 
-        [~,movingReg] = imregdemons(movingGPU,fixedGPU,[500 400 200],'AccumulatedFieldSmoothing',3);
+        [~,movingReg] = imregdemons(I_mat{i},fixed,[500 400 200],'AccumulatedFieldSmoothing',3);
         
         %Bring registered image back to CPU
-        registeredImage = gather(movingReg);
-        
-        imwrite(registeredImage,sprintf('%04d.tif',i))
+        %registeredImage = gather(movingReg);
+        registeredImage{i} = movingReg;
+        imwrite(movingReg,sprintf('%04d.tif',i))
     end 
     fprintf('Finished Demons Registration\n'); 
 end
