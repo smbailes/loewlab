@@ -322,7 +322,7 @@ figure, imshow(I,[]), title('Final Crop')
     %Use our diff1 as the AlphaData for the solid red image. 
     set(displ, 'AlphaData', connectedtop)
 
-imwrite(connectedtop, 'IRVT028-1000R-CP.tif'); 
+imwrite(connectedtop, 'IRVT025-1000R-CP.tif'); 
 
 %% 
 
