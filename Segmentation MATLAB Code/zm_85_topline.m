@@ -323,7 +323,11 @@ figure, imshow(I,[]), title('Final Crop')
     set(displ, 'AlphaData', connectedtop)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 imwrite(connectedtop, 'IRVT025-1000R-CP.tif'); 
+=======
+imwrite(connectedtop, 'IRVT027-0015-CP.tif'); 
+>>>>>>> parent of af40940... visible work
 =======
 imwrite(connectedtop, 'IRVT027-0015-CP.tif'); 
 >>>>>>> parent of af40940... visible work
