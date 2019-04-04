@@ -2,7 +2,7 @@ ptID = input('Enter image name you want to open: ','s'); % ENTER PATIENT IMAGE N
 %ex. 0000, 0120, 0240, 0360, 0480...1800 or 1799
 ptID = strcat(ptID,'.tif'); % ptID labelled as TIF file (ex. 0000.tif)
 dir = uigetdir; % select patient number's folder from folder with 8 bit images
-I = imread([dir '/' ptID]); % retrieves image from selected folder 
+I = imread([dir '\' ptID]); % retrieves image from selected folder 
 I1 = I(find(I>0));
 
 imshow(I, []); % displays image 
@@ -40,6 +40,6 @@ height = bottomLine - topLine + 1;  % sets the height for the traced region
 newCrop = imcrop(blackMaskedImage, [leftColumn, topLine, width, height]); %this crops teh blackmasked image to this size 
 close; 
 
-imwrite(blackMaskedImage, sprintf('PatientNumber_ImageNumberM.tif')); % CHANGE THIS BEFORE RUNNING CODE
+imwrite(blackMaskedImage, sprintf('IRVT029_0015M.tif')); % CHANGE THIS BEFORE RUNNING CODE
 % format: 'PatientNumber_ImageNumberM.tif' 
 % ex. for Patient Number 1 and Image Number 0000: 'P1_0000M.tif'

@@ -96,10 +96,8 @@ refdist = sqrt((Xr2^2)-(Xl2^2));
 ratio = refdist/visdist;
 
 Ivis = imresize(Ivis, ratio);
-[rnew cnew] = size(Ivis);
 if ratio<1
-    Ivis = padarray(Ivis, 512-rnew, val, 'post');
-    Ivis = padarray(Ivis, [0 640-cnew], val, 'post');
+    Ivis = padarray(Ivis, abs(vshift), val, 'pre');
 end
 Ivis = imcrop(Ivis, [0 0 640 512]);
 %% 
