@@ -3,30 +3,22 @@
 
 % I = imread('1799 - V10.tif');
 % I = im2double(I); 
-% figure, imshow(I,[]); [y,x] = getpts;
-% P = [x(:) y(:)];
+%figure, imshow(I,[]); [y,x] = getpts;
+[y,x] = find(connectedtop==1);
 
-[y x] = find(total==1);
-tot = find(total==1);
+k = 0;
+for i = length(x):-1:1
+    k = k + 1;
+    xx(k,1) = x(i,1);
+    yy(k,1) = y(i,1);
+end
 
+P = [yy(:) xx(:)];
 
-% k = 0;
-% for i = length(x):-1:1
-%     k = k + 1;
-%     xx(k,1) = x(i,1);
-%     yy(k,1) = y(i,1);
-% end
-
-x = flipud(x);
-y = flipud(y);
-
-
-P = [y(:) x(:)];
-
-% % figure;
-% % imshow(I,[])
-% % hold on
-% % plot(P);
+figure;
+imshow(I,[])
+hold on
+plot(P);
 Options = struct;
 
 %% Basic
