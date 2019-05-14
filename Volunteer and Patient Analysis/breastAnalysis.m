@@ -1,3 +1,11 @@
+%% Get information about each patient/volunteer 
+% Dependencies:
+% - pathfinder
+% - patientselect
+% - volunteerselect 
+% - getMatrixOutliers
+
+
 clear all, close all
 %% Patient Selection
     [location, ptID] = pathfinder; 
@@ -24,7 +32,6 @@ clear all, close all
     notes = txt(index,7);                   % Get any notes from txt file
     celldisp(notes);   
 
-    
 %% ROI Identification on First Image - Tumor side
 
     if hr <= 9 && hr > 3            
@@ -47,7 +54,8 @@ clear all, close all
     I = getMatrixOutliers(I1);  % Remove outliers
     I_adj1 = I1(find(I1>0));    % Remove zero pixels
     I_sort1 = sort(I_adj1)
-    %% Select Both Nipples at Each Minute
+    
+%% Select Both Nipples at Each Minute
     
 figure('Name','Select nipple (w/o Tumor)'), 
 for i = 1:15 % Get coordinates of both nipples at each minute
@@ -81,7 +89,8 @@ for i =1:15
     [XTumNip{i},YTumNip{i}] = ginput(1); 
 end 
      
-% Get a center of tumor for each time
+%% Get a center of tumor for each time
+% Allows for tracking of tumor region across time 
 for i = 1:15
     XTumNew{i} = XTumNip{i} + dx;                       % Coordinates of center of tumor
     YTumNew{i} = YTumNip{i} - dy; 
@@ -151,12 +160,12 @@ plot([cT2(1) cT3(1)],[cT2(2) cT3(2)],'b');
 plot([cT3(1) cT4(1)],[cT3(2) cT4(2)],'b');
 plot([cT4(1) cT1(1)],[cT4(2) cT1(2)],'b');
 
-
 e = imrect();
 
 xyTum = wait(e);
 hold on;
 %% Select ROI - corresponding region
+
 figure('Name', 'Select Coresponding Region'),
 imshow(I,[min(I_adj1) max(I_adj1)]);               % Display with contrast
 hold on;
@@ -170,21 +179,21 @@ xyCorr = wait(e);
 hold on;
 %% Show histograms
 
-% figure('Name', 'Histogram');
-%     I1 = I_mat{n};
-%     I2 = I_mat{n}(find(I_mat{n}>0));
-% 
-% %     subplot(4,4,n)
-% 
-%     histogram(I2,500,'FaceColor','r','EdgeColor','r');
-%     title('Entire Image(red) v. Tumor Region(yellow) v. Corresponding Region(blue)')
-%     hold on
-%     yyaxis right
-%     ylim([0 100])
-%     histogram(tumorRegion,500,'FaceColor','y','EdgeColor','y');
-%     hold on
-%     histogram(corrRegion, 500, 'FaceColor', 'b', 'EdgeColor', 'b');
-%     
+figure('Name', 'Histogram');
+I1 = I_mat{n};
+I2 = I_mat{n}(find(I_mat{n}>0));
+
+%     subplot(4,4,n)
+
+histogram(I2,500,'FaceColor','r','EdgeColor','r');
+title('Entire Image(red) v. Tumor Region(yellow) v. Corresponding Region(blue)')
+hold on
+yyaxis right
+ylim([0 100])
+histogram(tumorRegion,500,'FaceColor','y','EdgeColor','y');
+hold on
+histogram(corrRegion, 500, 'FaceColor', 'b', 'EdgeColor', 'b');
+    
 %% Find averages
 for i = 1:15
     XTumChange{i} = XTumNip{7} - XTumNip{1};
@@ -264,8 +273,6 @@ p5 = plot([c1(1 ) c2(1)],[c1(2) c2(2)],'r');                      % Create red b
 p6 = plot([c2(1) c3(1)],[c2(2) c3(2)],'r');
 p7 = plot([c3(1) c4(1)],[c3(2) c4(2)],'r');
 p8 = plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
-    
-
 
 %% Plot temperature changes
     

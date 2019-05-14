@@ -19,13 +19,8 @@ stdev15 = std2(t15);
 avg1 = mean2(t1);
 avg15 = mean2(t15);
 
-%% 
-% eq = adapthisteq(t1, 'NumTiles',[15 15],'NBins',1000,'Range','original');
-% le = min(eq(find(eq>0)));
-% he = max(eq(find(eq>0)));
-% figure, imshow(eq, [le he]);
-
 %% Subtract images
+% just subtract pixel by pixel 
 diff = t1 - t15;
 nonzero = diff(find(diff>0));
 high = max(nonzero);
@@ -37,6 +32,7 @@ diffAvg = mean2(diff)
 diffStd = std2(diff)
 
 %% Fibermetric 
+% use dark polarity instead of light 
 V = fibermetric(diff,'ObjectPolarity','dark','StructureSensitivity',50);
 figure,
 imshow(V)

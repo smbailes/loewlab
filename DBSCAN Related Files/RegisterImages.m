@@ -1,4 +1,9 @@
 %% Setup: Find directory, open image
+% Dependencies
+% - getMatrixOutliers 
+% - RegisteredCropScript 
+% - showImages 
+
 close all; clear all; clc;
 location = uigetdir;
 location = strcat(location, '\');
@@ -26,7 +31,7 @@ end
 pause
 close all
 %% Register Images
-%Use demons for patients that move more or with larger breasts
+% Use demons for patients that move more or with larger breasts
 
 in = input('Affine or demons? Enter a/d: ','s');
 fixed = I_mat{8};
@@ -46,20 +51,31 @@ if strcmp(in, 'a')%Affine registration
     end
     fprintf('Finished Affine Registration\n');
 elseif strcmp(in, 'd') %demons registration
-    
-    fixedGPU = gpuArray(fixed); %Create gpuArray
-    for i = 0:120:1680
-        imgpath = [location '\' sprintf('%04d.tif',i)];
-        moving = imread(imgpath);
-        movingGPU = gpuArray(moving); %Create gpuArray
+    % Check to see if computer has GPU. If it does, use GPU. 
+    g = input('Does this computer have a GPU? (Y/N):', 's'); 
+    if strcmp(g, 'Y')
+        fixedGPU = gpuArray(fixed); %Create gpuArray
+        for i = 0:120:1680
+            imgpath = [location '\' sprintf('%04d.tif',i)];
+            moving = imread(imgpath);
+            movingGPU = gpuArray(moving); %Create gpuArray
 
-        [~,movingReg] = imregdemons(movingGPU,fixedGPU,[500 400 200],'AccumulatedFieldSmoothing',3);
-        
-        %Bring registered image back to CPU
-        registeredImage = gather(movingReg);
-        
-        imwrite(registeredImage,sprintf('%04d.tif',i))
+            [~,movingReg] = imregdemons(movingGPU,fixedGPU,[500 400 200],'AccumulatedFieldSmoothing',3);
+
+            %Bring registered image back to CPU
+            registeredImage = gather(movingReg);
+
+            imwrite(registeredImage,sprintf('%04d.tif',i))
+        end 
+    else
+         for i = 0:120:1680
+            imgpath = [location '\' sprintf('%04d.tif',i)];
+            moving = imread(imgpath);
+            [~,registeredImage] = imregdemons(moving,fixed,[500 400 200],'AccumulatedFieldSmoothing',3);
+            imwrite(registeredImage,sprintf('%04d.tif',i))
+         end 
     end 
+        
     fprintf('Finished Demons Registration\n'); 
 end
 

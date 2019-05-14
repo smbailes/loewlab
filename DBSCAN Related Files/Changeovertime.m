@@ -1,3 +1,8 @@
+%% Divide images into grids to compare that grid over time 
+% Dependencies: 
+% - pathfinder 
+% - getMatrixOutliers 
+
 % close all
 clc, clearvars -except perchangebreast perchangecorr v
 %v = v+1
@@ -10,7 +15,7 @@ clc, clearvars -except perchangebreast perchangecorr v
 %     numlines = 1;
 %     answers = inputdlg(prompt,dlgtitle,numlines,defaultans);
     
-    %% Image Input
+%% Image Input
     numpics = 15; % allocates number of pictures
     % Read images to cell matrix I_mat
     a=0000; % set equal to the number of the first picture
@@ -100,24 +105,6 @@ for i = 1:numrows
         end
     end
 end
-
-%% find good data for 
-
-% for i = 1:numrows
-%     for j = 1:numcols
-%         for k = 1:numpics 
-%             if abs(stdv{i,j,k}) >500  % eliminates data that deviates too, mostly edge squares
-%                 for d = 1:numpics % total number of pictures
-%                 averages{i,j,d} = NaN;
-%                 end   
-%             elseif averages{i,j,k} == 0
-%                 for d = 1:numpics
-%                     averages{i,j,k} = NaN;
-%                 end
-%             end
-%         end
-%     end
-% end
 
 %% determining y-value limits
 ylim_array = gooddata;

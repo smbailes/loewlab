@@ -1,3 +1,11 @@
+%% Register and Crop images from new camera 
+% Accounts for different naming convention 
+% Dependencies
+% - pathfinder
+% - patientselect
+% - volunteerselect 
+% - getMatrixOutliers
+
 close all;
 clear all;
 clc; 
@@ -25,52 +33,53 @@ end
 pause
 close all
 %% Register Images
-%Use demons for patients that move more or with larger breasts
+% Use demons for patients that move more or with larger breasts
 
 in = input('Affine or demons? Enter a/d: ','s');
 fixed = I_mat{8};
 cd(newLocation);
 
 if strcmp(in, 'a')%Affine registration
-    for i = 1:15
-        [optimizer, metric] = imregconfig('monomodal');
-        optimizer.MaximumStepLength = 0.04;
-        optimizer.MaximumIterations = 100;
-        
-        registeredImage{i} = imregister(I_mat{i},fixed,'affine',optimizer,metric);
-        imwrite(registeredImage{i},sprintf('%04d.tif',i));
-    end 
-    fprintf('Finished Affine Registration \n');
-%     for i = 0:120:1680
-%     newFile = [location '/' sprintf('%04d.tif',i)];
-%     newImage = imread(newFile);
-%     
-%     [optimizer, metric] = imregconfig('monomodal');
-%     optimizer.MaximumStepLength = 0.04;
-%     optimizer.MaximumIterations = 100; %SETTING FOR NEW MATLAB
-% 
-%     registeredImage = imregister(newImage,fixed,'affine',optimizer,metric);
-%     imwrite(registeredImage,sprintf('%04d.tif',i))
-%     end
-%     fprintf('Finished Affine Registration\n');
-elseif strcmp(in, 'd') %demons registration
+    for i = 0:120:1680
+    newFile = [location '/' sprintf('%04d.tif',i)];
+    newImage = imread(newFile);
     
-    %fixedGPU = gpuArray(fixed); %Create gpuArray
-    for i = 1:15
-        %imgpath = [location sprintf('%04d.tif',i)];
-        %moving = imread(imgpath);
-        %movingGPU = gpuArray(moving); %Create gpuArray
+    [optimizer, metric] = imregconfig('monomodal');
+    optimizer.MaximumStepLength = 0.04;
+    optimizer.MaximumIterations = 100; %SETTING FOR NEW MATLAB
 
-        [~,movingReg] = imregdemons(I_mat{i},fixed,[500 400 200],'AccumulatedFieldSmoothing',3);
-        
-        %Bring registered image back to CPU
-        %registeredImage = gather(movingReg);
-        registeredImage{i} = movingReg;
-        imwrite(movingReg,sprintf('%04d.tif',i))
+    registeredImage = imregister(newImage,fixed,'affine',optimizer,metric);
+    imwrite(registeredImage,sprintf('%04d.tif',i))
+    end
+    fprintf('Finished Affine Registration\n');
+elseif strcmp(in, 'd') %demons registration
+    % Check to see if computer has GPU. If it does, use GPU. 
+    g = input('Does this computer have a GPU? (Y/N):', 's'); 
+    if strcmp(g, 'Y')
+        fixedGPU = gpuArray(fixed); %Create gpuArray
+        for i = 0:120:1680
+            imgpath = [location '\' sprintf('%04d.tif',i)];
+            moving = imread(imgpath);
+            movingGPU = gpuArray(moving); %Create gpuArray
+
+            [~,movingReg] = imregdemons(movingGPU,fixedGPU,[500 400 200],'AccumulatedFieldSmoothing',3);
+
+            %Bring registered image back to CPU
+            registeredImage = gather(movingReg);
+
+            imwrite(registeredImage,sprintf('%04d.tif',i))
+        end 
+    else
+         for i = 0:120:1680
+            imgpath = [location '\' sprintf('%04d.tif',i)];
+            moving = imread(imgpath);
+            [~,registeredImage] = imregdemons(moving,fixed,[500 400 200],'AccumulatedFieldSmoothing',3);
+            imwrite(registeredImage,sprintf('%04d.tif',i))
+         end 
     end 
+        
     fprintf('Finished Demons Registration\n'); 
 end
-
 %% Show newly registered images
 
 for p = 1:15

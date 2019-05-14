@@ -13,11 +13,9 @@ close all;
 
 %Start timer
 tic         
-%% Call to ChangeOverTime
-Changeovertime;
 
 %% Patient Selection
-%     [location, ptID] = pathfinder; 
+    [location, ptID] = pathfinder; 
 
 %% Image Input
     
@@ -205,7 +203,8 @@ for d = 7:7
    end    
    fprintf('Removed clusters from bottom border\n');
    
-   %Check for vessels
+   %Rudimentary check for vessels(just based on thinness, not the real
+   %vesselness check) 
     for t = 1:numClust
         if thisImage(t).RemoveCluster == 0
             indices = thisImage(t).ClusterIndices;
@@ -225,10 +224,6 @@ for d = 7:7
             if(ylength > 20 || xlength > 20 || DiagnolLength > 20)
                 thisImage(t).RemoveCluster = 1;
             end
-            
-%             if(ylength < 5 || xlength < 5)
-%                 thisImage(t).RemoveCluster = 1;
-%             end
 
             if(ylength >= xlength*3 || xlength>= ylength*3)
                 thisImage(t).RemoveCluster = 1;
@@ -271,15 +266,6 @@ for g = 7:7
     plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
     hold on 
     
-    %%PLOT MIDLINE IMAGE
-
-%     figure, imshow(picture, [min(pic_adj), max(pic_adj)]);
-%     hold on
-%     y1=get(gca,'ylim');
-%     plot([xcent xcent],y1);
-%         
-%     title(sprintf('%s - Mirror Midline Isolation',ptID));
-%     
     ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
 
@@ -301,7 +287,10 @@ lowchange = lowsquarechange(topx);
 lowsquarechange1 = lowavesquarechange(topx);
 
  %% Corresponding Nipple check: Get coordinates of nipples
-
+% You have to track the nipples over time because of the patient's shift.
+% If you want to be able to compare the exact same spot over time you need
+% to do this because of patient movement. Go through and click on the
+% right/left nipple in each image (right first) 
 figure('Name','Select Right nipple'), 
  for i = 1:15
     I1 = I_mat{i}(find(I_mat{i}>0));
@@ -338,7 +327,7 @@ figure('Name','Select Middle'), imshow(I_mat{7},[min(pic_adj) max(pic_adj)]), xl
 close
 
 %% Look at clusters over time
-
+% Remove clusters that change a lot over time 
 for o = 7:7
     thisImage = ClusterInfo{o,1}; %Get Current Image Info
     numClusters = length(thisImage);
@@ -461,6 +450,8 @@ end
 %}
 
 %% Vessel Check
+% Checking for vessels. Will need to be updated to include fibermetric in
+% the future. Doesn't work very well right now. 
 for o = 7:7 
     thisImage = ClusterInfo{o,1}; %Get Current Image Info
 
@@ -694,7 +685,9 @@ for g = 7:7
 end
 
 
-%% Track Clusters over time
+%% Compare each cluster to the same region on the opposite breast
+% If the cluster is warmer than the same region on the opposite breast keep
+% it, otherwise mark for removal 
 for o = 7:7
     thisImage = ClusterInfo{o,1};
     numClust = length(thisImage);
@@ -794,7 +787,7 @@ end
 
 ClusterInfo{o,1} = thisImage;
 
-%%     
+%% Plot results (again) 
 for g = 7:7 
     
 %     thisImage = ClusterInfo{g,1}; %Get Current Image Info
@@ -825,17 +818,9 @@ for g = 7:7
     plot([c4(1) c1(1)],[c4(2) c1(2)],'r');
     hold on 
     
-    %%PLOT MIDLINE IMAGE
 
-%     figure, imshow(picture, [min(pic_adj), max(pic_adj)]);
-%     hold on
-%     y1=get(gca,'ylim');
-%     plot([xcent xcent],y1);
-%         
-%     title(sprintf('%s - Mirror Midline Isolation',ptID));
-%     
+   
     ClusterInfo{7,1} = thisImage;
     ClusterInfo{g,3} = clustData; %Save updated Cluster Info to Array
 end
 fprintf('DBSCAN_3D took %04f seconds to run\n',toc)
-%%
